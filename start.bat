@@ -31,12 +31,27 @@ if %errorlevel% neq 0 (
     exit /b
 )
 
+echo [*] 正在檢查虛擬環境 (.venv)...
+if not exist .venv (
+    echo [*] 正在建立 Python 虛擬環境 (.venv)...
+    python -m venv .venv
+    if %errorlevel% neq 0 (
+        echo [!] 建立虛擬環境失敗，將嘗試使用系統預設的 Python 環境...
+        set PY_EXEC=python
+    ) else (
+        echo [✔] 虛擬環境建立成功！
+        set PY_EXEC=.venv\Scripts\python
+    )
+) else (
+    set PY_EXEC=.venv\Scripts\python
+)
+
 echo [*] 正在確認環境所需的 Python 套件已安裝 (若已安裝將極速跳過)...
-python -m pip install -r requirements.txt --quiet
+%PY_EXEC% -m pip install -r requirements.txt --quiet
 if %errorlevel% neq 0 (
     echo [!] 自動安裝套件時遇到一些狀況，將嘗試直接載入服務...
 ) else (
-    echo [✔] 環境套件確認完畢！
+    echo [✔] 虛擬環境套件確認完畢！
 )
 echo.
 echo 💡 [提示] 若您擁有 Gemini API Key，請在下方貼上。
@@ -59,7 +74,7 @@ start http://localhost:8000
 echo.
 echo [*] 正在啟動 FastAPI 後端服務...
 echo.
-python -m uvicorn app:app --reload --port 8000
+%PY_EXEC% -m uvicorn app:app --reload --port 8000
 if %errorlevel% neq 0 (
     echo [!] 後端服務異常終止。
 )
