@@ -17,10 +17,24 @@ echo.
 echo [*] 歡迎使用 戀愛AI 智慧工作區！
 echo [*] 本腳本將協助您一鍵啟動後端 API 服務與網頁介面。
 echo.
-echo [*] 正在確認環境所需的 Python 套件已安裝 (若已安裝將極速跳過)...
-pip install -r requirements.txt --quiet
+echo [*] 正在確認 Python 環境...
+where python >nul 2>nul
 if %errorlevel% neq 0 (
-    echo [!] 自動確認套件時遇到些微狀況，將嘗試直接載入服務...
+    echo [!] 錯誤：找不到 Python！
+    echo ─────────────────────────────────────────────────────────────
+    echo 請前往 Python 官方網站下載安裝 Python 3.9 或以上版本：
+    echo 👉 https://www.python.org/downloads/
+    echo.
+    echo 💡 重要提示：安裝時請務必勾選「Add Python to PATH」選項！
+    echo ─────────────────────────────────────────────────────────────
+    pause
+    exit /b
+)
+
+echo [*] 正在確認環境所需的 Python 套件已安裝 (若已安裝將極速跳過)...
+python -m pip install -r requirements.txt --quiet
+if %errorlevel% neq 0 (
+    echo [!] 自動安裝套件時遇到一些狀況，將嘗試直接載入服務...
 ) else (
     echo [✔] 環境套件確認完畢！
 )
@@ -45,5 +59,8 @@ start http://localhost:8000
 echo.
 echo [*] 正在啟動 FastAPI 後端服務...
 echo.
-uvicorn app:app --reload --port 8000
+python -m uvicorn app:app --reload --port 8000
+if %errorlevel% neq 0 (
+    echo [!] 後端服務異常終止。
+)
 pause
