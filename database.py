@@ -71,14 +71,22 @@ def init_db():
     ''')
     
     # 預先插入一個預設的 PTT Catch 筆記本，如果不存在的話
-    cursor.execute("SELECT id FROM notebooks WHERE title = 'PTT Catch 精華區'")
+    cursor.execute("SELECT id FROM notebooks WHERE id = 'default-catch-notebook-uuid'")
     if not cursor.fetchone():
-        default_notebook_id = "default-catch-notebook-uuid"
         cursor.execute(
             "INSERT INTO notebooks (id, title, description) VALUES (?, ?, ?)",
-            (default_notebook_id, "PTT Catch 精華區", "PTT Catch 板精華區經典文章智慧導讀知識庫")
+            ("default-catch-notebook-uuid", "PTT Catch 精華區", "PTT Catch 板精華區經典文章智慧導讀知識庫")
         )
         print("Default notebook created.")
+        
+    # 預先插入把妹與情感經典書籍的筆記本，如果不存在的話
+    cursor.execute("SELECT id FROM notebooks WHERE id = 'pua-books-notebook-uuid'")
+    if not cursor.fetchone():
+        cursor.execute(
+            "INSERT INTO notebooks (id, title, description) VALUES (?, ?, ?)",
+            ("pua-books-notebook-uuid", "把妹與情感經典書籍", "收錄把妹達人、謎男方法等經典兩性相處與社交動力學書籍")
+        )
+        print("PUA Books notebook created.")
         
     conn.commit()
     conn.close()
@@ -94,29 +102,44 @@ def init_db():
     )
     print(f"ChromaDB initialized. Collection 'catch_chunks' is ready.")
 
-def clear_db():
-    """清空 SQLite 與 ChromaDB 中所有的舊文檔與向量資料"""
-    print("Clearing document-related tables in SQLite...")
+def clear_db(notebook_id=None):
+    """清空 SQLite 與 ChromaDB 中特定筆記本的舊文檔與向量資料，若 notebook_id 為 None 則清空全部"""
+    print(f"Clearing document-related tables in SQLite for notebook: {notebook_id or 'ALL'}...")
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute("DELETE FROM document_chunks")
-        cursor.execute("DELETE FROM documents")
+        if notebook_id:
+            cursor.execute("""
+                DELETE FROM document_chunks 
+                WHERE document_id IN (SELECT id FROM documents WHERE notebook_id = ?)
+            """, (notebook_id,))
+            cursor.execute("DELETE FROM documents WHERE notebook_id = ?", (notebook_id,))
+        else:
+            cursor.execute("DELETE FROM document_chunks")
+            cursor.execute("DELETE FROM documents")
         conn.commit()
-        print("Successfully cleared documents and document_chunks from SQLite.")
+        print("Successfully cleared document tables from SQLite.")
     except Exception as e:
         print(f"Error clearing SQLite tables: {str(e)}")
     finally:
         conn.close()
 
-    print("Clearing ChromaDB collection...")
+    print(f"Clearing ChromaDB collection for notebook: {notebook_id or 'ALL'}...")
     try:
-        chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
-        try:
-            chroma_client.delete_collection("catch_chunks")
-            print("Successfully deleted catch_chunks collection from ChromaDB.")
-        except Exception as e:
-            print(f"Collection delete log (can be ignored if collection did not exist): {str(e)}")
+        if notebook_id:
+            try:
+                collection = get_chroma_collection()
+                collection.delete(where={"notebook_id": notebook_id})
+                print(f"Successfully deleted vectors for notebook: {notebook_id} from ChromaDB.")
+            except Exception as e:
+                print(f"ChromaDB notebook delete error: {str(e)}")
+        else:
+            chroma_client = chromadb.PersistentClient(path=CHROMA_PATH)
+            try:
+                chroma_client.delete_collection("catch_chunks")
+                print("Successfully deleted catch_chunks collection from ChromaDB.")
+            except Exception as e:
+                print(f"Collection delete log (can be ignored if collection did not exist): {str(e)}")
     except Exception as e:
         print(f"Error clearing ChromaDB: {str(e)}")
 

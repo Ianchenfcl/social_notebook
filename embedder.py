@@ -75,10 +75,9 @@ def process_and_embed_catch_data(json_file_path="d:/sideproject/catchbot/catch_p
         print(f"Error: JSON file '{json_file_path}' not found! Has the crawler completed?")
         return
 
-    # 初始化與清除資料庫
+    # 初始化與清除資料庫 (僅清除 PTT Catch 筆記本對應的舊資料)
     database.init_db()
-    database.clear_db()
-    database.init_db() # 重新建立全新的 ChromaDB 集合
+    database.clear_db("default-catch-notebook-uuid")
     
     with open(json_file_path, 'r', encoding='utf-8') as f:
         posts = json.load(f)

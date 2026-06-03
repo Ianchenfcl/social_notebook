@@ -188,7 +188,7 @@
         <header class="h-16 border-b border-slate-900 px-6 flex items-center justify-between bg-slate-950/20 backdrop-blur-md z-10">
             <div>
                 <h2 id="current-notebook-title" class="font-semibold text-slate-100">PTT Catch 精華區導讀</h2>
-                <p class="text-xs text-slate-400">AI 將結合板上經典心態、技巧與實戰文章回答您的任何提問</p>
+                <p id="current-notebook-description" class="text-xs text-slate-400">AI 將結合板上經典心態、技巧與實戰文章回答您的任何提問</p>
             </div>
             
             <div class="flex items-center gap-2">
@@ -326,7 +326,8 @@
     <!-- Frontend logic scripts -->
     <script>
         const API_BASE = "http://localhost:8000/api";
-        const currentNotebookId = "default-catch-notebook-uuid";
+        let currentNotebookId = "default-catch-notebook-uuid";
+        let notebooksList = [];
         
         let loadedSources = [];
         let chatHistory = [];
@@ -367,11 +368,78 @@
             lucide.createIcons();
         }
 
+        // --- Load notebooks list ---
+        async function loadNotebooks() {
+            try {
+                const response = await fetch(`${API_BASE}/notebooks`);
+                if (!response.ok) throw new Error("Failed to load notebooks");
+                const notebooks = await response.json();
+                notebooksList = notebooks;
+                
+                const selectEl = document.getElementById('notebook-select');
+                selectEl.innerHTML = notebooks.map(nb => `
+                    <option value="${nb.id}">${nb.id === 'default-catch-notebook-uuid' ? '📚 ' : '📖 '}${nb.title}</option>
+                `).join('');
+                
+                // restore selected notebook if saved (or default)
+                const savedNbId = localStorage.getItem('current_notebook_id') || "default-catch-notebook-uuid";
+                const exists = notebooks.some(nb => nb.id === savedNbId);
+                currentNotebookId = exists ? savedNbId : (notebooks[0] ? notebooks[0].id : "default-catch-notebook-uuid");
+                selectEl.value = currentNotebookId;
+                
+                // Bind onchange handler
+                selectEl.onchange = (e) => {
+                    switchNotebook(e.target.value);
+                };
+                
+                updateNotebookHeader();
+                
+                // Now load documents and notes for the active notebook
+                loadDocuments();
+                loadNotes();
+            } catch (err) {
+                console.error("Load notebooks error:", err);
+                // Fallback to load default
+                loadDocuments();
+                loadNotes();
+            }
+        }
+
+        function updateNotebookHeader() {
+            const nb = notebooksList.find(n => n.id === currentNotebookId);
+            if (nb) {
+                document.getElementById('current-notebook-title').textContent = nb.title + " 導讀";
+                document.getElementById('current-notebook-description').textContent = nb.description || "AI 將結合筆記本內的參考文章回答您的問題";
+            }
+        }
+
+        function switchNotebook(nbId) {
+            currentNotebookId = nbId;
+            localStorage.setItem('current_notebook_id', nbId);
+            updateNotebookHeader();
+            loadDocuments();
+            loadNotes();
+            
+            // Clear chat display smoothly without location.reload
+            document.getElementById('chat-messages').innerHTML = `
+                <div class="flex gap-4 max-w-3xl">
+                    <div class="w-9 h-9 rounded-lg bg-brand-600 flex items-center justify-center flex-shrink-0 shadow shadow-brand-500/20">
+                        <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
+                    </div>
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl px-5 py-4 max-w-full">
+                        <h4 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">系統提示</h4>
+                        <div class="prose max-w-none text-sm text-slate-350 leading-relaxed">
+                            已成功切換至 <strong>${notebooksList.find(n => n.id === nbId)?.title || '新筆記本'}</strong>。請在下方輸入您的問題開始對話！
+                        </div>
+                    </div>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+
         // Initialize lucide icons on load
         window.addEventListener('DOMContentLoaded', () => {
             lucide.createIcons();
-            loadDocuments();
-            loadNotes();
             
             // 讀取 localStorage 並回填金鑰
             const savedKey = localStorage.getItem('gemini_api_key') || "";
@@ -381,6 +449,9 @@
             // 讀取 localStorage 並回填模型選擇
             const savedModel = localStorage.getItem('gemini_model') || "models/gemini-3.5-flash";
             document.getElementById('web-model-select').value = savedModel;
+            
+            // 載入筆記本清單並啟動文件加載
+            loadNotebooks();
         });
 
         // 1. Load documents/sources
@@ -399,17 +470,34 @@
                     return;
                 }
                 
-                listDiv.innerHTML = docs.map(doc => `
-                    <a href="${doc.source_url || '#'}" target="_blank" class="block group bg-slate-950/60 hover:bg-slate-900/60 border border-slate-800 hover:border-slate-700 rounded-xl p-3 text-left transition duration-200 cursor-pointer no-underline">
-                        <div class="flex items-start gap-2">
-                            <i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-brand-400 mt-0.5 flex-shrink-0"></i>
-                            <div class="overflow-hidden w-full">
-                                <h4 class="text-xs font-semibold text-slate-200 truncate group-hover:text-brand-300" title="${doc.title}">${doc.title}</h4>
-                                <p class="text-[10px] text-slate-500 truncate mt-0.5">作者: ${doc.author || '未知'} • ${doc.category_path[doc.category_path.length-1] || '精華區'}</p>
+                const isPua = (currentNotebookId === 'pua-books-notebook-uuid');
+                listDiv.innerHTML = docs.map(doc => {
+                    if (isPua) {
+                        return `
+                            <div class="group bg-slate-950/60 border border-slate-850 rounded-xl p-3 text-left transition duration-200">
+                                <div class="flex items-start gap-2">
+                                    <i data-lucide="book" class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0"></i>
+                                    <div class="overflow-hidden w-full">
+                                        <h4 class="text-xs font-semibold text-slate-200 truncate" title="${doc.title}">${doc.title}</h4>
+                                        <p class="text-[10px] text-slate-500 truncate mt-0.5">作者: ${doc.author || '未知'} • 經典書籍</p>
+                                    </div>
+                                </div>
                             </div>
-                        </div>
-                    </a>
-                `).join('');
+                        `;
+                    } else {
+                        return `
+                            <a href="${doc.source_url || '#'}" target="_blank" class="block group bg-slate-950/60 hover:bg-slate-900/60 border border-slate-800 hover:border-slate-700 rounded-xl p-3 text-left transition duration-200 cursor-pointer no-underline">
+                                <div class="flex items-start gap-2">
+                                    <i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-brand-400 mt-0.5 flex-shrink-0"></i>
+                                    <div class="overflow-hidden w-full">
+                                        <h4 class="text-xs font-semibold text-slate-200 truncate group-hover:text-brand-300" title="${doc.title}">${doc.title}</h4>
+                                        <p class="text-[10px] text-slate-500 truncate mt-0.5">作者: ${doc.author || '未知'} • ${doc.category_path[doc.category_path.length-1] || '精華區'}</p>
+                                    </div>
+                                </div>
+                            </a>
+                        `;
+                    }
+                }).join('');
                 
                 lucide.createIcons();
             } catch (err) {
@@ -774,7 +862,7 @@
             
             const urlEl = document.getElementById('source-url');
             urlEl.href = src.source_url;
-            if (src.source_url === '#') {
+            if (src.source_url === '#' || currentNotebookId === 'pua-books-notebook-uuid') {
                 urlEl.classList.add('hidden');
             } else {
                 urlEl.classList.remove('hidden');

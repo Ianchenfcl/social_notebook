@@ -1,0 +1,4 @@
+__pycache__/
+pua_books_repo/
+*.json
+*-journal

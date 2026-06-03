@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini Live 即時語音智能對話</title>
+    <!-- 引入 Outfit 與 Noto Sans TC 字型 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 圖標 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 載入自訂 CSS 樣式 -->
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <!-- 背景發光球（裝飾用） -->
+    <div class="glowing-bg">
+        <div class="blob blob-purple"></div>
+        <div class="blob blob-teal"></div>
+        <div class="blob blob-indigo"></div>
+    </div>
+
+    <div class="container">
+        <!-- 頁首標題 -->
+        <header>
+            <h1><i class="fa-solid fa-microphone-lines pulse-icon"></i> Gemini Live <span>即時語音對話</span></h1>
+            <p>感受 Gemini 3.1 Live API 的超低延遲雙向語音互動，支援鏡頭與螢幕分享，完美支援語音打斷！</p>
+        </header>
+
+        <div class="main-layout">
+            <!-- 左側：設定與控制面板 -->
+            <section class="left-panel">
+                <!-- API 設定卡片 -->
+                <div class="glass-card config-card">
+                    <h2 class="card-title"><i class="fa-solid fa-key"></i> 認證與設定</h2>
+                    
+                    <div class="input-group">
+                        <label for="apiKey"><span class="required">*</span> Google AI Studio API Key</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="apiKey" placeholder="請貼上您的 AIzaSy... 金鑰" autocomplete="current-password">
+                            <button type="button" id="toggleApiKey" class="icon-btn"><i class="fa-solid fa-eye"></i></button>
+                        </div>
+                        <span class="input-tip">金鑰僅存於您瀏覽器 localStorage 中，完全在本地安全端點執行。</span>
+                    </div>
+
+                    <div class="input-grid">
+                        <div class="input-group">
+                            <label for="voiceMode">輸入模式</label>
+                            <select id="voiceMode">
+                                <option value="none" selected>純語音對話</option>
+                                <option value="camera">開啟鏡頭串流</option>
+                                <option value="screen">分享螢幕畫面</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="voiceSelect">Gemini 語音</label>
+                            <select id="voiceSelect">
+                                <option value="Zephyr" selected>Zephyr (優雅女聲 - 推薦)</option>
+                                <option value="Aoede">Aoede (清晰女聲)</option>
+                                <option value="Kore">Kore (清亮女聲)</option>
+                                <option value="Puck">Puck (陽光男聲)</option>
+                                <option value="Charon">Charon (沉穩男聲)</option>
+                                <option value="Fenrir">Fenrir (深沉男聲)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 狀態與核心控制卡片 -->
+                <div class="glass-card control-card">
+                    <h2 class="card-title"><i class="fa-solid fa-sliders"></i> 通訊控制台</h2>
+                    
+                    <!-- 狀態顯示器 -->
+                    <div class="status-indicator-wrapper">
+                        <div class="status-indicator">
+                            <span class="status-dot disconnected" id="statusDot"></span>
+                            <span class="status-text" id="statusText">尚未連線</span>
+                        </div>
+                        <div class="timer" id="connectionTimer">00:00</div>
+                    </div>
+
+                    <!-- 影像預覽區域 (相機鏡頭或螢幕分享時顯示) -->
+                    <div class="video-preview-wrapper" id="videoPreviewWrapper" style="display: none;">
+                        <video id="localVideo" autoplay playsinline muted></video>
+                        <div class="video-overlay">
+                            <span><i class="fa-solid fa-video"></i> 即時影像串流中</span>
+                        </div>
+                    </div>
+
+                    <!-- 麥克風 VAD 靜音門檻設定 -->
+                    <div class="input-group" style="margin-top: 15px; margin-bottom: 20px;">
+                        <label for="vadSlider" style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+                            <span><i class="fa-solid fa-microphone-lines"></i> 麥克風 VAD 靈敏度門檻</span>
+                            <span id="vadValue" style="font-weight: 700; color: var(--color-pink); text-shadow: 0 0 8px var(--color-pink-glow);">0.006</span>
+                        </label>
+                        <input type="range" id="vadSlider" min="0.001" max="0.05" step="0.001" value="0.006" style="width: 100%; accent-color: var(--color-pink); margin-top: 8px; cursor: pointer;">
+                        <span class="input-tip">若環境雜訊多（電流/風扇聲），請調高以過濾背景雜音；若說話斷續，請調低。</span>
+                    </div>
+
+                    <!-- 主要控制按鈕 -->
+                    <div class="control-actions">
+                        <button id="connectBtn" class="btn btn-primary btn-large">
+                            <i class="fa-solid fa-play"></i> 開始語音連線
+                        </button>
+                        
+                        <div class="btn-group-row">
+                            <button id="muteMicBtn" class="btn btn-secondary btn-icon-only" disabled title="靜音麥克風">
+                                <i class="fa-solid fa-microphone"></i>
+                            </button>
+                            <button id="disconnectBtn" class="btn btn-danger btn-large" disabled>
+                                <i class="fa-solid fa-stop"></i> 中斷連線
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 右側：語音視覺化與對話稿 -->
+            <section class="right-panel">
+                <!-- 雙向音訊視覺化卡片 -->
+                <div class="glass-card visualizer-card">
+                    <h2 class="card-title"><i class="fa-solid fa-wave-square"></i> 音訊視覺波形</h2>
+                    
+                    <div class="visualizers-container">
+                        <!-- 使用者麥克風波形 -->
+                        <div class="vis-box">
+                            <span class="vis-label"><i class="fa-solid fa-user-circle"></i> 您的聲音</span>
+                            <canvas id="userCanvas"></canvas>
+                        </div>
+                        <!-- Gemini 回應波形 -->
+                        <div class="vis-box">
+                            <span class="vis-label vis-label-gemini"><i class="fa-solid fa-brain"></i> Gemini 的聲音</span>
+                            <canvas id="geminiCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 逐字稿與聊天卡片 -->
+                <div class="glass-card chat-card">
+                    <h2 class="card-title"><i class="fa-solid fa-comment-dots"></i> 即時對話逐字稿與紀錄</h2>
+                    
+                    <div class="chat-log" id="chatLog">
+                        <div class="system-message">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>歡迎使用！請在左側輸入您的 API Key 並點擊「開始語音連線」進行即時對話。</span>
+                        </div>
+                    </div>
+
+                    <!-- 文字輸入輔助 (當不方便說話時可以打字) -->
+                    <div class="chat-input-wrapper">
+                        <input type="text" id="textInput" placeholder="在此輸入文字訊息傳送給 Gemini..." disabled>
+                        <button id="sendTextBtn" class="btn btn-primary" disabled><i class="fa-solid fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- 頁尾 -->
+    <footer>
+        <p>Built with <i class="fa-solid fa-heart" style="color: #ff4a5a;"></i> using Google Gemini Live API | Antigravity AI Partner</p>
+    </footer>
+
+    <!-- 載入核心 JS 程式碼 -->
+    <script src="/static/main.js"></script>
+</body>
+</html>
