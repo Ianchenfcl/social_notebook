@@ -166,7 +166,7 @@
                     <span id="key-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-medium">展示模式</span>
                 </div>
                 <div class="relative flex items-center">
-                    <input id="web-api-key" type="password" placeholder="貼上您的 GEMINI_API_KEY..." oninput="saveApiKey(this.value)" class="w-full bg-slate-950/85 border border-slate-800 rounded-lg py-1.5 pl-3 pr-8 text-xs text-slate-300 focus:outline-none focus:border-brand-500/80 transition">
+                    <input id="web-api-key" type="password" name="web-api-key" autocomplete="new-password" placeholder="貼上您的 GEMINI_API_KEY..." oninput="saveApiKey(this.value)" class="w-full bg-slate-950/85 border border-slate-800 rounded-lg py-1.5 pl-3 pr-8 text-xs text-slate-300 focus:outline-none focus:border-brand-500/80 transition">
                     <button onclick="toggleKeyVisibility()" class="absolute right-2.5 text-slate-500 hover:text-slate-350 focus:outline-none">
                         <i id="eye-icon" data-lucide="eye" class="w-3.5 h-3.5"></i>
                     </button>
@@ -559,7 +559,7 @@
                             <div class="flex items-center justify-between gap-2">
                                 <div class="flex items-center gap-1.5 flex-1 min-w-0">
                                     <i data-lucide="edit-3" class="w-3.5 h-3.5 text-brand-400 flex-shrink-0"></i>
-                                    <input type="text" value="${note.title}" onblur="updateNoteTitle('${note.id}', this.value)" class="bg-transparent font-bold text-slate-200 text-xs focus:outline-none border-b border-transparent focus:border-slate-750 pr-2">
+                                    <input type="text" autocomplete="off" name="note-title-${note.id}" value="${note.title}" onblur="updateNoteTitle('${note.id}', this.value)" class="bg-transparent font-bold text-slate-200 text-xs focus:outline-none border-b border-transparent focus:border-brand-500/50 w-full pr-2 truncate">
                                 </div>
                                 <div class="flex items-center gap-1 flex-shrink-0">
                                     <button onclick="toggleNoteExpand('${note.id}')" title="收起筆記" class="text-slate-400 hover:text-brand-300 transition p-1 hover:bg-slate-900 rounded">
@@ -584,7 +584,7 @@
                         <div class="bg-slate-950/40 hover:bg-slate-950/80 border border-slate-850 hover:border-brand-500/25 rounded-lg px-3 py-2 flex items-center justify-between gap-2 transition group cursor-pointer" onclick="handleCardClick(event, '${note.id}')">
                             <div class="flex items-center gap-2 flex-1 min-w-0">
                                 <i data-lucide="file-text" class="w-3.5 h-3.5 text-slate-500 group-hover:text-brand-400 transition flex-shrink-0"></i>
-                                <input type="text" value="${note.title}" onblur="updateNoteTitle('${note.id}', this.value)" class="bg-transparent font-semibold text-slate-350 text-xs focus:outline-none border-b border-transparent focus:border-brand-500/50 w-full pr-2 truncate cursor-text" onclick="event.stopPropagation()">
+                                <input type="text" autocomplete="off" name="note-title-${note.id}" value="${note.title}" onblur="updateNoteTitle('${note.id}', this.value)" class="bg-transparent font-semibold text-slate-350 text-xs focus:outline-none border-b border-transparent focus:border-brand-500/50 w-full pr-2 truncate cursor-text" onclick="event.stopPropagation()">
                             </div>
                             <div class="flex items-center gap-0.5 flex-shrink-0">
                                 <button onclick="toggleNoteExpand('${note.id}')" title="點開編輯詳細內容" class="text-slate-500 hover:text-brand-300 transition p-1 rounded hover:bg-slate-900">
