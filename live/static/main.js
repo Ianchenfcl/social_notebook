@@ -355,6 +355,15 @@ function disconnect() {
     // 停止計時器
     stopTimer();
 
+    // 暫停音訊環境釋放硬體資源與防漏音
+    if (audioCtx) {
+        try {
+            audioCtx.suspend();
+        } catch (e) {
+            console.error("Failed to suspend AudioContext:", e);
+        }
+    }
+
     // 重設 UI 狀態
     setUIState("disconnected");
     currentGeminiBubble = null;
@@ -413,7 +422,12 @@ function sendTextMessage() {
 
 // 7. 音訊初始化 (Web Audio API)
 async function initAudio() {
-    if (audioCtx) return;
+    if (audioCtx) {
+        if (audioCtx.state === "suspended") {
+            await audioCtx.resume();
+        }
+        return;
+    }
     
     // 建立 16000Hz AudioContext，瀏覽器會以硬體級高品質抗混疊濾波器自動完成雙向重採樣，保證錄音清晰度！
     const AudioContextClass = window.AudioContext || window.webkitAudioContext;
@@ -480,10 +494,20 @@ async function startMicInput() {
         }
         
         // 讀取動態滑桿或快取的靈敏度設定 (解決固定門檻導致的斷線或靜音衝突)
-        const silenceThreshold = vadSlider ? parseFloat(vadSlider.value) : 0.006;
+        let silenceThreshold = vadSlider ? parseFloat(vadSlider.value) : 0.012;
+        
+        // 動態門檻判定：Gemini 正在說話時調高門檻 (防止喇叭回授/回音打斷模型發言)
+        const isGeminiSpeaking = audioCtx && audioCtx.currentTime < nextStartTime;
+        if (isGeminiSpeaking) {
+            silenceThreshold = Math.max(silenceThreshold * 1.5, 0.018);
+        }
         
         // B. Client-side VAD 判定
         if (maxVal >= silenceThreshold) {
+            if (isGeminiSpeaking) {
+                // 使用者發言打斷 AI 播放：立即在本地停止播放，避免繼續播放造成回音干擾
+                interruptPlayback();
+            }
             // 當使用者再度開始說話時，如果 Gemini 先前有說話，將其存入歷史紀錄中
             if (currentGeminiText) {
                 saveGeminiHistory();
@@ -685,12 +709,13 @@ function flushAudioBuffer() {
     activeSources.push(source);
     
     const durationMs = audioBuffer.duration * 1000;
+    const playDelayMs = (startTime - currentTime) * 1000;
     setTimeout(() => {
         const idx = activeSources.indexOf(source);
         if (idx > -1) {
             activeSources.splice(idx, 1);
         }
-    }, durationMs + 200);
+    }, playDelayMs + durationMs + 200);
     
     nextStartTime = startTime + audioBuffer.duration;
 }

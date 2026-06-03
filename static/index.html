@@ -194,6 +194,16 @@
             </div>
             
             <div class="flex items-center gap-2">
+                <!-- 語音對象選擇 (選擇導師) -->
+                <select id="voice-voice-select" class="bg-slate-900 border border-slate-800 rounded-lg py-1.5 px-2 text-xs text-slate-300 focus:outline-none focus:border-brand-500 transition mr-1 cursor-pointer">
+                    <option value="Zephyr" selected>🎓 導師 Zephyr (優雅女聲)</option>
+                    <option value="Aoede">🎓 導師 Aoede (清晰女聲)</option>
+                    <option value="Kore">🎓 導師 Kore (清亮女聲)</option>
+                    <option value="Puck">🎓 導師 Puck (陽光男聲)</option>
+                    <option value="Charon">🎓 導師 Charon (沉穩男聲)</option>
+                    <option value="Fenrir">🎓 導師 Fenrir (深沉男聲)</option>
+                </select>
+
                 <!-- 語音通話按鈕 -->
                 <button id="voice-call-btn" onclick="openVoiceCallModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-950 text-brand-400 hover:bg-brand-900 border border-brand-900/40 text-xs font-semibold shadow-md shadow-brand-500/5 transition mr-1.5">
                     <span class="relative flex h-2 w-2">
@@ -1016,24 +1026,11 @@
             </div>
 
             <!-- Voice Control Group -->
-            <div class="flex items-center justify-between gap-3 text-xs">
-                <!-- Voice Select -->
-                <div class="flex flex-col gap-1 w-1/2">
-                    <label class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">大師聲線</label>
-                    <select id="voice-voice-select" class="w-full bg-slate-950 border border-slate-850 rounded-lg py-1.5 px-2 text-xs text-slate-350 focus:outline-none">
-                        <option value="Zephyr" selected>Zephyr (優雅女聲)</option>
-                        <option value="Aoede">Aoede (清晰女聲)</option>
-                        <option value="Kore">Kore (清亮女聲)</option>
-                        <option value="Puck">Puck (陽光男聲)</option>
-                        <option value="Charon">Charon (沉穩男聲)</option>
-                        <option value="Fenrir">Fenrir (深沉男聲)</option>
-                    </select>
-                </div>
-
+            <div class="flex items-center justify-center gap-3 text-xs pt-1">
                 <!-- Auto save setting -->
-                <div class="flex items-center gap-1.5 pt-4">
+                <div class="flex items-center gap-1.5">
                     <input type="checkbox" id="voice-auto-save" checked class="rounded border-slate-800 bg-slate-950 text-brand-600 focus:ring-0 cursor-pointer">
-                    <label for="voice-auto-save" class="text-[10px] text-slate-400 select-none cursor-pointer">掛斷後自動存入隨身筆記</label>
+                    <label for="voice-auto-save" class="text-xs text-slate-400 select-none cursor-pointer">掛斷後自動存入隨身筆記</label>
                 </div>
             </div>
 
@@ -1121,6 +1118,10 @@
                 voiceReconnectAttempts = 0;
             }
             
+            // 停用聲線選單，避免通話中切換造成不一致
+            const voiceSelect = document.getElementById('voice-voice-select');
+            if (voiceSelect) voiceSelect.disabled = true;
+            
             updateVoiceStatus("connecting", isReconnect ? "重新連線中..." : "正在建立與 Google AI Studio 的 Live 連線...");
             
             try {
@@ -1161,12 +1162,10 @@
                         try {
                             const msg = JSON.parse(event.data);
                             if (msg.type === "text") {
-                                voiceIsInterrupted = false; // 大師開始回應，重置打斷狀態
                                 handleVoiceTextResponse(msg.text);
                             } else if (msg.type === "start_turn") {
-                                voiceIsInterrupted = false; // 收到新回合開始訊號，重置打斷狀態，允許播放音訊
+                                // 新回合開始
                             } else if (msg.type === "interrupt") {
-                                voiceIsInterrupted = true;
                                 handleVoiceInterruption();
                             } else if (msg.type === "turn_complete") {
                                 saveVoiceHistoryTurn(); // 語音回答完畢，存檔當前輪次
@@ -1229,6 +1228,10 @@
             isVoiceReconnecting = false;
             voiceReconnectAttempts = 0;
             
+            // 啟用聲線選單，允許下次連線前切換
+            const voiceSelect = document.getElementById('voice-voice-select');
+            if (voiceSelect) voiceSelect.disabled = false;
+            
             if (voiceWs) {
                 const temp = voiceWs;
                 voiceWs = null;
@@ -1242,6 +1245,14 @@
             stopVoiceTimer();
             stopVoiceVisualizers();
             stopSpeechRecognition(); // 關閉使用者語意辨識
+            
+            if (voiceAudioCtx) {
+                try {
+                    await voiceAudioCtx.suspend();
+                } catch (e) {
+                    console.error("Failed to suspend AudioContext:", e);
+                }
+            }
             
             document.getElementById('voice-call-modal').classList.add('hidden');
             
@@ -1264,7 +1275,13 @@
         }
 
         async function initVoiceAudio() {
-            if (voiceAudioCtx) return;
+            if (voiceAudioCtx) {
+                if (voiceAudioCtx.state === "suspended") {
+                    await voiceAudioCtx.resume();
+                }
+                startVoiceVisualizers(); // 確保重新連線/開啟時重新啟動視覺化繪圖循環
+                return;
+            }
             
             const AudioContextClass = window.AudioContext || window.webkitAudioContext;
             voiceAudioCtx = new AudioContextClass({ sampleRate: 16000 });
@@ -1319,8 +1336,14 @@
                     if (abs > maxVal) maxVal = abs;
                 }
                 
-                const threshold = 0.006;
+                // 動態門檻判定：Gemini 正在說話時調高門檻 (防止喇叭回授/回音打斷模型發言)，平時用正常門檻
+                const isGeminiSpeaking = voiceAudioCtx && voiceAudioCtx.currentTime < voiceNextStartTime;
+                const threshold = isGeminiSpeaking ? 0.025 : 0.012;
                 if (maxVal >= threshold) {
+                    if (isGeminiSpeaking) {
+                        // 使用者發言打斷 AI 播放：立即在本地停止播放
+                        interruptVoicePlayback();
+                    }
                     if (voiceCurrentText) {
                         saveVoiceHistoryTurn();
                     }
@@ -1379,7 +1402,6 @@
 
         function playVoicePCM24kHz(arrayBuffer) {
             if (!voiceAudioCtx) return;
-            if (voiceIsInterrupted) return; // 處於被打斷狀態下，拋棄任何殘留的過時音訊
             
             // 安全防護：如果 ArrayBuffer 長度為奇數，在轉成 Int16Array 時會報 RangeError。
             // 我們進行切片以確保它是偶數。
@@ -1430,12 +1452,13 @@
             voiceActiveSources.push(source);
             
             const durationMs = audioBuffer.duration * 1000;
+            const playDelayMs = (startTime - currentTime) * 1000;
             setTimeout(() => {
                 const idx = voiceActiveSources.indexOf(source);
                 if (idx > -1) {
                     voiceActiveSources.splice(idx, 1);
                 }
-            }, durationMs + 200);
+            }, playDelayMs + durationMs + 200);
             
             voiceNextStartTime = startTime + audioBuffer.duration;
         }
@@ -1607,6 +1630,31 @@
             if (voiceVisualizerLoop) {
                 cancelAnimationFrame(voiceVisualizerLoop);
                 voiceVisualizerLoop = null;
+            }
+            // 清除並重設音量狀態條 (Canvases) 恢復成水平直線
+            const userCanvas = document.getElementById('voice-user-canvas');
+            const geminiCanvas = document.getElementById('voice-gemini-canvas');
+            if (userCanvas && geminiCanvas) {
+                const uCtx = userCanvas.getContext('2d');
+                const gCtx = geminiCanvas.getContext('2d');
+                uCtx.clearRect(0, 0, userCanvas.width, userCanvas.height);
+                gCtx.clearRect(0, 0, geminiCanvas.width, geminiCanvas.height);
+                
+                uCtx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+                uCtx.fillRect(0, 0, userCanvas.width, userCanvas.height);
+                uCtx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+                uCtx.beginPath();
+                uCtx.moveTo(0, userCanvas.height / 2);
+                uCtx.lineTo(userCanvas.width, userCanvas.height / 2);
+                uCtx.stroke();
+
+                gCtx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+                gCtx.fillRect(0, 0, geminiCanvas.width, geminiCanvas.height);
+                gCtx.strokeStyle = "rgba(255, 255, 255, 0.1)";
+                gCtx.beginPath();
+                gCtx.moveTo(0, geminiCanvas.height / 2);
+                gCtx.lineTo(geminiCanvas.width, geminiCanvas.height / 2);
+                gCtx.stroke();
             }
         }
 

@@ -117,7 +117,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 trigger_tokens=104857,
                 sliding_window=types.SlidingWindow(target_tokens=52428),
             ),
-            system_instruction=system_instruction
+            system_instruction=system_instruction,
+            output_audio_transcription=types.AudioTranscriptionConfig()
         )
 
         # 4. 連線至 Gemini Live 服務
@@ -140,10 +141,16 @@ async def websocket_endpoint(websocket: WebSocket):
                                 await websocket.send_bytes(response.data)
                             
                             # B. 處理文字逐字稿 (優化：遍歷 parts 避免直接呼叫 response.text 觸發警告)
-                            if response.server_content and response.server_content.model_turn:
-                                for part in response.server_content.model_turn.parts:
-                                    if part.text:
-                                        await websocket.send_json({"type": "text", "text": part.text})
+                            if response.server_content:
+                                # 優先嘗試從 output_transcription 獲取語音逐字稿
+                                if response.server_content.output_transcription and response.server_content.output_transcription.text:
+                                    await websocket.send_json({"type": "text", "text": response.server_content.output_transcription.text})
+                                
+                                # 保留原先從 model_turn 獲取文字的邏輯做為 fallback
+                                if response.server_content.model_turn:
+                                    for part in response.server_content.model_turn.parts:
+                                        if part.text:
+                                            await websocket.send_json({"type": "text", "text": part.text})
                             
                             # D. 處理打斷機制 (Interruption)
                             if response.server_content is not None:
