@@ -504,14 +504,6 @@ async function startMicInput() {
         
         // B. Client-side VAD 判定
         if (maxVal >= silenceThreshold) {
-            if (isGeminiSpeaking) {
-                // 使用者發言打斷 AI 播放：立即在本地停止播放，避免繼續播放造成回音干擾
-                interruptPlayback();
-            }
-            // 當使用者再度開始說話時，如果 Gemini 先前有說話，將其存入歷史紀錄中
-            if (currentGeminiText) {
-                saveGeminiHistory();
-            }
             micIsSpeaking = true;
             silenceTicks = 0;
         } else {

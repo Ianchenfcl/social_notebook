@@ -1340,13 +1340,6 @@
                 const isGeminiSpeaking = voiceAudioCtx && voiceAudioCtx.currentTime < voiceNextStartTime;
                 const threshold = isGeminiSpeaking ? 0.025 : 0.012;
                 if (maxVal >= threshold) {
-                    if (isGeminiSpeaking) {
-                        // 使用者發言打斷 AI 播放：立即在本地停止播放
-                        interruptVoicePlayback();
-                    }
-                    if (voiceCurrentText) {
-                        saveVoiceHistoryTurn();
-                    }
                     micSpeaking = true;
                     silenceTicks = 0;
                 } else {
