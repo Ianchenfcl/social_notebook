@@ -395,8 +395,8 @@ import logging
 import traceback
 import asyncio
 from fastapi import WebSocket, WebSocketDisconnect
-from google import genai
-from google.genai import types
+from google import genai as live_genai
+from google.genai import types as live_types
 
 logger = logging.getLogger("gemini-live-backend")
 VOICE_MODEL = "models/gemini-3.1-flash-live-preview"
@@ -441,7 +441,7 @@ async def websocket_endpoint(websocket: WebSocket):
         await websocket.send_json({"type": "status", "status": "connecting", "message": "正在建立與 Google AI Studio 的 Live 連線..."})
 
         # 2. 建立 Gemini 客戶端
-        client = genai.Client(
+        client = live_genai.Client(
             http_options={"api_version": "v1beta"},
             api_key=api_key,
         )
@@ -466,7 +466,7 @@ async def websocket_endpoint(websocket: WebSocket):
         base_instruction = (
             "你是一位情感心靈大師，擅長根據兩性心理學來提供充滿智慧、同理心且具建設性的語音建議。\n"
             "請務必使用繁體中文（台灣，Taiwanese Mandarin）與使用者進行語音交談，並用繁體中文回答所有問題。\n"
-            "答話請保持精簡、口語、溫暖且一針見血，符合日常交談習慣，不要使用長篇大論的書面語。\n"
+            "答話請保持精簡、口語、溫慢且一針見血，符合日常交談習慣，不要使用長篇大論的書面語。\n"
             f"{study_guide_instruction}"
         )
         
@@ -488,17 +488,17 @@ async def websocket_endpoint(websocket: WebSocket):
             system_instruction = base_instruction
 
         # 4. 配置 Live 連線設定
-        config = types.LiveConnectConfig(
+        config = live_types.LiveConnectConfig(
             response_modalities=["AUDIO"],
             media_resolution="MEDIA_RESOLUTION_MEDIUM",
-            speech_config=types.SpeechConfig(
-                voice_config=types.VoiceConfig(
-                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_name)
+            speech_config=live_types.SpeechConfig(
+                voice_config=live_types.VoiceConfig(
+                    prebuilt_voice_config=live_types.PrebuiltVoiceConfig(voice_name=voice_name)
                 )
             ),
-            context_window_compression=types.ContextWindowCompressionConfig(
+            context_window_compression=live_types.ContextWindowCompressionConfig(
                 trigger_tokens=104857,
-                sliding_window=types.SlidingWindow(target_tokens=52428),
+                sliding_window=live_types.SlidingWindow(target_tokens=52428),
             ),
             system_instruction=system_instruction
         )
@@ -525,6 +525,9 @@ async def websocket_endpoint(websocket: WebSocket):
                                 if getattr(response.server_content, "interrupted", False):
                                     logger.info("偵測到語音被打斷，發送 interrupt 指令。")
                                     await websocket.send_json({"type": "interrupt"})
+                                if getattr(response.server_content, "turn_complete", False):
+                                    logger.info("偵測到大師發言結束，發送 turn_complete 指令。")
+                                    await websocket.send_json({"type": "turn_complete"})
                 except asyncio.CancelledError:
                     pass
                 except Exception as e:
@@ -540,11 +543,11 @@ async def websocket_endpoint(websocket: WebSocket):
                         
                         if item_type == "audio":
                             await session.send_realtime_input(
-                                audio=types.Blob(data=item_data, mime_type="audio/pcm;rate=16000")
+                                audio=live_types.Blob(data=item_data, mime_type="audio/pcm;rate=16000")
                             )
                         elif item_type == "video":
                             await session.send_realtime_input(
-                                video=types.Blob(data=item_data, mime_type="image/jpeg")
+                                video=live_types.Blob(data=item_data, mime_type="image/jpeg")
                             )
                         elif item_type == "text":
                             await session.send_client_content(

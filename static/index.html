@@ -1074,6 +1074,9 @@
         let isVoiceReconnecting = false;
         let voiceReconnectAttempts = 0;
         const maxVoiceReconnectAttempts = 3;
+        let voiceIsInterrupted = false;
+        let voiceRecognition = null;
+        let voiceRecBubble = null;
 
         async function openVoiceCallModal() {
             const apiKey = localStorage.getItem('gemini_api_key') || "";
@@ -1139,6 +1142,7 @@
                     
                     isVoiceReconnecting = false;
                     voiceReconnectAttempts = 0;
+                    startSpeechRecognition(); // 啟動使用者語音辨識（逐字稿）
                 };
                 
                 voiceWs.onmessage = async (event) => {
@@ -1148,9 +1152,13 @@
                         try {
                             const msg = JSON.parse(event.data);
                             if (msg.type === "text") {
+                                voiceIsInterrupted = false; // 大師開始回應，重置打斷狀態
                                 handleVoiceTextResponse(msg.text);
                             } else if (msg.type === "interrupt") {
+                                voiceIsInterrupted = true;
                                 handleVoiceInterruption();
+                            } else if (msg.type === "turn_complete") {
+                                saveVoiceHistoryTurn(); // 語音回答完畢，存檔當前輪次
                             } else if (msg.type === "status") {
                                 updateVoiceStatus(msg.status, msg.message);
                             } else if (msg.type === "error") {
@@ -1222,6 +1230,7 @@
             interruptVoicePlayback();
             stopVoiceTimer();
             stopVoiceVisualizers();
+            stopSpeechRecognition(); // 關閉使用者語意辨識
             
             document.getElementById('voice-call-modal').classList.add('hidden');
             
@@ -1304,6 +1313,10 @@
                     if (voiceCurrentText) {
                         saveVoiceHistoryTurn();
                     }
+                    if (!voiceIsInterrupted) {
+                        voiceIsInterrupted = true;
+                        interruptVoicePlayback(); // 麥克風偵測到發聲，立即使本機當前播放音訊停止
+                    }
                     micSpeaking = true;
                     silenceTicks = 0;
                 } else {
@@ -1359,6 +1372,7 @@
 
         function playVoicePCM24kHz(arrayBuffer) {
             if (!voiceAudioCtx) return;
+            if (voiceIsInterrupted) return; // 處於被打斷狀態下，拋棄任何殘留的過時音訊
             
             const incoming = new Int16Array(arrayBuffer);
             
@@ -1421,9 +1435,11 @@
             if (voiceIsMuted) {
                 btn.className = "w-12 h-12 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center transition border border-rose-500/20 shadow";
                 icon.setAttribute('data-lucide', 'microphone-off');
+                stopSpeechRecognition(); // 麥克風靜音時同步關閉語音辨識
             } else {
                 btn.className = "w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-750 text-slate-350 hover:text-white flex items-center justify-center transition border border-slate-700/60 shadow";
                 icon.setAttribute('data-lucide', 'microphone');
+                startSpeechRecognition(); // 取消靜音時重新啟動語音辨識
             }
             lucide.createIcons();
         }
@@ -1579,6 +1595,98 @@
                 cancelAnimationFrame(voiceVisualizerLoop);
                 voiceVisualizerLoop = null;
             }
+        }
+
+        // --- 語音辨識與即時逐字稿服務 (Web Speech API) ---
+        function startSpeechRecognition() {
+            if (voiceIsMuted) return;
+            const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognitionClass) {
+                console.warn("Web Speech API is not supported in this browser.");
+                return;
+            }
+            
+            if (voiceRecognition) return; // 已經在執行中
+            
+            voiceRecognition = new SpeechRecognitionClass();
+            voiceRecognition.continuous = true;
+            voiceRecognition.interimResults = true;
+            voiceRecognition.lang = 'zh-TW';
+            
+            voiceRecBubble = null;
+            
+            voiceRecognition.onresult = (event) => {
+                let interimTranscript = '';
+                let finalTranscript = '';
+                
+                for (let i = event.resultIndex; i < event.results.length; ++i) {
+                    if (event.results[i].isFinal) {
+                        finalTranscript += event.results[i][0].transcript;
+                    } else {
+                        interimTranscript += event.results[i][0].transcript;
+                    }
+                }
+                
+                if (finalTranscript || interimTranscript) {
+                    const logDiv = document.getElementById('voice-transcript-log');
+                    const isPlaceholder = logDiv.querySelector('.text-slate-500');
+                    if (isPlaceholder) logDiv.innerHTML = "";
+                    
+                    if (!voiceRecBubble) {
+                        voiceRecBubble = document.createElement("div");
+                        voiceRecBubble.className = "text-slate-350 border-l-2 border-slate-600 pl-2 py-0.5 my-1.5 transition animate-pulse";
+                        voiceRecBubble.innerHTML = `<span class="text-slate-400 font-bold">👤 您：</span><span class="user-text-body"></span>`;
+                        logDiv.appendChild(voiceRecBubble);
+                    }
+                    
+                    const displayTranscript = finalTranscript + interimTranscript;
+                    voiceRecBubble.querySelector(".user-text-body").textContent = displayTranscript;
+                    logDiv.scrollTop = logDiv.scrollHeight;
+                    
+                    if (event.results[event.results.length - 1].isFinal) {
+                        const finalSegment = event.results[event.results.length - 1][0].transcript.trim();
+                        if (finalSegment) {
+                            voiceCallLogHistory.push({ role: 'user', text: finalSegment });
+                        }
+                        const bubbleText = voiceRecBubble.querySelector(".user-text-body");
+                        if (bubbleText) bubbleText.textContent = finalSegment;
+                        voiceRecBubble.className = "text-slate-350 border-l-2 border-slate-600 pl-2 py-0.5 my-1.5 transition"; // 移除呼吸動畫
+                        voiceRecBubble = null; // 重設以在下次發言時開啟新對話氣泡
+                    }
+                }
+            };
+            
+            voiceRecognition.onerror = (e) => {
+                if (e.error === 'no-speech') return; // 忽略無發聲的錯誤
+                console.error("Speech recognition error:", e);
+            };
+            
+            voiceRecognition.onend = () => {
+                // 連線中且未靜音時，若自動結束則重啟，維持持續監聽
+                if (voiceWs && !voiceIsMuted && voiceRecognition) {
+                    try {
+                        voiceRecognition.start();
+                    } catch(err) {
+                        // 已經在執行中
+                    }
+                }
+            };
+            
+            try {
+                voiceRecognition.start();
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        function stopSpeechRecognition() {
+            if (voiceRecognition) {
+                try {
+                    voiceRecognition.stop();
+                } catch(e){}
+                voiceRecognition = null;
+            }
+            voiceRecBubble = null;
         }
     </script>
 </body>
