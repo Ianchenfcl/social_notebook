@@ -1095,6 +1095,11 @@
             voiceCurrentText = "";
             voiceCallLogHistory = [];
             voiceIsMuted = false;
+            voiceIsInterrupted = false; // 重設打斷狀態，避免上一次通話的狀態殘留
+            voiceAccumulator = new Int16Array(0); // 清空音訊快取
+            voiceNextStartTime = 0; // 重置音訊時間軸
+            voiceActiveSources = []; // 清空現有播放源
+            
             document.getElementById('voice-mute-btn').className = "w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white flex items-center justify-center transition border border-slate-700/60 shadow";
             document.getElementById('voice-mute-icon').setAttribute('data-lucide', 'microphone');
             lucide.createIcons();
@@ -1158,6 +1163,8 @@
                             if (msg.type === "text") {
                                 voiceIsInterrupted = false; // 大師開始回應，重置打斷狀態
                                 handleVoiceTextResponse(msg.text);
+                            } else if (msg.type === "start_turn") {
+                                voiceIsInterrupted = false; // 收到新回合開始訊號，重置打斷狀態，允許播放音訊
                             } else if (msg.type === "interrupt") {
                                 voiceIsInterrupted = true;
                                 handleVoiceInterruption();

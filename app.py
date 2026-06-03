@@ -407,7 +407,9 @@ async def websocket_endpoint(websocket: WebSocket):
     """
     WebSocket 端點，作為瀏覽器前端與 Gemini Live API 之間的雙向橋樑。
     """
+    print("DEBUG 1: websocket_endpoint starts")
     await websocket.accept()
+    print("DEBUG 2: websocket accepted")
     logger.info("瀏覽器 WebSocket 已連線。")
 
     gemini_session = None
@@ -419,32 +421,40 @@ async def websocket_endpoint(websocket: WebSocket):
 
     try:
         # 1. 等待設定訊息
+        print("DEBUG 3: waiting for setup message")
         setup_data = await websocket.receive_text()
+        print(f"DEBUG 4: setup message received: {setup_data}")
         setup_json = json.loads(setup_data)
         
         if setup_json.get("type") != "setup":
+            print("DEBUG ERROR: first message is not setup")
             await websocket.send_json({"type": "error", "message": "首條訊息必須為 setup 設定。"})
             await websocket.close()
             return
             
+        print("DEBUG 5: parsing setup parameters")
         api_key = setup_json.get("api_key")
         voice_name = setup_json.get("voice_name", DEFAULT_VOICE)
         notebook_id = setup_json.get("notebook_id", "default-catch-notebook-uuid")
         history = setup_json.get("history", [])
         
         if not api_key:
+            print("DEBUG ERROR: api_key is missing")
             await websocket.send_json({"type": "error", "message": "缺少 API Key。"})
             await websocket.close()
             return
             
+        print(f"DEBUG 6: api_key len = {len(api_key)}, notebook_id={notebook_id}, voice_name={voice_name}")
         logger.info(f"語音通話正在連線... Notebook: {notebook_id}, 語音: {voice_name}")
         await websocket.send_json({"type": "status", "status": "connecting", "message": "正在建立與 Google AI Studio 的 Live 連線..."})
 
         # 2. 建立 Gemini 客戶端
+        print("DEBUG 7: creating Gemini client")
         client = live_genai.Client(
             http_options={"api_version": "v1beta"},
             api_key=api_key,
         )
+        print("DEBUG 8: Gemini client created")
         
         # 3. 獲取導讀指南做為 system_instruction，自適應其回答風格
         study_guide_instruction = ""
@@ -461,6 +471,7 @@ async def websocket_endpoint(websocket: WebSocket):
                     "請站在兩性心理學和這些精華文章的智慧角度回答，提供溫暖、有自信、不暴露需求感、幽默推拉的具體關係指南。"
                 )
         except Exception as db_err:
+            print(f"DEBUG DB ERROR: {db_err}")
             logger.error(f"Error querying documents for voice: {db_err}")
 
         base_instruction = (
@@ -504,33 +515,48 @@ async def websocket_endpoint(websocket: WebSocket):
         )
 
         # 5. 連線至 Gemini Live 服務
+        print(f"DEBUG 9: connecting to Gemini Live with model: {VOICE_MODEL}")
         async with client.aio.live.connect(model=VOICE_MODEL, config=config) as session:
+            print("DEBUG 10: Gemini Live connection successful")
             gemini_session = session
             logger.info("Gemini Live 連線成功！")
             await websocket.send_json({"type": "status", "status": "connected", "message": "連線成功！開始進行語音對話吧。"})
 
+            in_turn = False
             async def receive_from_gemini():
+                nonlocal in_turn
                 try:
                     while True:
                         async for response in session.receive():
-                            if response.data:
-                                await websocket.send_bytes(response.data)
+                            # 1. 偵測與發送新回合開始訊號
+                            if (response.data or (response.server_content and response.server_content.model_turn)) and not in_turn:
+                                in_turn = True
+                                await websocket.send_json({"type": "start_turn"})
                             
+                            # 2. 處理文字逐字稿
                             if response.server_content and response.server_content.model_turn:
                                 for part in response.server_content.model_turn.parts:
                                     if part.text:
                                         await websocket.send_json({"type": "text", "text": part.text})
                             
+                            # 3. 處理音訊輸出
+                            if response.data:
+                                await websocket.send_bytes(response.data)
+                            
+                            # 4. 處理中斷與結束狀態
                             if response.server_content is not None:
                                 if getattr(response.server_content, "interrupted", False):
                                     logger.info("偵測到語音被打斷，發送 interrupt 指令。")
+                                    in_turn = False
                                     await websocket.send_json({"type": "interrupt"})
                                 if getattr(response.server_content, "turn_complete", False):
                                     logger.info("偵測到大師發言結束，發送 turn_complete 指令。")
+                                    in_turn = False
                                     await websocket.send_json({"type": "turn_complete"})
                 except asyncio.CancelledError:
                     pass
                 except Exception as e:
+                    print(f"DEBUG ERROR in receive_from_gemini: {e}")
                     logger.error(f"從 Gemini 接收資料時出錯: {str(e)}")
                     await websocket.send_json({"type": "error", "message": f"接收 Gemini 回應失敗: {str(e)}"})
 
