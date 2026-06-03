@@ -5,8 +5,9 @@ import uuid
 import chromadb
 from chromadb.config import Settings
 
-DB_PATH = "d:/sideproject/catchbot/catch_notebook.db"
-CHROMA_PATH = "d:/sideproject/catchbot/chroma_db"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_PATH = os.path.join(BASE_DIR, "catch_notebook.db")
+CHROMA_PATH = os.path.join(BASE_DIR, "chroma_db")
 
 def get_db_connection():
     conn = sqlite3.connect(DB_PATH)

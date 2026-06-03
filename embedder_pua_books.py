@@ -14,7 +14,8 @@ import database
 from embedder import EmbeddingService
 import zhconv
 
-REPO_DIR = "d:/sideproject/catchbot/pua_books_repo"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_DIR = os.path.join(BASE_DIR, "pua_books_repo")
 NOTEBOOK_ID = "pua-books-notebook-uuid"
 
 # 篩選最頂級的 15 本情感與把妹經典書籍，控制庫大小並提供最優質內容

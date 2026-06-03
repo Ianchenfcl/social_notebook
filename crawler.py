@@ -7,7 +7,8 @@ import sys
 from bs4 import BeautifulSoup
 
 BASE_URL = "https://www.ptt.cc"
-OUTPUT_FILE = "d:/sideproject/catchbot/catch_posts.json"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+OUTPUT_FILE = os.path.join(BASE_DIR, "catch_posts.json")
 
 def safe_print(text):
     """強健的控制台輸出函數，100% 根除 Windows CP950/Big5 編碼崩潰問題"""

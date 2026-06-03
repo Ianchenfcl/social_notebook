@@ -10,4 +10,5 @@ python-dotenv
 pypdf
 zhconv
 google-genai
+websockets
 

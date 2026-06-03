@@ -70,7 +70,11 @@ class EmbeddingService:
                 embeddings.append(self.get_embedding(t))
             return embeddings
 
-def process_and_embed_catch_data(json_file_path="d:/sideproject/catchbot/catch_posts.json"):
+def process_and_embed_catch_data(json_file_path=None):
+    if json_file_path is None:
+        BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+        json_file_path = os.path.join(BASE_DIR, "catch_posts.json")
+        
     if not os.path.exists(json_file_path):
         print(f"Error: JSON file '{json_file_path}' not found! Has the crawler completed?")
         return

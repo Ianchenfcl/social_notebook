@@ -13,7 +13,8 @@ def safe_print(text):
             pass
 
 def show():
-    path = "d:/sideproject/catchbot/catch_posts.json"
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    path = os.path.join(BASE_DIR, "catch_posts.json")
     if not os.path.exists(path):
         print("catch_posts.json does not exist yet.")
         return
