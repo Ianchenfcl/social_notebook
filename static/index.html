@@ -1079,6 +1079,10 @@
         let voiceRecBubble = null;
 
         async function openVoiceCallModal() {
+            if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
+                alert("語音功能需要安全連線環境（HTTPS 或 localhost）。如果您使用外部 IP 或者是未加密網域連線，瀏覽器會禁用麥克風與語音辨識。請改用 http://localhost:8000 開啟系統測試！");
+                return;
+            }
             const apiKey = localStorage.getItem('gemini_api_key') || "";
             if (!apiKey) {
                 alert("請在左下角設定欄中先填寫您的 Gemini API 金鑰！語音通話需要使用您的 API 額度。");
@@ -1599,83 +1603,83 @@
 
         // --- 語音辨識與即時逐字稿服務 (Web Speech API) ---
         function startSpeechRecognition() {
-            if (voiceIsMuted) return;
-            const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognitionClass) {
-                console.warn("Web Speech API is not supported in this browser.");
-                return;
-            }
-            
-            if (voiceRecognition) return; // 已經在執行中
-            
-            voiceRecognition = new SpeechRecognitionClass();
-            voiceRecognition.continuous = true;
-            voiceRecognition.interimResults = true;
-            voiceRecognition.lang = 'zh-TW';
-            
-            voiceRecBubble = null;
-            
-            voiceRecognition.onresult = (event) => {
-                let interimTranscript = '';
-                let finalTranscript = '';
-                
-                for (let i = event.resultIndex; i < event.results.length; ++i) {
-                    if (event.results[i].isFinal) {
-                        finalTranscript += event.results[i][0].transcript;
-                    } else {
-                        interimTranscript += event.results[i][0].transcript;
-                    }
-                }
-                
-                if (finalTranscript || interimTranscript) {
-                    const logDiv = document.getElementById('voice-transcript-log');
-                    const isPlaceholder = logDiv.querySelector('.text-slate-500');
-                    if (isPlaceholder) logDiv.innerHTML = "";
-                    
-                    if (!voiceRecBubble) {
-                        voiceRecBubble = document.createElement("div");
-                        voiceRecBubble.className = "text-slate-350 border-l-2 border-slate-600 pl-2 py-0.5 my-1.5 transition animate-pulse";
-                        voiceRecBubble.innerHTML = `<span class="text-slate-400 font-bold">👤 您：</span><span class="user-text-body"></span>`;
-                        logDiv.appendChild(voiceRecBubble);
-                    }
-                    
-                    const displayTranscript = finalTranscript + interimTranscript;
-                    voiceRecBubble.querySelector(".user-text-body").textContent = displayTranscript;
-                    logDiv.scrollTop = logDiv.scrollHeight;
-                    
-                    if (event.results[event.results.length - 1].isFinal) {
-                        const finalSegment = event.results[event.results.length - 1][0].transcript.trim();
-                        if (finalSegment) {
-                            voiceCallLogHistory.push({ role: 'user', text: finalSegment });
-                        }
-                        const bubbleText = voiceRecBubble.querySelector(".user-text-body");
-                        if (bubbleText) bubbleText.textContent = finalSegment;
-                        voiceRecBubble.className = "text-slate-350 border-l-2 border-slate-600 pl-2 py-0.5 my-1.5 transition"; // 移除呼吸動畫
-                        voiceRecBubble = null; // 重設以在下次發言時開啟新對話氣泡
-                    }
-                }
-            };
-            
-            voiceRecognition.onerror = (e) => {
-                if (e.error === 'no-speech') return; // 忽略無發聲的錯誤
-                console.error("Speech recognition error:", e);
-            };
-            
-            voiceRecognition.onend = () => {
-                // 連線中且未靜音時，若自動結束則重啟，維持持續監聽
-                if (voiceWs && !voiceIsMuted && voiceRecognition) {
-                    try {
-                        voiceRecognition.start();
-                    } catch(err) {
-                        // 已經在執行中
-                    }
-                }
-            };
-            
             try {
+                if (voiceIsMuted) return;
+                const SpeechRecognitionClass = window.SpeechRecognition || window.webkitSpeechRecognition;
+                if (!SpeechRecognitionClass) {
+                    console.warn("Web Speech API is not supported in this browser.");
+                    return;
+                }
+                
+                if (voiceRecognition) return; // 已經在執行中
+                
+                voiceRecognition = new SpeechRecognitionClass();
+                voiceRecognition.continuous = true;
+                voiceRecognition.interimResults = true;
+                voiceRecognition.lang = 'zh-TW';
+                
+                voiceRecBubble = null;
+                
+                voiceRecognition.onresult = (event) => {
+                    let interimTranscript = '';
+                    let finalTranscript = '';
+                    
+                    for (let i = event.resultIndex; i < event.results.length; ++i) {
+                        if (event.results[i].isFinal) {
+                            finalTranscript += event.results[i][0].transcript;
+                        } else {
+                            interimTranscript += event.results[i][0].transcript;
+                        }
+                    }
+                    
+                    if (finalTranscript || interimTranscript) {
+                        const logDiv = document.getElementById('voice-transcript-log');
+                        const isPlaceholder = logDiv.querySelector('.text-slate-500');
+                        if (isPlaceholder) logDiv.innerHTML = "";
+                        
+                        if (!voiceRecBubble) {
+                            voiceRecBubble = document.createElement("div");
+                            voiceRecBubble.className = "text-slate-350 border-l-2 border-slate-600 pl-2 py-0.5 my-1.5 transition animate-pulse";
+                            voiceRecBubble.innerHTML = `<span class="text-slate-400 font-bold">👤 您：</span><span class="user-text-body"></span>`;
+                            logDiv.appendChild(voiceRecBubble);
+                        }
+                        
+                        const displayTranscript = finalTranscript + interimTranscript;
+                        voiceRecBubble.querySelector(".user-text-body").textContent = displayTranscript;
+                        logDiv.scrollTop = logDiv.scrollHeight;
+                        
+                        if (event.results[event.results.length - 1].isFinal) {
+                            const finalSegment = event.results[event.results.length - 1][0].transcript.trim();
+                            if (finalSegment) {
+                                voiceCallLogHistory.push({ role: 'user', text: finalSegment });
+                            }
+                            const bubbleText = voiceRecBubble.querySelector(".user-text-body");
+                            if (bubbleText) bubbleText.textContent = finalSegment;
+                            voiceRecBubble.className = "text-slate-350 border-l-2 border-slate-600 pl-2 py-0.5 my-1.5 transition"; // 移除呼吸動畫
+                            voiceRecBubble = null; // 重設以在下次發言時開啟新對話氣泡
+                        }
+                    }
+                };
+                
+                voiceRecognition.onerror = (e) => {
+                    if (e.error === 'no-speech') return; // 忽略無發聲的錯誤
+                    console.error("Speech recognition error:", e);
+                };
+                
+                voiceRecognition.onend = () => {
+                    // 連線中且未靜音時，若自動結束則重啟，維持持續監聽
+                    if (voiceWs && !voiceIsMuted && voiceRecognition) {
+                        try {
+                            voiceRecognition.start();
+                        } catch(err) {
+                            // 已經在執行中
+                        }
+                    }
+                };
+                
                 voiceRecognition.start();
-            } catch(e) {
-                console.error(e);
+            } catch (err) {
+                console.error("Speech recognition initialization failed safely:", err);
             }
         }
 
