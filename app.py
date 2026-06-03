@@ -389,6 +389,238 @@ def get_study_guide(notebook_id: str, x_gemini_api_key: Optional[str] = Header(N
 """
     return {"study_guide": default_guide}
 
+# ----------------- Gemini Live Voice Call WebSocket -----------------
+
+import logging
+import traceback
+import asyncio
+from fastapi import WebSocket, WebSocketDisconnect
+from google import genai
+from google.genai import types
+
+logger = logging.getLogger("gemini-live-backend")
+VOICE_MODEL = "models/gemini-3.1-flash-live-preview"
+DEFAULT_VOICE = "Zephyr"
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    """
+    WebSocket 端點，作為瀏覽器前端與 Gemini Live API 之間的雙向橋樑。
+    """
+    await websocket.accept()
+    logger.info("瀏覽器 WebSocket 已連線。")
+
+    gemini_session = None
+    client = None
+    gemini_receive_task = None
+    gemini_send_task = None
+    
+    to_gemini_queue = asyncio.Queue()
+
+    try:
+        # 1. 等待設定訊息
+        setup_data = await websocket.receive_text()
+        setup_json = json.loads(setup_data)
+        
+        if setup_json.get("type") != "setup":
+            await websocket.send_json({"type": "error", "message": "首條訊息必須為 setup 設定。"})
+            await websocket.close()
+            return
+            
+        api_key = setup_json.get("api_key")
+        voice_name = setup_json.get("voice_name", DEFAULT_VOICE)
+        notebook_id = setup_json.get("notebook_id", "default-catch-notebook-uuid")
+        history = setup_json.get("history", [])
+        
+        if not api_key:
+            await websocket.send_json({"type": "error", "message": "缺少 API Key。"})
+            await websocket.close()
+            return
+            
+        logger.info(f"語音通話正在連線... Notebook: {notebook_id}, 語音: {voice_name}")
+        await websocket.send_json({"type": "status", "status": "connecting", "message": "正在建立與 Google AI Studio 的 Live 連線..."})
+
+        # 2. 建立 Gemini 客戶端
+        client = genai.Client(
+            http_options={"api_version": "v1beta"},
+            api_key=api_key,
+        )
+        
+        # 3. 獲取導讀指南做為 system_instruction，自適應其回答風格
+        study_guide_instruction = ""
+        try:
+            conn = database.get_db_connection()
+            cursor = conn.cursor()
+            cursor.execute("SELECT title, author FROM documents WHERE notebook_id = ? LIMIT 8", (notebook_id,))
+            docs = cursor.fetchall()
+            conn.close()
+            if docs:
+                titles_str = ", ".join([f"《{d['title']}》" for d in docs])
+                study_guide_instruction = (
+                    f"\n【重要知識背景】您目前代表的情感知識庫包含這些經典文章/書籍：{titles_str}。\n"
+                    "請站在兩性心理學和這些精華文章的智慧角度回答，提供溫暖、有自信、不暴露需求感、幽默推拉的具體關係指南。"
+                )
+        except Exception as db_err:
+            logger.error(f"Error querying documents for voice: {db_err}")
+
+        base_instruction = (
+            "你是一位情感心靈大師，擅長根據兩性心理學來提供充滿智慧、同理心且具建設性的語音建議。\n"
+            "請務必使用繁體中文（台灣，Taiwanese Mandarin）與使用者進行語音交談，並用繁體中文回答所有問題。\n"
+            "答話請保持精簡、口語、溫暖且一針見血，符合日常交談習慣，不要使用長篇大論的書面語。\n"
+            f"{study_guide_instruction}"
+        )
+        
+        if history:
+            history_lines = []
+            for turn in history:
+                role_name = "使用者" if turn.get("role") == "user" else "助理"
+                txt = turn.get("text", "")
+                if txt:
+                    history_lines.append(f"{role_name}：{txt}")
+            
+            history_context = "\n".join(history_lines)
+            system_instruction = (
+                f"{base_instruction}\n\n"
+                f"【注意】以下是我們在連線中斷前進行的對話歷史紀錄，請牢記這些上下文，並在接下來的對話中無縫延續，但不要主動重複這些對話或在此時立刻發聲回應：\n"
+                f"{history_context}"
+            )
+        else:
+            system_instruction = base_instruction
+
+        # 4. 配置 Live 連線設定
+        config = types.LiveConnectConfig(
+            response_modalities=["AUDIO"],
+            media_resolution="MEDIA_RESOLUTION_MEDIUM",
+            speech_config=types.SpeechConfig(
+                voice_config=types.VoiceConfig(
+                    prebuilt_voice_config=types.PrebuiltVoiceConfig(voice_name=voice_name)
+                )
+            ),
+            context_window_compression=types.ContextWindowCompressionConfig(
+                trigger_tokens=104857,
+                sliding_window=types.SlidingWindow(target_tokens=52428),
+            ),
+            system_instruction=system_instruction
+        )
+
+        # 5. 連線至 Gemini Live 服務
+        async with client.aio.live.connect(model=VOICE_MODEL, config=config) as session:
+            gemini_session = session
+            logger.info("Gemini Live 連線成功！")
+            await websocket.send_json({"type": "status", "status": "connected", "message": "連線成功！開始進行語音對話吧。"})
+
+            async def receive_from_gemini():
+                try:
+                    while True:
+                        async for response in session.receive():
+                            if response.data:
+                                await websocket.send_bytes(response.data)
+                            
+                            if response.server_content and response.server_content.model_turn:
+                                for part in response.server_content.model_turn.parts:
+                                    if part.text:
+                                        await websocket.send_json({"type": "text", "text": part.text})
+                            
+                            if response.server_content is not None:
+                                if getattr(response.server_content, "interrupted", False):
+                                    logger.info("偵測到語音被打斷，發送 interrupt 指令。")
+                                    await websocket.send_json({"type": "interrupt"})
+                except asyncio.CancelledError:
+                    pass
+                except Exception as e:
+                    logger.error(f"從 Gemini 接收資料時出錯: {str(e)}")
+                    await websocket.send_json({"type": "error", "message": f"接收 Gemini 回應失敗: {str(e)}"})
+
+            async def send_to_gemini():
+                try:
+                    while True:
+                        item, end_of_turn = await to_gemini_queue.get()
+                        item_type = item["type"]
+                        item_data = item["data"]
+                        
+                        if item_type == "audio":
+                            await session.send_realtime_input(
+                                audio=types.Blob(data=item_data, mime_type="audio/pcm;rate=16000")
+                            )
+                        elif item_type == "video":
+                            await session.send_realtime_input(
+                                video=types.Blob(data=item_data, mime_type="image/jpeg")
+                            )
+                        elif item_type == "text":
+                            await session.send_client_content(
+                                turns={"parts": [{"text": item_data}]},
+                                turn_complete=True
+                            )
+                        to_gemini_queue.task_done()
+                except asyncio.CancelledError:
+                    pass
+                except Exception as e:
+                    logger.error(f"發送資料至 Gemini 時出錯: {str(e)}")
+                    traceback.print_exc()
+
+            async def receive_from_browser():
+                received_packet_count = 0
+                try:
+                    while True:
+                        message = await websocket.receive()
+                        if message.get("type") == "websocket.disconnect":
+                            break
+                        
+                        if "bytes" in message:
+                            pcm_data = message["bytes"]
+                            received_packet_count += 1
+                            await to_gemini_queue.put(({"type": "audio", "data": pcm_data}, False))
+                        
+                        elif "text" in message:
+                            try:
+                                data = json.loads(message["text"])
+                                msg_type = data.get("type")
+                                if msg_type == "video":
+                                    base64_data = data.get("data")
+                                    if base64_data:
+                                        img_bytes = base64.b64decode(base64_data)
+                                        await to_gemini_queue.put(({"type": "video", "data": img_bytes}, False))
+                                elif msg_type == "text":
+                                    text_content = data.get("text")
+                                    if text_content:
+                                        await to_gemini_queue.put(({"type": "text", "data": text_content}, True))
+                            except json.JSONDecodeError:
+                                pass
+                except asyncio.CancelledError:
+                    pass
+
+            browser_task = asyncio.create_task(receive_from_browser(), name="BrowserReceiver")
+            gemini_receive_task = asyncio.create_task(receive_from_gemini(), name="GeminiReceiver")
+            gemini_send_task = asyncio.create_task(send_to_gemini(), name="GeminiSender")
+
+            done, pending = await asyncio.wait(
+                [browser_task, gemini_receive_task, gemini_send_task],
+                return_when=asyncio.FIRST_COMPLETED
+            )
+
+            for task in pending:
+                task.cancel()
+                
+    except WebSocketDisconnect:
+        logger.info("瀏覽器 WebSocket 連線已中斷。")
+    except Exception as e:
+        logger.error(f"語音 WebSocket 連線錯誤: {str(e)}")
+        traceback.print_exc()
+        try:
+            await websocket.send_json({"type": "error", "message": f"連線錯誤: {str(e)}"})
+        except:
+            pass
+    finally:
+        if gemini_receive_task:
+            gemini_receive_task.cancel()
+        if gemini_send_task:
+            gemini_send_task.cancel()
+        try:
+            await websocket.close()
+        except:
+            pass
+        logger.info("語音 WebSocket 資源已清理。")
+
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 

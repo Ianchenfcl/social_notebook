@@ -9,3 +9,5 @@ beautifulsoup4
 python-dotenv
 pypdf
 zhconv
+google-genai
+

@@ -166,7 +166,7 @@
                     <span id="key-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-medium">展示模式</span>
                 </div>
                 <div class="relative flex items-center">
-                    <input id="web-api-key" type="password" name="web-api-key" autocomplete="new-password" placeholder="貼上您的 GEMINI_API_KEY..." oninput="saveApiKey(this.value)" class="w-full bg-slate-950/85 border border-slate-800 rounded-lg py-1.5 pl-3 pr-8 text-xs text-slate-300 focus:outline-none focus:border-brand-500/80 transition">
+                    <input id="web-api-key" type="text" name="web-api-key" autocomplete="off" placeholder="貼上您的 GEMINI_API_KEY..." oninput="saveApiKey(this.value)" style="-webkit-text-security: disc;" class="w-full bg-slate-950/85 border border-slate-800 rounded-lg py-1.5 pl-3 pr-8 text-xs text-slate-350 focus:outline-none focus:border-brand-500/80 transition">
                     <button onclick="toggleKeyVisibility()" class="absolute right-2.5 text-slate-500 hover:text-slate-350 focus:outline-none">
                         <i id="eye-icon" data-lucide="eye" class="w-3.5 h-3.5"></i>
                     </button>
@@ -194,7 +194,16 @@
             </div>
             
             <div class="flex items-center gap-2">
-                <button onclick="clearChat()" class="p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition">
+                <!-- 語音通話按鈕 -->
+                <button id="voice-call-btn" onclick="openVoiceCallModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-950 text-brand-400 hover:bg-brand-900 border border-brand-900/40 text-xs font-semibold shadow-md shadow-brand-500/5 transition mr-1.5">
+                    <span class="relative flex h-2 w-2">
+                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                        <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                    </span>
+                    <i data-lucide="phone" class="w-3.5 h-3.5"></i> 撥打語音導師
+                </button>
+
+                <button onclick="clearChat()" class="p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition" title="清空對話">
                     <i data-lucide="trash-2" class="w-4 h-4"></i>
                 </button>
             </div>
@@ -360,12 +369,12 @@
         function toggleKeyVisibility() {
             const input = document.getElementById('web-api-key');
             const icon = document.getElementById('eye-icon');
-            if (input.type === 'password') {
-                input.type = 'text';
-                icon.setAttribute('data-lucide', 'eye-off');
-            } else {
-                input.type = 'password';
+            if (input.style.webkitTextSecurity === 'none') {
+                input.style.webkitTextSecurity = 'disc';
                 icon.setAttribute('data-lucide', 'eye');
+            } else {
+                input.style.webkitTextSecurity = 'none';
+                icon.setAttribute('data-lucide', 'eye-off');
             }
             lucide.createIcons();
         }
@@ -562,18 +571,18 @@
                                     <input type="text" autocomplete="off" name="note-title-${note.id}" value="${note.title}" onblur="updateNoteTitle('${note.id}', this.value)" class="bg-transparent font-bold text-slate-200 text-xs focus:outline-none border-b border-transparent focus:border-brand-500/50 w-full pr-2 truncate">
                                 </div>
                                 <div class="flex items-center gap-1 flex-shrink-0">
-                                    <button onclick="toggleNoteExpand('${note.id}')" title="收起筆記" class="text-slate-400 hover:text-brand-300 transition p-1 hover:bg-slate-900 rounded">
+                                    <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" title="收起筆記" class="text-slate-400 hover:text-brand-300 transition p-1 hover:bg-slate-900 rounded">
                                         <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
                                     </button>
-                                    <button onclick="deleteNote('${note.id}')" title="刪除筆記" class="text-slate-550 hover:text-rose-450 transition p-1 hover:bg-slate-900 rounded">
+                                    <button onclick="deleteNote('${note.id}'); event.stopPropagation();" title="刪除筆記" class="text-slate-550 hover:text-rose-450 transition p-1 hover:bg-slate-900 rounded">
                                         <i data-lucide="trash" class="w-3.5 h-3.5"></i>
                                     </button>
                                 </div>
                             </div>
-                            <textarea onblur="updateNoteContent('${note.id}', this.value)" rows="8" class="w-full bg-slate-900/40 border border-slate-800/85 rounded-lg p-2.5 text-slate-350 text-xs resize-none focus:outline-none focus:border-brand-500/30 leading-relaxed font-sans placeholder-slate-600" placeholder="在此紀錄您的思考或聊天對策...">${note.content}</textarea>
+                            <textarea onblur="updateNoteContent('${note.id}', this.value)" style="min-height: 150px; height: auto;" class="w-full bg-slate-900/40 border border-slate-800/85 rounded-lg p-2.5 text-slate-350 text-xs resize-none focus:outline-none focus:border-brand-500/30 leading-relaxed font-sans placeholder-slate-600" placeholder="在此紀錄您的思考或聊天對策...">${note.content}</textarea>
                             <div class="flex justify-between items-center text-[10px] text-slate-500">
                                 <span>編輯內容將自動儲存</span>
-                                <button onclick="toggleNoteExpand('${note.id}')" class="text-brand-400 hover:text-brand-300 flex items-center gap-0.5 font-medium">
+                                <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" class="text-brand-400 hover:text-brand-300 flex items-center gap-0.5 font-medium">
                                     收起筆記 <i data-lucide="chevron-up" class="w-3 h-3"></i>
                                 </button>
                             </div>
@@ -587,10 +596,10 @@
                                 <input type="text" autocomplete="off" name="note-title-${note.id}" value="${note.title}" onblur="updateNoteTitle('${note.id}', this.value)" class="bg-transparent font-semibold text-slate-350 text-xs focus:outline-none border-b border-transparent focus:border-brand-500/50 w-full pr-2 truncate cursor-text" onclick="event.stopPropagation()">
                             </div>
                             <div class="flex items-center gap-0.5 flex-shrink-0">
-                                <button onclick="toggleNoteExpand('${note.id}')" title="點開編輯詳細內容" class="text-slate-500 hover:text-brand-300 transition p-1 rounded hover:bg-slate-900">
+                                <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" title="點開編輯詳細內容" class="text-slate-550 hover:text-brand-300 transition p-1 rounded hover:bg-slate-900">
                                     <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                                 </button>
-                                <button onclick="deleteNote('${note.id}')" title="刪除筆記" class="text-slate-655 hover:text-rose-455 opacity-0 group-hover:opacity-100 transition p-1 rounded hover:bg-slate-900" onclick="event.stopPropagation()">
+                                <button onclick="deleteNote('${note.id}'); event.stopPropagation();" title="刪除筆記" class="text-slate-655 hover:text-rose-455 opacity-0 group-hover:opacity-100 transition p-1 rounded hover:bg-slate-900">
                                     <i data-lucide="trash" class="w-3.5 h-3.5"></i>
                                 </button>
                             </div>
@@ -598,6 +607,17 @@
                     `;
                 }
             }).join('');
+            
+            // Auto-size textareas to fit content
+            notesDiv.querySelectorAll('textarea').forEach(ta => {
+                ta.style.height = 'auto';
+                ta.style.height = (ta.scrollHeight + 10) + 'px';
+                
+                ta.addEventListener('input', function() {
+                    this.style.height = 'auto';
+                    this.style.height = (this.scrollHeight + 10) + 'px';
+                });
+            });
             
             lucide.createIcons();
         }
@@ -956,6 +976,608 @@
         function clearChat() {
             if (confirm("確定要清空當前的對話紀錄嗎？")) {
                 location.reload();
+            }
+        }
+    </script>
+    <!-- 📞 AI 語音通話 Modal (Floating Call Modal) -->
+    <div id="voice-call-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center hidden z-50 transition-opacity duration-300">
+        <div class="bg-slate-900/95 border border-slate-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl shadow-brand-950/30 flex flex-col space-y-5 animate-in fade-in zoom-in duration-200">
+            <!-- Modal Header -->
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <div class="flex items-center gap-2">
+                    <div class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" id="voice-status-dot"></div>
+                    <h3 class="font-bold text-slate-100 text-sm flex items-center gap-1.5">
+                        <i data-lucide="headphones" class="w-4 h-4 text-brand-400"></i>AI 語音通話諮詢中
+                    </h3>
+                </div>
+                <span id="voice-timer" class="text-xs font-mono text-slate-400">00:00</span>
+            </div>
+
+            <!-- Visualizer canvas area -->
+            <div class="space-y-3 bg-slate-950/60 border border-slate-850 p-4 rounded-2xl">
+                <!-- User voice Canvas -->
+                <div class="relative flex flex-col items-center">
+                    <span class="text-[9px] uppercase tracking-wider text-slate-500 mb-1 flex items-center gap-1"><i data-lucide="user" class="w-2.5 h-2.5"></i> 您的麥克風</span>
+                    <canvas id="voice-user-canvas" class="w-full h-10 rounded bg-slate-950/30"></canvas>
+                </div>
+                <!-- Gemini voice Canvas -->
+                <div class="relative flex flex-col items-center border-t border-slate-900/60 pt-3">
+                    <span class="text-[9px] uppercase tracking-wider text-brand-400 mb-1 flex items-center gap-1"><i data-lucide="brain" class="w-2.5 h-2.5"></i> AI 大師之聲</span>
+                    <canvas id="voice-gemini-canvas" class="w-full h-10 rounded bg-slate-950/30"></canvas>
+                </div>
+            </div>
+
+            <!-- Subtitle/Transcription Box -->
+            <div class="bg-slate-950/40 border border-slate-850 rounded-xl p-3.5 h-28 overflow-y-auto flex flex-col space-y-2 text-xs leading-relaxed" id="voice-transcript-log">
+                <div class="text-slate-500 italic text-center py-6 flex flex-col items-center justify-center gap-1">
+                    <i data-lucide="info" class="w-4 h-4 text-slate-700"></i>
+                    <span>通話連線後，大師的發言字幕將在此即時顯示。</span>
+                </div>
+            </div>
+
+            <!-- Voice Control Group -->
+            <div class="flex items-center justify-between gap-3 text-xs">
+                <!-- Voice Select -->
+                <div class="flex flex-col gap-1 w-1/2">
+                    <label class="text-[9px] uppercase tracking-wider text-slate-500 font-semibold">大師聲線</label>
+                    <select id="voice-voice-select" class="w-full bg-slate-950 border border-slate-850 rounded-lg py-1.5 px-2 text-xs text-slate-350 focus:outline-none">
+                        <option value="Zephyr" selected>Zephyr (優雅女聲)</option>
+                        <option value="Aoede">Aoede (清晰女聲)</option>
+                        <option value="Kore">Kore (清亮女聲)</option>
+                        <option value="Puck">Puck (陽光男聲)</option>
+                        <option value="Charon">Charon (沉穩男聲)</option>
+                        <option value="Fenrir">Fenrir (深沉男聲)</option>
+                    </select>
+                </div>
+
+                <!-- Auto save setting -->
+                <div class="flex items-center gap-1.5 pt-4">
+                    <input type="checkbox" id="voice-auto-save" checked class="rounded border-slate-800 bg-slate-950 text-brand-600 focus:ring-0 cursor-pointer">
+                    <label for="voice-auto-save" class="text-[10px] text-slate-400 select-none cursor-pointer">掛斷後自動存入隨身筆記</label>
+                </div>
+            </div>
+
+            <!-- Actions buttons -->
+            <div class="flex gap-3 justify-center pt-2">
+                <button id="voice-mute-btn" onclick="toggleVoiceMute()" class="w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white flex items-center justify-center transition border border-slate-700/60 shadow" title="靜音麥克風">
+                    <i data-lucide="microphone" id="voice-mute-icon" class="w-5 h-5"></i>
+                </button>
+                <button id="voice-hangup-btn" onclick="closeVoiceCallModal()" class="w-12 h-12 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center shadow-lg shadow-rose-950/20 hover:scale-105 transition" title="結束通話">
+                    <i data-lucide="phone-off" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gemini Live Voice Client Script -->
+    <script>
+        let voiceWs = null;
+        let voiceAudioCtx = null;
+        let voiceMicStream = null;
+        let voiceMicSource = null;
+        let voiceScriptNode = null;
+        let voiceUserAnalyser = null;
+        let voiceGeminiAnalyser = null;
+        
+        let voiceNextStartTime = 0;
+        let voiceActiveSources = [];
+        let voiceIsMuted = false;
+        let voiceTimerInterval = null;
+        let voiceStartTime = null;
+        
+        let voiceVisualizerLoop = null;
+        let voiceAccumulator = new Int16Array(0);
+        let voiceFlushTimeout = null;
+        
+        let voiceCurrentText = "";
+        let voiceCallLogHistory = []; 
+        let isVoiceReconnecting = false;
+        let voiceReconnectAttempts = 0;
+        const maxVoiceReconnectAttempts = 3;
+
+        async function openVoiceCallModal() {
+            const apiKey = localStorage.getItem('gemini_api_key') || "";
+            if (!apiKey) {
+                alert("請在左下角設定欄中先填寫您的 Gemini API 金鑰！語音通話需要使用您的 API 額度。");
+                return;
+            }
+            
+            const modal = document.getElementById('voice-call-modal');
+            modal.classList.remove('hidden');
+            
+            voiceCurrentText = "";
+            voiceCallLogHistory = [];
+            voiceIsMuted = false;
+            document.getElementById('voice-mute-btn').className = "w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white flex items-center justify-center transition border border-slate-700/60 shadow";
+            document.getElementById('voice-mute-icon').setAttribute('data-lucide', 'microphone');
+            lucide.createIcons();
+            
+            const logDiv = document.getElementById('voice-transcript-log');
+            logDiv.innerHTML = `
+                <div class="text-slate-500 italic text-center py-6 flex flex-col items-center justify-center gap-1">
+                    <i data-lucide="loader" class="w-4 h-4 animate-spin text-brand-400"></i>
+                    <span>大師熱線正在接通中，請稍候...</span>
+                </div>
+            `;
+            
+            connectVoice(apiKey);
+        }
+
+        async function connectVoice(apiKey, isReconnect = false) {
+            if (!isReconnect) {
+                isVoiceReconnecting = false;
+                voiceReconnectAttempts = 0;
+            }
+            
+            updateVoiceStatus("connecting", isReconnect ? "重新連線中..." : "正在建立與 Google AI Studio 的 Live 連線...");
+            
+            try {
+                await initVoiceAudio();
+                
+                if (!voiceMicStream) {
+                    await startVoiceMicInput();
+                }
+                
+                const protocol = window.location.protocol === "https:" ? "wss://" : "ws://";
+                const wsUrl = `${protocol}${window.location.host}/ws`;
+                
+                voiceWs = new WebSocket(wsUrl);
+                voiceWs.binaryType = "arraybuffer";
+                
+                voiceWs.onopen = () => {
+                    updateVoiceStatus("connected", "已成功建立大師對話熱線");
+                    startVoiceTimer();
+                    
+                    const setupMsg = {
+                        type: "setup",
+                        api_key: apiKey,
+                        voice_name: document.getElementById('voice-voice-select').value,
+                        notebook_id: currentNotebookId,
+                        history: []
+                    };
+                    voiceWs.send(JSON.stringify(setupMsg));
+                    
+                    isVoiceReconnecting = false;
+                    voiceReconnectAttempts = 0;
+                };
+                
+                voiceWs.onmessage = async (event) => {
+                    if (event.data instanceof ArrayBuffer) {
+                        playVoicePCM24kHz(event.data);
+                    } else {
+                        try {
+                            const msg = JSON.parse(event.data);
+                            if (msg.type === "text") {
+                                handleVoiceTextResponse(msg.text);
+                            } else if (msg.type === "interrupt") {
+                                handleVoiceInterruption();
+                            } else if (msg.type === "status") {
+                                updateVoiceStatus(msg.status, msg.message);
+                            } else if (msg.type === "error") {
+                                updateVoiceStatus("error", msg.message);
+                                closeVoiceCallModal(true);
+                            }
+                        } catch (e) {
+                            console.error(e);
+                        }
+                    }
+                };
+                
+                voiceWs.onclose = () => {
+                    if (voiceWs && !isVoiceReconnecting) {
+                        triggerVoiceAutoReconnect(apiKey);
+                    }
+                };
+                
+                voiceWs.onerror = (e) => {
+                    console.error("Voice websocket error:", e);
+                };
+                
+            } catch (err) {
+                console.error("Connect voice error:", err);
+                updateVoiceStatus("error", err.message);
+                closeVoiceCallModal(true);
+            }
+        }
+
+        function triggerVoiceAutoReconnect(apiKey) {
+            if (isVoiceReconnecting) return;
+            isVoiceReconnecting = true;
+            
+            if (voiceWs) {
+                try { voiceWs.close(); } catch(e){}
+                voiceWs = null;
+            }
+            
+            voiceReconnectAttempts++;
+            if (voiceReconnectAttempts > maxVoiceReconnectAttempts) {
+                updateVoiceStatus("error", "連線多次中斷，請確認您的網路與 API 金鑰是否有效。");
+                closeVoiceCallModal(true);
+                return;
+            }
+            
+            updateVoiceStatus("connecting", `連線中斷，正在進行第 ${voiceReconnectAttempts} 次重連嘗試...`);
+            setTimeout(async () => {
+                if (!isVoiceReconnecting) return;
+                isVoiceReconnecting = false;
+                await connectVoice(apiKey, true);
+            }, 1500);
+        }
+
+        async function closeVoiceCallModal(forceNoNote = false) {
+            updateVoiceStatus("disconnected", "已中斷通話");
+            
+            isVoiceReconnecting = false;
+            voiceReconnectAttempts = 0;
+            
+            if (voiceWs) {
+                const temp = voiceWs;
+                voiceWs = null;
+                if (temp.readyState === WebSocket.OPEN || temp.readyState === WebSocket.CONNECTING) {
+                    temp.close();
+                }
+            }
+            
+            stopVoiceMicInput();
+            interruptVoicePlayback();
+            stopVoiceTimer();
+            stopVoiceVisualizers();
+            
+            document.getElementById('voice-call-modal').classList.add('hidden');
+            
+            const autoSave = document.getElementById('voice-auto-save').checked;
+            if (autoSave && !forceNoNote && voiceCallLogHistory.length > 0) {
+                let noteContent = `【諮詢主題】${document.getElementById('current-notebook-title').textContent}\n`;
+                noteContent += `【諮詢時間】${new Date().toLocaleString()}\n`;
+                noteContent += `【大師語音對話實錄】\n`;
+                noteContent += `====================================\n\n`;
+                
+                voiceCallLogHistory.forEach(turn => {
+                    const speaker = turn.role === 'user' ? '👤 您' : '🧠 情感導師';
+                    noteContent += `${speaker}：\n${turn.text}\n\n`;
+                });
+                
+                const noteTitle = `語音諮詢心法 - ${new Date().toLocaleDateString()}`;
+                await createNewNote(noteTitle, noteContent);
+                alert(`已自動為您將通話中大師所傳授的「語音諮詢心法筆記」一鍵存入右側個人筆記！`);
+            }
+        }
+
+        async function initVoiceAudio() {
+            if (voiceAudioCtx) return;
+            
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            voiceAudioCtx = new AudioContextClass({ sampleRate: 16000 });
+            
+            voiceUserAnalyser = voiceAudioCtx.createAnalyser();
+            voiceUserAnalyser.fftSize = 256;
+            
+            voiceGeminiAnalyser = voiceAudioCtx.createAnalyser();
+            voiceGeminiAnalyser.fftSize = 256;
+            voiceGeminiAnalyser.connect(voiceAudioCtx.destination);
+            
+            startVoiceVisualizers();
+        }
+
+        async function startVoiceMicInput() {
+            voiceMicStream = await navigator.mediaDevices.getUserMedia({
+                audio: {
+                    channelCount: 1,
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                },
+                video: false
+            });
+            
+            if (voiceAudioCtx.state === "suspended") {
+                await voiceAudioCtx.resume();
+            }
+            
+            voiceMicSource = voiceAudioCtx.createMediaStreamSource(voiceMicStream);
+            voiceMicSource.connect(voiceUserAnalyser);
+            
+            voiceScriptNode = voiceAudioCtx.createScriptProcessor(2048, 1, 1);
+            
+            let micSpeaking = false;
+            let silenceTicks = 0;
+            const SILENCE_HOLD_TICKS = 8;
+            
+            voiceScriptNode.onaudioprocess = (e) => {
+                if (!voiceWs || voiceWs.readyState !== WebSocket.OPEN) return;
+                
+                const inputData = e.inputBuffer.getChannelData(0);
+                
+                if (voiceIsMuted) {
+                    const silent = new Int16Array(inputData.length);
+                    voiceWs.send(silent.buffer);
+                    return;
+                }
+                
+                let maxVal = 0;
+                for (let i = 0; i < inputData.length; i++) {
+                    const abs = Math.abs(inputData[i]);
+                    if (abs > maxVal) maxVal = abs;
+                }
+                
+                const threshold = 0.006;
+                if (maxVal >= threshold) {
+                    if (voiceCurrentText) {
+                        saveVoiceHistoryTurn();
+                    }
+                    micSpeaking = true;
+                    silenceTicks = 0;
+                } else {
+                    if (micSpeaking) {
+                        silenceTicks++;
+                        if (silenceTicks > SILENCE_HOLD_TICKS) {
+                            micSpeaking = false;
+                        }
+                    }
+                }
+                
+                if (micSpeaking) {
+                    const pcmBuffer = float32ToInt16(inputData);
+                    if (voiceWs.readyState === WebSocket.OPEN) {
+                        voiceWs.send(pcmBuffer);
+                    }
+                } else {
+                    const silent = new Int16Array(inputData.length);
+                    if (voiceWs.readyState === WebSocket.OPEN) {
+                        voiceWs.send(silent.buffer);
+                    }
+                }
+            };
+            
+            voiceMicSource.connect(voiceScriptNode);
+            voiceScriptNode.connect(voiceAudioCtx.destination);
+        }
+
+        function stopVoiceMicInput() {
+            if (voiceScriptNode) {
+                voiceScriptNode.disconnect();
+                voiceScriptNode = null;
+            }
+            if (voiceMicSource) {
+                voiceMicSource.disconnect();
+                voiceMicSource = null;
+            }
+            if (voiceMicStream) {
+                voiceMicStream.getTracks().forEach(track => track.stop());
+                voiceMicStream = null;
+            }
+        }
+
+        function float32ToInt16(buffer) {
+            let l = buffer.length;
+            let buf = new Int16Array(l);
+            while (l--) {
+                let s = Math.max(-1, Math.min(1, buffer[l]));
+                buf[l] = s < 0 ? s * 0x8000 : s * 0x7FFF;
+            }
+            return buf.buffer;
+        }
+
+        function playVoicePCM24kHz(arrayBuffer) {
+            if (!voiceAudioCtx) return;
+            
+            const incoming = new Int16Array(arrayBuffer);
+            
+            const merged = new Int16Array(voiceAccumulator.length + incoming.length);
+            merged.set(voiceAccumulator, 0);
+            merged.set(incoming, voiceAccumulator.length);
+            voiceAccumulator = merged;
+            
+            if (voiceFlushTimeout) {
+                clearTimeout(voiceFlushTimeout);
+            }
+            
+            if (voiceAccumulator.length >= 4800) {
+                flushVoiceAudioBuffer();
+            } else {
+                voiceFlushTimeout = setTimeout(flushVoiceAudioBuffer, 50);
+            }
+        }
+
+        function flushVoiceAudioBuffer() {
+            if (voiceAccumulator.length === 0) return;
+            
+            const samples = voiceAccumulator;
+            voiceAccumulator = new Int16Array(0);
+            
+            const float32Array = new Float32Array(samples.length);
+            for (let i = 0; i < samples.length; i++) {
+                float32Array[i] = samples[i] / 32768.0;
+            }
+            
+            const audioBuffer = voiceAudioCtx.createBuffer(1, float32Array.length, 24000);
+            audioBuffer.getChannelData(0).set(float32Array);
+            
+            const source = voiceAudioCtx.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(voiceGeminiAnalyser);
+            
+            const currentTime = voiceAudioCtx.currentTime;
+            const startTime = Math.max(currentTime, voiceNextStartTime);
+            source.start(startTime);
+            
+            voiceActiveSources.push(source);
+            
+            const durationMs = audioBuffer.duration * 1000;
+            setTimeout(() => {
+                const idx = voiceActiveSources.indexOf(source);
+                if (idx > -1) {
+                    voiceActiveSources.splice(idx, 1);
+                }
+            }, durationMs + 200);
+            
+            voiceNextStartTime = startTime + audioBuffer.duration;
+        }
+
+        function toggleVoiceMute() {
+            voiceIsMuted = !voiceIsMuted;
+            const btn = document.getElementById('voice-mute-btn');
+            const icon = document.getElementById('voice-mute-icon');
+            
+            if (voiceIsMuted) {
+                btn.className = "w-12 h-12 rounded-full bg-rose-600 hover:bg-rose-500 text-white flex items-center justify-center transition border border-rose-500/20 shadow";
+                icon.setAttribute('data-lucide', 'microphone-off');
+            } else {
+                btn.className = "w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-750 text-slate-350 hover:text-white flex items-center justify-center transition border border-slate-700/60 shadow";
+                icon.setAttribute('data-lucide', 'microphone');
+            }
+            lucide.createIcons();
+        }
+
+        function handleVoiceInterruption() {
+            interruptVoicePlayback();
+            const logDiv = document.getElementById('voice-transcript-log');
+            logDiv.innerHTML += `<div class="text-rose-400 font-bold border-l-2 border-rose-500/60 pl-2 py-0.5 text-[10px] my-1">[大師語音已打斷]</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function interruptVoicePlayback() {
+            if (voiceFlushTimeout) {
+                clearTimeout(voiceFlushTimeout);
+                voiceFlushTimeout = null;
+            }
+            voiceAccumulator = new Int16Array(0);
+            voiceActiveSources.forEach(src => {
+                try { src.stop(); } catch(e){}
+            });
+            voiceActiveSources = [];
+            voiceNextStartTime = 0;
+            
+            if (voiceCurrentText) {
+                saveVoiceHistoryTurn();
+            }
+        }
+
+        function handleVoiceTextResponse(text) {
+            const logDiv = document.getElementById('voice-transcript-log');
+            
+            if (!voiceCurrentText) {
+                const isPlaceholder = logDiv.querySelector('.text-slate-500');
+                if (isPlaceholder) logDiv.innerHTML = "";
+                
+                const bubble = document.createElement("div");
+                bubble.className = "text-slate-200 border-l-2 border-brand-500/50 pl-2 py-0.5 my-1.5 transition";
+                bubble.innerHTML = `<span class="text-brand-400 font-bold">🧠 導師：</span><span class="voice-text-body"></span>`;
+                logDiv.appendChild(bubble);
+            }
+            
+            voiceCurrentText += text;
+            const textSpans = logDiv.querySelectorAll(".voice-text-body");
+            if (textSpans.length > 0) {
+                textSpans[textSpans.length - 1].textContent = voiceCurrentText;
+            }
+            
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        function saveVoiceHistoryTurn() {
+            if (voiceCurrentText.trim()) {
+                voiceCallLogHistory.push({ role: 'model', text: voiceCurrentText.trim() });
+            }
+            voiceCurrentText = "";
+        }
+
+        function updateVoiceStatus(status, message) {
+            const dot = document.getElementById('voice-status-dot');
+            if (status === 'connected') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse";
+            } else if (status === 'connecting') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-amber-500 animate-ping";
+            } else if (status === 'error') {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-rose-500";
+                alert(`語音通話發生錯誤：${message}`);
+            } else {
+                dot.className = "w-2.5 h-2.5 rounded-full bg-slate-600";
+            }
+        }
+
+        function startVoiceTimer() {
+            stopVoiceTimer();
+            voiceStartTime = Date.now();
+            const timerEl = document.getElementById('voice-timer');
+            
+            voiceTimerInterval = setInterval(() => {
+                const diffSec = Math.floor((Date.now() - voiceStartTime) / 1000);
+                const mm = String(Math.floor(diffSec / 60)).padStart(2, '0');
+                const ss = String(diffSec % 60).padStart(2, '0');
+                timerEl.textContent = `${mm}:${ss}`;
+            }, 1000);
+        }
+
+        function stopVoiceTimer() {
+            if (voiceTimerInterval) {
+                clearInterval(voiceTimerInterval);
+                voiceTimerInterval = null;
+            }
+            document.getElementById('voice-timer').textContent = "00:00";
+        }
+
+        function startVoiceVisualizers() {
+            stopVoiceVisualizers();
+            
+            const userCanvas = document.getElementById('voice-user-canvas');
+            const geminiCanvas = document.getElementById('voice-gemini-canvas');
+            const uCtx = userCanvas.getContext('2d');
+            const gCtx = geminiCanvas.getContext('2d');
+            
+            userCanvas.width = userCanvas.parentElement.clientWidth;
+            userCanvas.height = 40;
+            geminiCanvas.width = geminiCanvas.parentElement.clientWidth;
+            geminiCanvas.height = 40;
+            
+            function draw() {
+                voiceVisualizerLoop = requestAnimationFrame(draw);
+                
+                if (voiceUserAnalyser) {
+                    const dataArray = new Uint8Array(voiceUserAnalyser.frequencyBinCount);
+                    voiceUserAnalyser.getByteFrequencyData(dataArray);
+                    
+                    uCtx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+                    uCtx.fillRect(0, 0, userCanvas.width, userCanvas.height);
+                    
+                    const barWidth = (userCanvas.width / dataArray.length) * 1.5;
+                    let barHeight;
+                    let x = 0;
+                    
+                    for (let i = 0; i < dataArray.length; i++) {
+                        barHeight = (dataArray[i] / 255) * userCanvas.height;
+                        uCtx.fillStyle = `rgba(148, 163, 184, ${0.3 + (barHeight / userCanvas.height) * 0.7})`;
+                        uCtx.fillRect(x, userCanvas.height - barHeight, barWidth - 1, barHeight);
+                        x += barWidth;
+                    }
+                }
+                
+                if (voiceGeminiAnalyser) {
+                    const dataArray = new Uint8Array(voiceGeminiAnalyser.frequencyBinCount);
+                    voiceGeminiAnalyser.getByteFrequencyData(dataArray);
+                    
+                    gCtx.fillStyle = 'rgba(15, 23, 42, 0.4)';
+                    gCtx.fillRect(0, 0, geminiCanvas.width, geminiCanvas.height);
+                    
+                    const barWidth = (geminiCanvas.width / dataArray.length) * 1.5;
+                    let barHeight;
+                    let x = 0;
+                    
+                    for (let i = 0; i < dataArray.length; i++) {
+                        barHeight = (dataArray[i] / 255) * geminiCanvas.height;
+                        gCtx.fillStyle = `rgba(168, 85, 247, ${0.4 + (barHeight / geminiCanvas.height) * 0.6})`;
+                        gCtx.fillRect(x, geminiCanvas.height - barHeight, barWidth - 1, barHeight);
+                        x += barWidth;
+                    }
+                }
+            }
+            
+            draw();
+        }
+
+        function stopVoiceVisualizers() {
+            if (voiceVisualizerLoop) {
+                cancelAnimationFrame(voiceVisualizerLoop);
+                voiceVisualizerLoop = null;
             }
         }
     </script>
