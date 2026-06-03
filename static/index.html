@@ -1324,10 +1324,6 @@
                     if (voiceCurrentText) {
                         saveVoiceHistoryTurn();
                     }
-                    if (!voiceIsInterrupted) {
-                        voiceIsInterrupted = true;
-                        interruptVoicePlayback(); // 麥克風偵測到發聲，立即使本機當前播放音訊停止
-                    }
                     micSpeaking = true;
                     silenceTicks = 0;
                 } else {
@@ -1385,6 +1381,12 @@
             if (!voiceAudioCtx) return;
             if (voiceIsInterrupted) return; // 處於被打斷狀態下，拋棄任何殘留的過時音訊
             
+            // 安全防護：如果 ArrayBuffer 長度為奇數，在轉成 Int16Array 時會報 RangeError。
+            // 我們進行切片以確保它是偶數。
+            let byteLen = arrayBuffer.byteLength;
+            if (byteLen % 2 !== 0) {
+                arrayBuffer = arrayBuffer.slice(0, byteLen - 1);
+            }
             const incoming = new Int16Array(arrayBuffer);
             
             const merged = new Int16Array(voiceAccumulator.length + incoming.length);
