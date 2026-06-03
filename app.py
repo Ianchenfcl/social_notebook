@@ -14,7 +14,7 @@ import database
 import embedder
 
 # 初始化 FastAPI app
-app = FastAPI(title="CatchLM API", description="PTT Catch Board NotebookLM-style AI API")
+app = FastAPI(title="戀愛AI導師 API", description="PTT Catch 智慧情感開源知識庫 AI API")
 
 # 設定 CORS
 app.add_middleware(
@@ -55,7 +55,7 @@ def get_llm_response(prompt: str, context_sources: list, client_api_key: Optiona
         sources_summary = "\n".join([f"- [{i+1}] {s['title']} (作者: {s['author']})" for i, s in enumerate(context_sources)])
         return (
             "【系統提示：偵測到未設定 GEMINI_API_KEY，目前運行於展示模式】\n\n"
-            "您好！我是您的 CatchLM 情場助手。我已經成功在資料庫中檢索到與您問題最相關的文章！\n"
+            "您好！我是您的 戀愛AI導師。我已經成功在資料庫中檢索到與您問題最相關的文章！\n"
             f"以下是為您找到的 Catch 板精華區經典文章：\n{sources_summary}\n\n"
             "💡 **建議**：請在左側欄「金鑰設定」中填入您的 `GEMINI_API_KEY`，我將能為您深度分析這些文章並生成專屬的智慧心法與行動方案！\n\n"
             "您可以參考下方「參考來源」頁籤，點擊直接查看這些神人文章的原文段落。"
@@ -74,7 +74,7 @@ def get_llm_response(prompt: str, context_sources: list, client_api_key: Optiona
 
 @app.get("/api/status")
 def read_status():
-    return {"status": "online", "message": "Welcome to CatchLM API"}
+    return {"status": "online", "message": "Welcome to 戀愛AI導師 API"}
 
 
 @app.get("/api/notebooks")
@@ -336,7 +336,7 @@ def get_study_guide(notebook_id: str, x_gemini_api_key: Optional[str] = Header(N
             pass # 失敗則 fallback 到預設的高質感導讀
 
     # Fallback/預設的高質感導讀（展示 Catch 板的核心思想）
-    default_guide = f"""# 📈 PTT Catch 兩性智能導讀指南 (CatchLM Study Guide)
+    default_guide = f"""# 📈 PTT Catch 兩性智能導讀指南 (戀愛AI Study Guide)
 
 本導讀基於您目前導入的 **{len(docs)} 篇 Catch 板精華區經典文獻**。透過系統分析，為您梳理出兩性互動的核心心法、常見痛點 FAQ 以及可立刻執行的行動指南。
 
@@ -363,14 +363,14 @@ def get_study_guide(notebook_id: str, x_gemini_api_key: Optional[str] = Header(N
 ## 二、 經典痛點問答 (Frequently Asked Questions)
 
 ### Q1：和喜歡的女生聊天，對方回得很慢甚至已讀不回，該怎麼辦？
-> **CatchLM 導師解答**：
+> **戀愛AI 導師解答**：
 > 已讀不回的本質是**「吸引力不足」**或**「互動壓力過大」**。
 > 1.  **立刻停損**：千萬不要狂發訊息質問（例如：「在忙嗎？」、「怎麼不理我？」），這會徹底暴露你的焦慮與低價值框架。
 > 2.  **冷凍期**：給彼此 3 到 5 天的空白。
 > 3.  **無壓重啟**：以一個「有趣、無壓力、不需強迫回覆」的話題重新開局（例如：一張美食照片配上簡短一句「今天吃到超厲害的布丁，下次帶妳去」），如果對方仍冷淡，說明需要重新建立吸引。
 
 ### Q2：如何和不熟悉的女生開啟話題，且聊得自然？
-> **CatchLM 導師解答**：
+> **戀愛AI 導師解答**：
 > 關鍵在於**「觀察周圍環境」**與**「主動分享狀態」**，而非突兀地問問題。
 > *   **錯誤示範**：「妳叫什麼名字？」、「妳幾歲？」、「妳住哪？」（像警察臨檢，極度扣分）。
 > *   **正確示範**：「這家咖啡廳的音樂超像 90 年代的復古風，我很喜歡。妳也是因為這樣才來這裡的嗎？」——先分享自己的主觀感受，再給對方球接。

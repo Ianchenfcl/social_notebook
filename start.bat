@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 > nul
-title CatchLM - 一鍵啟動大師
+title 戀愛AI - 一鍵啟動大師
 cls
 echo ===================================================================
 echo.
@@ -14,8 +14,8 @@ echo.
 echo                       PTT Catch 智慧情感知識庫
 echo ===================================================================
 echo.
-echo [*] 歡迎使用 CatchLM 智慧工作區！
-echo [*] 本腳本將協助您一鍵啟動後端 API 服務與 NotebookLM 網頁介面。
+echo [*] 歡迎使用 戀愛AI 智慧工作區！
+echo [*] 本腳本將協助您一鍵啟動後端 API 服務與網頁介面。
 echo.
 echo [*] 正在確認環境所需的 Python 套件已安裝 (若已安裝將極速跳過)...
 pip install -r requirements.txt --quiet

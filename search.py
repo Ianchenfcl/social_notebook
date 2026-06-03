@@ -73,7 +73,7 @@ if __name__ == "__main__":
         query = " ".join(sys.argv[1:])
         search_catch_knowledge(query)
     else:
-        print("CatchLM Semantic Search CLI Test Tool")
+        print("戀愛AI Semantic Search CLI Test Tool")
         print("Usage: python search.py <your query>")
         print("Example: python search.py 怎麼跟不熟的女生聊天")
         

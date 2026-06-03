@@ -75,9 +75,15 @@ def init_db():
     if not cursor.fetchone():
         cursor.execute(
             "INSERT INTO notebooks (id, title, description) VALUES (?, ?, ?)",
-            ("default-catch-notebook-uuid", "PTT Catch 精華區", "PTT Catch 板精華區經典文章智慧導讀知識庫")
+            ("default-catch-notebook-uuid", "PTT Catch 精華區", "PTT Catch 精華區經典文章智慧導讀知識庫")
         )
         print("Default notebook created.")
+    else:
+        cursor.execute(
+            "UPDATE notebooks SET title = ?, description = ? WHERE id = ?",
+            ("PTT Catch 精華區", "PTT Catch 精華區經典文章智慧導讀知識庫", "default-catch-notebook-uuid")
+        )
+        print("Default notebook rebranded.")
         
     # 預先插入把妹與情感經典書籍的筆記本，如果不存在的話
     cursor.execute("SELECT id FROM notebooks WHERE id = 'pua-books-notebook-uuid'")

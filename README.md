@@ -1,10 +1,10 @@
-# 🚀 CatchLM - PTT Catch 智慧情感開源知識庫 / Relationship RAG Platform
+# 🚀 戀愛AI - PTT Catch 智慧情感開源知識庫 / Relationship RAG Platform
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-MIT-green.svg" alt="License">
   <img src="https://img.shields.io/badge/Python-3.9+-blue.svg" alt="Python Version">
   <img src="https://img.shields.io/badge/Database-SQLite%20%26%20ChromaDB-orange.svg" alt="Database">
-  <img src="https://img.shields.io/badge/AI%20Brain-Gemini%203.5%20Flash-purple.svg" alt="AI Brain">
+  <img src="https://img.shields.io/badge/AI%20Brain-Gemini%201.5%2520Flash-purple.svg" alt="AI Brain">
 </p>
 
 ---
@@ -18,35 +18,36 @@
 # 繁體中文版說明 (Traditional Chinese)
 
 ## 📌 項目簡介
-**CatchLM** 是一款專為兩性溝通與吸引力科學深度訂製的 **NotebookLM 式開源智慧情感導讀與對話平台**。
+**戀愛AI** 是一款專為兩性溝通與吸引力科學深度訂製的 **開源智慧情感導讀與對話平台**。
 
-本專案支援 **多主體筆記本 (Multi-Notebook) 管理**，預設提供兩個核心知識庫：
-1. **📚 PTT Catch 精華區**：收錄自 2005 年創板以來，經萬人推爆（推文數 $\ge 99$ 的「爆」文）的 57 篇殿堂級情感神作（共 366 個高品質語意區塊），自動過濾公告噪音。
-2. **📖 經典情感與把妹書籍**：自動提取並向量化知名開源倉庫中的 15 本情感與社交動力學經典文獻（如《謎男方法》、《把妹達人》、《冷讀術》、《魔鬼搭訕學》等共 680 個語意區塊）。
+本專案支援 **多主體知識庫 (Multi-Notebook) 切換**，預設提供兩個精心整理的知識庫：
+1. **📚 PTT Catch 精華區**：收錄自 2005 年創板以來，經萬人推爆（推文數 $\ge 99$ 的「爆」文）的 57 篇殿堂級情感神作（共 366 個高品質語意區塊），自動過濾公告噪音，保留最純粹的互動心法。
+2. **📖 經典情感與把妹書籍**：自動提取並向量化 15 本情感與社交動力學經典文獻（如《謎男方法》、《把妹達人》、《冷讀術》、《魔鬼搭訕學》等共 680 個語意區塊）。
 
-系統利用先進的 **RAG（檢索增強生成）** 技術，讓您能與多位情感大師和經典書籍作者進行深度對話，生成智慧導讀（Study Guide），並針對您的兩性溝通、心態提升等問題，提供極具建設性的客製化行動方案！
+系統利用先進的 **RAG（檢索增強生成）** 技術，讓您能與多位情感大師和經典書籍作者進行深度對話，一鍵生成智慧學習導讀（Study Guide），並針對您的兩性溝通、心態提升等問題，提供極具建設性的客製化行動方案！
 
 ---
 
-## 🛡️ 戰術防禦與設計理念 (技術中立與版權尊重)
+## 🛡️ 設計理念與著作權尊重 (技術中立)
 
-為了保障開源社群的健康發展、尊重原作者權益，並避免不必要的內容爭議，CatchLM 在設計上導入了以下關鍵機制：
+為了保障開源社群的健康發展、尊重原作者權益，並避免不必要的內容爭議，**戀愛AI** 在設計上導入了以下關鍵機制：
 
 1. **🔗 尊重著作權的「引用溯源橋樑」（Fair Use Citation Bridge）**：
-   - **完全合理使用（Fair Use）**：本系統不以取代原作者為目的，而是扮演「通往原著與精華區的橋樑」。AI 的每一句回答都會強制帶上可點擊的 `[Source X]` 引用標籤。
-   - **雙向網頁導流**：左側文檔列表與右側引文對照面板，均已串接 **PTT 網頁版原文或 GitHub 經典書籍原著之超連結**。使用者點擊即可在**新分頁直接開啟原文**，有效為論壇與原作者引流，活化經典資產。
+   - **合理使用（Fair Use）**：本系統扮演「通往原著與精華區的橋樑」。AI 的每一句回答都會強制帶上可點擊的 `[Source X]` 引用標籤。
+   - **雙向網頁導流**：左側文檔列表與右側引文對照面板，均已串接 **PTT 網頁版原文或 GitHub 經典書籍原著之超連結**。使用者點擊即可在**新分頁直接開啟原文**，有效為論壇與原著作者引流，活化經典資產。
 2. **🧠 技術中立與零幻覺防禦**：
-   - 採用 **SQLite（目錄管理）+ ChromaDB（向量檢索）** 雙核心引擎，確保 AI 僅根據所選筆記本內的文獻真實內容進行回答，100% 防禦 AI 瞎編與幻覺。
+   - 採用 **SQLite（目錄管理）+ ChromaDB（向量檢索）** 雙核心引擎，確保 AI 僅根據所選知識庫內的文獻真實內容進行回答，防禦 AI 瞎編與幻覺。
    - **免責宣告**：本工具為純技術中立之開源閱讀輔助外掛，不對資料庫內文之觀點做任何背書。
-3. **🔒 客戶端隱私防護**：
+3. **🔒 用戶隱私防護**：
    - API Key 僅儲存於用戶本機瀏覽器 `localStorage`，不經過任何後端伺服器，確保金鑰隱私絕對安全。
 
 ---
 
 ## 🌟 核心特色 (Features)
-* **🗂️ 多主體筆記本自由切換**：可於左側控制面板無縫切換「PTT Catch 精華區」與「經典情感與把妹書籍」兩大知識庫，載入不同文件並與 AI 對話。
+* **🗂️ 多主體知識庫自由切換**：可於左側控制面板無縫切換「PTT Catch 精華區」與「經典情感與把妹書籍」兩大知識庫，載入不同文件並與 AI 對話。
+* **📞 撥打電話給戀愛AI導師**：點擊右上角「撥打語音導師」按鈕，即可與多種風格的 AI 語音導師（如 Zephyr, Puck 等）進行如同打電話般的即時語音對話，支援 **Barge-in（插話打斷）** 功能，讓您的兩性對話演練更加逼真。
 * **💎 純淨無噪聲資料庫**：自動過濾板規、公告等噪聲，專注於實戰與心法。
-* **三欄式質感介面 (Tailwind CSS)**：
+* **🎨 三欄式質感介面 (Tailwind CSS)**：
   * **左欄**：參考來源清單（支援一鍵點擊在新分頁開啟原文，並可一鍵生成 Study Guide 智慧導讀大綱）。
   * **中欄**：AI 問答視窗（帶有 `[Source X]` 引用智慧徽章）。
   * **右欄**：雙分頁對照（原文片段高亮對照檢視 + 個人隨手筆記編輯器）。
@@ -73,25 +74,32 @@
 
 # English Version
 
-## 📌 About CatchLM
-**CatchLM** is an open-source, **NotebookLM-style Relationship RAG Platform** deeply tailored for the PTT CATCH community (a premier forum for relationship psychology and soft skills). 
+## 📌 About 戀愛AI (Love AI Tutor)
+**戀愛AI** is an open-source **Relationship RAG Platform** deeply tailored for the PTT CATCH community (a premier forum for relationship psychology and soft skills) and classic literature on relationship/social dynamics. 
 
-By indexing **57 legendary dating masterpieces (366 high-quality semantic chunks)** with $\ge 99$ upvotes since 2005, CatchLM lets users chat with top-tier relationship mentors. It leverages **RAG (Retrieval-Augmented Generation)** to generate custom action plans, mindset training, and Study Guides to elevate your communication skills!
+By indexing **57 legendary dating masterpieces (366 high-quality semantic chunks)** with $\ge 99$ upvotes since 2005, and **15 classic relationship books** (e.g. *The Mystery Method*, *The Game*, *Cold Reading*), users can chat or **make live voice calls** with top-tier relationship mentors. It leverages **RAG (Retrieval-Augmented Generation)** to generate custom action plans, mindset training, and Study Guides to elevate your communication skills!
 
 ---
 
 ## 🛡️ Strategic Design (Copyright Respect & Neutrality)
 
-To protect the open-source community and respect original authors, CatchLM implements:
+To protect the open-source community and respect original authors, 戀愛AI implements:
 
 1. **🔗 Fair Use Citation Bridge**:
    - Every AI-synthesized claim is strictly anchored via `[Source X]` badges.
-   - Clickable cards and source viewers **link back directly to the original PTT web URLs in a new tab**, driving web traffic back to original threads and revitalizing community assets.
+   - Clickable cards and source viewers **link back directly to the original PTT web URLs or book sources in a new tab**, driving web traffic back to original threads and revitalizing community assets.
 2. **🧠 Advanced RAG to Prevent Hallucination**:
    - Built on a **SQLite + ChromaDB** dual engine, ensuring AI only answers based on verified classics.
-   - **Neutrality Disclaimer**: CatchLM is a technical reading utility; it remains content-neutral and does not endorse any specific advice in the dataset.
+   - **Neutrality Disclaimer**: 戀愛AI is a technical reading utility; it remains content-neutral and does not endorse any specific advice in the dataset.
 3. **🔒 Client-Side Local Privacy**:
    - API keys are secured purely within browser `localStorage`. No backend server logging is involved.
+
+---
+
+## 🌟 Key Features
+- **🗂️ Multi-Notebook Support**: Swap between "PTT Catch Classics" and "Classic Relationship Books" on the fly.
+- **📞 Phone Call with AI Mentors**: Click "撥打語音導師" to voice call multiple AI coaches (Zephyr, Puck, etc.) with real-time **barge-in / interruption** support.
+- **🎨 Premium Triple-Panel UI**: Clean responsive design with source indexing, interactive RAG chat window, and a split side panel for direct text comparison and user notebook editor.
 
 ---
 
