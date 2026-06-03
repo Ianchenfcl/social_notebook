@@ -39,21 +39,6 @@ if errorlevel 1 echo [WARNING] Dependency installation completed with warnings.
 if not errorlevel 1 echo [SUCCESS] Dependencies verified.
 
 echo.
-echo [TUTOR] If you have a Gemini API Key, paste it below.
-echo         (Or press Enter to start in local demo/search mode)
-echo.
-set /p USER_KEY="GEMINI_API_KEY: "
-
-if "%USER_KEY%"=="" goto running_demo
-set GEMINI_API_KEY=%USER_KEY%
-echo [SUCCESS] GEMINI_API_KEY loaded for this session!
-goto launch_server
-
-:running_demo
-echo [INFO] Running in demo mode (Local search and notes enabled).
-
-:launch_server
-echo.
 echo [*] Opening browser to http://localhost:8000...
 start http://localhost:8000
 
