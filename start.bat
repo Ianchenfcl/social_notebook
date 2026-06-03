@@ -30,8 +30,11 @@ set PY_EXEC=python
 goto install_req
 
 :install_req
+echo [*] Upgrading pip, setuptools, and wheel in virtual environment...
+%PY_EXEC% -m pip install --upgrade pip setuptools wheel --quiet
+
 echo [*] Installing requirements (this might take a few moments)...
-%PY_EXEC% -m pip install -r requirements.txt --quiet
+%PY_EXEC% -m pip install -r requirements.txt
 if errorlevel 1 echo [WARNING] Dependency installation completed with warnings.
 if not errorlevel 1 echo [SUCCESS] Dependencies verified.
 
