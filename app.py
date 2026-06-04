@@ -16,6 +16,11 @@ import embedder
 # 初始化 FastAPI app
 app = FastAPI(title="戀愛AI導師 API", description="PTT Catch 智慧情感開源知識庫 AI API")
 
+@app.on_event("startup")
+def startup_event():
+    # 確保資料庫與資料表在啟動時自動初始化
+    database.init_db()
+
 # 設定 CORS
 app.add_middleware(
     CORSMiddleware,
@@ -44,6 +49,14 @@ class NoteCreate(BaseModel):
 class NoteUpdate(BaseModel):
     title: Optional[str] = None
     content: Optional[str] = None
+
+class TranscriptTurn(BaseModel):
+    role: str
+    text: str
+
+class SummarizeRequest(BaseModel):
+    transcript: List[TranscriptTurn]
+    language: Optional[str] = "zh"
 
 # ----------------- Helper Functions -----------------
 
@@ -281,6 +294,79 @@ def delete_note(notebook_id: str, note_id: str):
     conn.commit()
     conn.close()
     return {"message": "Note deleted successfully"}
+
+@app.post("/api/notebooks/{notebook_id}/notes/summarize")
+def summarize_transcript(notebook_id: str, payload: SummarizeRequest, x_gemini_api_key: Optional[str] = Header(None)):
+    """將語音通話逐字稿摘要為高質感的個人情感隨身筆記"""
+    transcript = payload.transcript
+    lang = payload.language or "zh"
+    
+    if not transcript:
+        raise HTTPException(status_code=400, detail="Transcript is empty")
+        
+    formatted_transcript = ""
+    for turn in transcript:
+        speaker = "使用者" if turn.role == "user" else "AI 情感導師"
+        formatted_transcript += f"{speaker}: {turn.text}\n"
+        
+    active_key = x_gemini_api_key or GEMINI_API_KEY
+    
+    if lang == "zh":
+        prompt = f"""請以專業兩性情感導師的視角，為以下的「語音諮詢對話實錄」整理出一份**「摘要版筆記」**。
+該對話實錄是使用者與 AI 導師針對情感問題進行語音對話的紀錄。
+
+對話實錄內容：
+{formatted_transcript}
+
+請生成一份結構分明、排版美觀、語氣溫暖的繁體中文筆記，包含以下部分：
+1. 💡 **核心問題簡述**：精簡說明使用者遇到的主要情感痛點或諮詢主題。
+2. 🔑 **大師核心心法**：提煉對話中 AI 導師傳授的最關鍵的 2-3 個心態心法（如：減少需求感、建立框架、幽默推拉等）。
+3. 🛠️ **具體行動方案**：條列出使用者在生活中可以立刻執行的下一步動作。
+
+注意事項：
+- 請使用繁體中文（Taiwanese Mandarin）撰寫。
+- 請直接輸出筆記內容本身，不要包含任何開頭介紹或多餘的標籤（例如：不要寫「這是為您整理的筆記...」）。
+"""
+    else:
+        prompt = f"""Please act as a professional relationship coach and summarize the following "Voice Consultation Transcript" into a concise and well-structured **"Summarized Note"**.
+
+Transcript:
+{formatted_transcript}
+
+Please generate a beautifully formatted, structured, and warm-toned note in English containing:
+1. 💡 **Key Concerns**: Summarize the user's primary emotional pain points or consultation topics.
+2. 🔑 **Core Insights**: Extract the 2-3 most critical mindset or relationship strategies taught by the AI tutor (e.g., reducing neediness, frame control, push-pull).
+3. 🛠️ **Actionable Steps**: List the concrete next steps the user can execute immediately in their daily life.
+
+Note:
+- Please write in English.
+- Direct output the note content only. Do not include any introductory sentences like "Here is the summary...".
+"""
+
+    if not active_key:
+        if lang == "zh":
+            fallback_text = (
+                "⚠️ 【展示模式：偵測到未設定 GEMINI_API_KEY，無法生成 AI 智慧摘要】\n\n"
+                "以下是您的通話大綱速記：\n"
+                f"- 通話長度: {len(transcript)} 回合對話。\n"
+                "- 請在左側設定您的 API 金鑰以啟用 Gemini 自動分析與摘要生成功能！"
+            )
+        else:
+            fallback_text = (
+                "⚠️ [Demo Mode: GEMINI_API_KEY not configured. Cannot generate AI summary]\n\n"
+                "Here is your call summary outline:\n"
+                f"- Call length: {len(transcript)} conversational turns.\n"
+                "- Please set your API Key to enable Gemini automatic summarization."
+            )
+        return {"summary": fallback_text}
+
+    try:
+        genai.configure(api_key=active_key)
+        model = genai.GenerativeModel("models/gemini-1.5-flash")
+        response = model.generate_content(prompt)
+        return {"summary": response.text}
+    except Exception as e:
+        return {"summary": f"生成摘要時發生錯誤：{str(e)}"}
 
 # ----------------- Study Guide (NotebookLM style) -----------------
 

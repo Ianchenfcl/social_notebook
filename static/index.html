@@ -92,17 +92,17 @@
             </div>
             <div>
                 <h1 class="text-xl font-bold tracking-wider bg-gradient-to-r from-brand-400 to-indigo-300 bg-clip-text text-transparent">戀愛AI</h1>
-                <p class="text-xs text-slate-400">PTT Catch 智慧知識庫</p>
+                <p class="text-xs text-slate-400" data-i18n="sidebar.logo_sub">PTT Catch 智慧知識庫</p>
             </div>
         </div>
 
         <!-- Notebook Selection -->
         <div class="px-4 py-4 border-b border-slate-800">
-            <label class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase block mb-1">當前筆記本</label>
+            <label class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase block mb-1" data-i18n="sidebar.current_notebook">當前筆記本</label>
             <div class="relative">
                 <select id="notebook-select" class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500 appearance-none">
                     <!-- Loaded dynamically -->
-                    <option value="default-catch-notebook-uuid">📚 PTT Catch 精華區</option>
+                    <option value="default-catch-notebook-uuid">📚 PTT Catch 精華區 (PTT Catch Classics)</option>
                 </select>
                 <div class="absolute right-3 top-3 pointer-events-none text-slate-400">
                     <i data-lucide="chevron-down" class="w-4 h-4"></i>
@@ -113,16 +113,16 @@
         <!-- Documents / Sources List -->
         <div class="flex-1 overflow-y-auto p-4 space-y-4">
             <div class="flex items-center justify-between">
-                <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase">參考來源文件 (<span id="source-count">0</span>)</span>
+                <span class="text-xs font-semibold tracking-wider text-slate-400 uppercase"><span data-i18n="sidebar.ref_docs">參考來源文件</span> (<span id="source-count">0</span>)</span>
                 <button onclick="openAddDocModal()" class="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
-                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i>新增
+                    <i data-lucide="plus-circle" class="w-3.5 h-3.5"></i><span data-i18n="sidebar.add">新增</span>
                 </button>
             </div>
 
             <!-- Auto Study Guide Button -->
             <button onclick="triggerStudyGuide()" class="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-brand-700/60 to-indigo-700/60 hover:from-brand-600 hover:to-indigo-600 border border-brand-500/20 text-xs font-semibold flex items-center justify-center gap-2 shadow-lg shadow-brand-900/10 transition duration-300">
                 <i data-lucide="book-open" class="w-4 h-4"></i>
-                自動生成智慧導讀指南
+                <span data-i18n="sidebar.study_guide">自動生成智慧導讀指南</span>
             </button>
 
             <!-- Document List Items -->
@@ -139,7 +139,7 @@
             <!-- Model Selection -->
             <div class="space-y-1">
                 <label class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase flex items-center gap-1">
-                    <i data-lucide="cpu" class="w-3 h-3 text-slate-400"></i>AI 模型選擇
+                    <i data-lucide="cpu" class="w-3 h-3 text-slate-400"></i><span data-i18n="sidebar.model_select">AI 模型選擇</span>
                 </label>
                 <div class="relative">
                     <select id="web-model-select" onchange="saveSelectedModel(this.value)" class="w-full bg-slate-950/80 border border-slate-800 rounded-lg py-1.5 px-2.5 text-xs text-slate-300 focus:outline-none focus:border-brand-500/80 appearance-none cursor-pointer">
@@ -161,12 +161,12 @@
             <div class="space-y-1.5">
                 <div class="flex items-center justify-between">
                     <span class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase flex items-center gap-1">
-                        <i data-lucide="key" class="w-3 h-3 text-slate-400"></i>Gemini 金鑰設定
+                        <i data-lucide="key" class="w-3 h-3 text-slate-400"></i><span data-i18n="sidebar.key_settings">Gemini 金鑰設定</span>
                     </span>
                     <span id="key-badge" class="text-[9px] px-1.5 py-0.5 rounded bg-slate-800 text-slate-400 font-medium">展示模式</span>
                 </div>
                 <div class="relative flex items-center">
-                    <input id="web-api-key" type="text" name="web-api-key" autocomplete="off" placeholder="貼上您的 GEMINI_API_KEY..." oninput="saveApiKey(this.value)" style="-webkit-text-security: disc;" class="w-full bg-slate-950/85 border border-slate-800 rounded-lg py-1.5 pl-3 pr-8 text-xs text-slate-350 focus:outline-none focus:border-brand-500/80 transition">
+                    <input id="web-api-key" type="text" name="web-api-key" autocomplete="off" data-i18n="sidebar.key_placeholder" placeholder="貼上您的 GEMINI_API_KEY..." oninput="saveApiKey(this.value)" style="-webkit-text-security: disc;" class="w-full bg-slate-950/85 border border-slate-800 rounded-lg py-1.5 pl-3 pr-8 text-xs text-slate-350 focus:outline-none focus:border-brand-500/80 transition">
                     <button onclick="toggleKeyVisibility()" class="absolute right-2.5 text-slate-500 hover:text-slate-350 focus:outline-none">
                         <i id="eye-icon" data-lucide="eye" class="w-3.5 h-3.5"></i>
                     </button>
@@ -178,7 +178,7 @@
         <div class="p-4 border-t border-slate-800 bg-slate-950/40 text-xs text-slate-400 flex items-center justify-between">
             <div class="flex items-center gap-1.5">
                 <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                <span>系統連接正常</span>
+                <span data-i18n="sidebar.status_ok">系統連接正常</span>
             </div>
             <span class="text-[10px] bg-slate-800 px-2 py-0.5 rounded text-slate-400">v1.0.0</span>
         </div>
@@ -194,6 +194,12 @@
             </div>
             
             <div class="flex items-center gap-2">
+                <!-- 語言切換按鈕 -->
+                <button id="lang-toggle-btn" onclick="toggleLanguage()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-900 border border-slate-800 text-slate-350 hover:text-slate-200 hover:bg-slate-800 text-xs font-semibold transition mr-1" title="Switch Language / 切換語言">
+                    <i data-lucide="languages" class="w-3.5 h-3.5 text-brand-400"></i>
+                    <span id="lang-btn-text">English</span>
+                </button>
+
                 <!-- 語音對象選擇 (選擇導師) -->
                 <select id="voice-voice-select" class="bg-slate-900 border border-slate-800 rounded-lg py-1.5 px-2 text-xs text-slate-300 focus:outline-none focus:border-brand-500 transition mr-1 cursor-pointer">
                     <option value="Zephyr" selected>🎓 導師 Zephyr (優雅女聲)</option>
@@ -210,11 +216,11 @@
                         <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
                         <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
                     </span>
-                    <i data-lucide="phone" class="w-3.5 h-3.5"></i> 撥打語音導師
+                    <i data-lucide="phone" class="w-3.5 h-3.5"></i> <span data-i18n="chat.voice_call">撥打語音導師</span>
                 </button>
 
-                <button onclick="clearChat()" class="p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition" title="清空對話">
-                    <i data-lucide="trash-2" class="w-4 h-4"></i>
+                <button onclick="clearChat()" class="p-2 rounded-lg bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition flex items-center gap-1" title="清空對話" data-i18n-title="chat.clear">
+                    <i data-lucide="trash-2" class="w-4 h-4"></i> <span data-i18n="chat.clear" class="hidden md:inline">清空對話</span>
                 </button>
             </div>
         </header>
@@ -227,19 +233,19 @@
                     <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
                 </div>
                 <div class="bg-slate-900/60 border border-slate-800 rounded-2xl px-5 py-4 max-w-full">
-                    <h3 class="font-bold text-slate-200 mb-1 flex items-center gap-1.5">
+                    <h3 class="font-bold text-slate-200 mb-1 flex items-center gap-1.5" data-i18n="chat.welcome_title">
                         歡迎來到 戀愛AI 關係大師！
                     </h3>
-                    <p class="text-sm text-slate-300 leading-relaxed mb-3">
+                    <p class="text-sm text-slate-300 leading-relaxed mb-3" data-i18n-html="true" data-i18n="chat.welcome_p1">
                         我已經成功在向量資料庫中導入了 <strong>PTT Catch</strong> 數十篇精華區的經典神作（包含不敗心法、聊天技巧、男女框架、曖昧引導等）。
                     </p>
-                    <p class="text-sm text-slate-400 leading-relaxed mb-3">
+                    <p class="text-sm text-slate-400 leading-relaxed mb-3" data-i18n="chat.welcome_p2">
                         您可以向我詢問 any 兩性互動的難題，例如：
                     </p>
                     <div class="flex flex-wrap gap-2">
-                        <button onclick="prefillInput('女生已讀不回，我該如何心態建設與重啟話題？')" class="text-xs bg-brand-950/40 hover:bg-brand-900/50 border border-brand-900/40 text-brand-300 px-3 py-1.5 rounded-full transition">💬 女生已讀不回怎麼辦？</button>
-                        <button onclick="prefillInput('如何和剛認識的女生自然地聊天，避免像身家調查？')" class="text-xs bg-brand-950/40 hover:bg-brand-900/50 border border-brand-900/40 text-brand-300 px-3 py-1.5 rounded-full transition">💬 自然聊天避免身家調查</button>
-                        <button onclick="prefillInput('什麼是男女互動中的「框架理論」與「推拉」？')" class="text-xs bg-brand-950/40 hover:bg-brand-900/50 border border-brand-900/40 text-brand-300 px-3 py-1.5 rounded-full transition">💬 什麼是框架與推拉？</button>
+                        <button onclick="prefillInput(currentLang === 'zh' ? '女生已讀不回，我該如何心態建設與重啟話題？' : 'What should I do if a girl reads and ignores my message?')" class="text-xs bg-brand-950/40 hover:bg-brand-900/50 border border-brand-900/40 text-brand-300 px-3 py-1.5 rounded-full transition" data-i18n="chat.prompt_1">💬 女生已讀不回怎麼辦？</button>
+                        <button onclick="prefillInput(currentLang === 'zh' ? '如何和剛認識的女生自然地聊天，避免像身家調查？' : 'How to chat naturally with a girl I just met without sounding like an interrogation?')" class="text-xs bg-brand-950/40 hover:bg-brand-900/50 border border-brand-900/40 text-brand-300 px-3 py-1.5 rounded-full transition" data-i18n="chat.prompt_2">💬 自然聊天避免身家調查</button>
+                        <button onclick="prefillInput(currentLang === 'zh' ? '什麼是男女互動中的「框架理論」與「推拉」？' : 'What are the Frame Theory and Push-Pull in relationships?')" class="text-xs bg-brand-950/40 hover:bg-brand-900/50 border border-brand-900/40 text-brand-300 px-3 py-1.5 rounded-full transition" data-i18n="chat.prompt_3">💬 什麼是框架與推拉？</button>
                     </div>
                 </div>
             </div>
@@ -253,7 +259,7 @@
                     <i data-lucide="send" class="w-4 h-4"></i>
                 </button>
             </div>
-            <p class="text-[10px] text-center text-slate-600 mt-2">
+            <p class="text-[10px] text-center text-slate-600 mt-2" data-i18n="chat.footer_hint">
                 *本助手將整合 PTT Catch 經典文章進行答覆。所有回答句尾的 [Source X] 皆可點擊對照原文片段。
             </p>
         </footer>
@@ -264,19 +270,19 @@
         <!-- Panel Tabs -->
         <div class="flex border-b border-slate-800 bg-slate-950/30">
             <button onclick="switchRightTab('notes')" id="tab-notes" class="flex-1 py-4 text-xs font-semibold text-brand-400 border-b-2 border-brand-500 flex items-center justify-center gap-1.5">
-                <i data-lucide="sticky-note" class="w-4 h-4"></i>個人筆記
+                <i data-lucide="sticky-note" class="w-4 h-4"></i><span data-i18n="right.tab_notes">個人筆記</span>
             </button>
             <button onclick="switchRightTab('source')" id="tab-source" class="flex-1 py-4 text-xs font-semibold text-slate-400 border-b-2 border-transparent flex items-center justify-center gap-1.5">
-                <i data-lucide="file-text" class="w-4 h-4"></i>原文溯源對照
+                <i data-lucide="file-text" class="w-4 h-4"></i><span data-i18n="right.tab_source">原文溯源對照</span>
             </button>
         </div>
 
         <!-- Tab 1: Notes Content -->
         <div id="panel-notes-content" class="flex-1 overflow-y-auto p-4 flex flex-col">
             <div class="flex items-center justify-between mb-4">
-                <span class="text-xs font-semibold text-slate-400 uppercase">我的筆記本</span>
+                <span class="text-xs font-semibold text-slate-400 uppercase" data-i18n="right.my_notebook">我的筆記本</span>
                 <button onclick="createNewNote()" class="text-xs text-brand-400 hover:text-brand-300 flex items-center gap-1">
-                    <i data-lucide="plus" class="w-3.5 h-3.5"></i>新增筆記
+                    <i data-lucide="plus" class="w-3.5 h-3.5"></i><span data-i18n="right.add_note">新增筆記</span>
                 </button>
             </div>
             
@@ -290,20 +296,20 @@
         <div id="panel-source-content" class="flex-1 overflow-y-auto p-4 hidden space-y-4">
             <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-4">
                 <div class="flex items-center justify-between mb-2">
-                    <span class="text-[10px] bg-brand-950 text-brand-400 px-2 py-0.5 rounded font-semibold uppercase">引用原文</span>
-                    <span id="source-similarity" class="text-[10px] text-slate-500">相似度: 92.4%</span>
+                    <span class="text-[10px] bg-brand-950 text-brand-400 px-2 py-0.5 rounded font-semibold uppercase" data-i18n="right.source_badge">引用原文</span>
+                    <span id="source-similarity" class="text-[10px] text-slate-500"><span data-i18n="right.source_similarity">相似度</span>: 92.4%</span>
                 </div>
-                <h3 id="source-title" class="font-bold text-slate-200 text-sm mb-1">標題: 載入中...</h3>
-                <p id="source-author" class="text-xs text-slate-400 mb-1">作者: 未知</p>
-                <p id="source-category" class="text-xs text-slate-500 mb-2">路徑: 精華區 > CATCH</p>
+                <h3 id="source-title" class="font-bold text-slate-200 text-sm mb-1" data-i18n="right.source_title_placeholder">標題: 載入中...</h3>
+                <p id="source-author" class="text-xs text-slate-400 mb-1" data-i18n="right.source_author_placeholder">作者: 未知</p>
+                <p id="source-category" class="text-xs text-slate-500 mb-2" data-i18n="right.source_category_placeholder">路徑: 精華區 > CATCH</p>
                 <a id="source-url" href="#" target="_blank" class="text-xs text-brand-400 hover:underline flex items-center gap-1 mb-2">
-                    <i data-lucide="external-link" class="w-3 h-3"></i>前往 PTT 網頁版原文
+                    <i data-lucide="external-link" class="w-3 h-3"></i><span id="source-url-text" data-i18n="right.source_link_ptt">前往 PTT 網頁版原文</span>
                 </a>
             </div>
             
             <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 flex-1">
-                <h4 class="text-xs font-semibold text-slate-400 mb-2">引文段落片段：</h4>
-                <div id="source-text" class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap max-h-[50vh] overflow-y-auto pr-1">
+                <h4 class="text-xs font-semibold text-slate-400 mb-2" data-i18n="right.source_header">引文段落片段：</h4>
+                <div id="source-text" class="text-sm text-slate-300 leading-relaxed whitespace-pre-wrap max-h-[50vh] overflow-y-auto pr-1" data-i18n="right.source_text_placeholder">
                     請點擊左側 AI 回答中的數字標籤 [Source X] 以檢視其對應的 Catch 板精華原文段落。
                 </div>
             </div>
@@ -315,7 +321,7 @@
         <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl glass-panel">
             <div class="flex items-center justify-between">
                 <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
-                    <i data-lucide="file-plus-2" class="text-brand-400"></i>上傳個人情感資料/文章
+                    <i data-lucide="file-plus-2" class="text-brand-400"></i><span data-i18n="modal.add_doc_title">上傳個人情感資料/文章</span>
                 </h3>
                 <button onclick="closeAddDocModal()" class="text-slate-400 hover:text-slate-200">
                     <i data-lucide="x" class="w-5 h-5"></i>
@@ -324,22 +330,22 @@
             
             <div class="space-y-3">
                 <div>
-                    <label class="text-xs text-slate-400 block mb-1">文件標題</label>
-                    <input id="new-doc-title" type="text" placeholder="例如：與小美的對話截圖 / 聊天筆記" class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                    <label class="text-xs text-slate-400 block mb-1" data-i18n="modal.doc_title_label">文件標題</label>
+                    <input id="new-doc-title" type="text" data-i18n="modal.doc_title_placeholder" placeholder="例如：與小美的對話截圖 / 聊天筆記" class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
                 </div>
                 <div>
-                    <label class="text-xs text-slate-400 block mb-1">作者 (選填)</label>
-                    <input id="new-doc-author" type="text" placeholder="例如：我 / 聊天紀錄" class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
+                    <label class="text-xs text-slate-400 block mb-1" data-i18n="modal.doc_author_label">作者 (選填)</label>
+                    <input id="new-doc-author" type="text" data-i18n="modal.doc_author_placeholder" placeholder="例如：我 / 聊天紀錄" class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
                 </div>
                 <div>
-                    <label class="text-xs text-slate-400 block mb-1">文件內容 (文字內容將自動進行向量分段與 Embedding)</label>
-                    <textarea id="new-doc-content" rows="6" placeholder="請在此貼上對話紀錄、兩性相處日記或相關情感文章..." class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500 resize-none"></textarea>
+                    <label class="text-xs text-slate-400 block mb-1" data-i18n="modal.doc_content_label">文件內容 (文字內容將自動進行向量分段與 Embedding)</label>
+                    <textarea id="new-doc-content" rows="6" data-i18n="modal.doc_content_placeholder" placeholder="請在此貼上對話紀錄、兩性相處日記或相關情感文章..." class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500 resize-none"></textarea>
                 </div>
             </div>
             
             <div class="flex justify-end gap-3 pt-2">
-                <button onclick="closeAddDocModal()" class="px-4 py-2 text-sm bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700">取消</button>
-                <button onclick="submitNewDoc()" class="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-500 shadow shadow-brand-500/20">開始處理並向量化</button>
+                <button onclick="closeAddDocModal()" class="px-4 py-2 text-sm bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700" data-i18n="modal.cancel">取消</button>
+                <button onclick="submitNewDoc()" class="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-500 shadow shadow-brand-500/20" data-i18n="modal.submit">開始處理並向量化</button>
             </div>
         </div>
     </div>
@@ -353,6 +359,227 @@
         let loadedSources = [];
         let chatHistory = [];
         let sourceMap = {}; // mapping chunk_id to source info
+
+        // --- Internationalization System (i18n) ---
+        let currentLang = localStorage.getItem('app_lang') || 'zh';
+
+        const TRANSLATIONS = {
+            zh: {
+                "lang.btn": "English",
+                "sidebar.logo_sub": "PTT Catch 智慧知識庫",
+                "sidebar.current_notebook": "當前筆記本",
+                "sidebar.ref_docs": "參考來源文件",
+                "sidebar.add": "新增",
+                "sidebar.study_guide": "自動生成智慧導讀指南",
+                "sidebar.model_select": "AI 模型選擇",
+                "sidebar.key_settings": "Gemini 金鑰設定",
+                "sidebar.key_placeholder": "貼上您的 GEMINI_API_KEY...",
+                "sidebar.status_ok": "系統連接正常",
+                "chat.voice_call": "撥打語音導師",
+                "chat.clear": "清空對話",
+                "chat.welcome_title": "歡迎來到 戀愛AI 關係大師！",
+                "chat.welcome_p1": "我已經成功在向量資料庫中導入了 <strong>PTT Catch</strong> 數十篇精華區的經典神作（包含不敗心法、聊天技巧、男女框架、曖昧引導等）。",
+                "chat.welcome_p2": "您可以向我詢問 any 兩性互動的難題，例如：",
+                "chat.prompt_1": "💬 女生已讀不回怎麼辦？",
+                "chat.prompt_2": "💬 自然聊天避免身家調查",
+                "chat.prompt_3": "💬 什麼是框架與推拉？",
+                "chat.input_placeholder": "向 戀愛AI 提問... (如：如何建立吸引力？)",
+                "chat.footer_hint": "*本助手將整合 PTT Catch 經典文章進行答覆。所有回答句尾的 [Source X] 皆可點擊對照原文片段。",
+                "right.tab_notes": "個人筆記",
+                "right.tab_source": "原文溯源對照",
+                "right.my_notebook": "我的筆記本",
+                "right.add_note": "新增筆記",
+                "right.new_note_title": "新增智慧心法",
+                "right.note_content_placeholder": "在此紀錄您的思考或聊天對策...",
+                "right.note_auto_save": "編輯內容將自動儲存",
+                "right.note_collapse": "收起筆記",
+                "right.source_badge": "引用原文",
+                "right.source_similarity": "相似度",
+                "right.source_title_placeholder": "標題: 載入中...",
+                "right.source_author_placeholder": "作者: 未知",
+                "right.source_category_placeholder": "路徑: 精華區 > CATCH",
+                "right.source_link_ptt": "前往 PTT 網頁版原文",
+                "right.source_text_placeholder": "請點擊左側 AI 回答中的數字標籤 [Source X] 以檢視其對應的 Catch 板精華原文段落。",
+                "right.source_header": "引文段落片段：",
+                "modal.add_doc_title": "上傳個人情感資料/文章",
+                "modal.doc_title_label": "文件標題",
+                "modal.doc_title_placeholder": "例如：與小美的對話截圖 / 聊天筆記",
+                "modal.doc_author_label": "作者 (選填)",
+                "modal.doc_author_placeholder": "例如：我 / 聊天紀錄",
+                "modal.doc_content_label": "文件內容 (文字內容將自動進行向量分段與 Embedding)",
+                "modal.doc_content_placeholder": "請在此貼上對話紀錄、兩性相處日記或相關情感文章...",
+                "modal.cancel": "取消",
+                "modal.submit": "開始處理並向量化",
+                "chat.loading_sources": "大師正在調閱 Catch 板精華心法...",
+                "chat.loading_guide": "大師正在全方位解析 Catch 板導入文獻，整理智慧導讀大綱...",
+                "chat.guide_title": "📚 戀愛AI 智慧導讀指南 (Study Guide)",
+                "chat.save_to_notes": "將此心法一鍵存入隨身筆記",
+                "chat.save_guide_to_notes": "將此導讀存入我的隨身筆記",
+                "chat.reply_title": "戀愛AI 智慧回覆",
+                "chat.failed_conn": "連線失敗：請確保您的 FastAPI 後端服務正在啟動（在終端機運行 uvicorn app:app --reload 且埠號為 8000）。",
+                "voice.status_connecting": "正在建立與 Google AI Studio 的 Live 連線...",
+                "voice.status_connected": "連線成功！開始進行語音對話吧。",
+                "voice.title": "AI 語音通話諮詢中",
+                "voice.your_mic": "您的麥克風",
+                "voice.master_voice": "AI 大師之聲",
+                "voice.log_hint": "通話連線後，大師的發言字幕將在此即時顯示。",
+                "voice.auto_save_checkbox": "掛斷後自動存入隨身筆記",
+                "voice.summarize_checkbox": "產出摘要版筆記 (使用 AI 智慧總結)",
+                "voice.auto_save_summarized_msg": "已為您整理通話摘要並存入個人筆記！",
+                "voice.summarizing_status": "大師正在為您撰寫本次對話的智慧精華摘要...",
+                "right.copy_note": "複製筆記內容",
+                "voice.mute_tooltip": "靜音麥克風",
+                "voice.hangup_tooltip": "結束通話"
+            },
+            en: {
+                "lang.btn": "繁體中文",
+                "sidebar.logo_sub": "PTT Catch AI Tutor",
+                "sidebar.current_notebook": "Current Notebook",
+                "sidebar.ref_docs": "Reference Documents",
+                "sidebar.add": "Add",
+                "sidebar.study_guide": "Generate Study Guide",
+                "sidebar.model_select": "Select AI Model",
+                "sidebar.key_settings": "Gemini API Key",
+                "sidebar.key_placeholder": "Paste your GEMINI_API_KEY...",
+                "sidebar.status_ok": "System Connected",
+                "chat.voice_call": "Call Voice Tutor",
+                "chat.clear": "Clear Chat",
+                "chat.welcome_title": "Welcome to Love AI Relationship Master!",
+                "chat.welcome_p1": "I have successfully imported dozens of classic <strong>PTT Catch</strong> masterpieces (including dating mindset, conversation skills, frame theory, push-pull, etc.) into the vector database.",
+                "chat.welcome_p2": "You can ask me about any relationship challenges, for example:",
+                "chat.prompt_1": "💬 Read & ignored by a girl?",
+                "chat.prompt_2": "💬 Chat naturally without interrogation",
+                "chat.prompt_3": "💬 What is Frame & Push-Pull?",
+                "chat.input_placeholder": "Ask Love AI... (e.g. How to build attraction?)",
+                "chat.footer_hint": "*This assistant integrates classic PTT Catch articles to reply. Click [Source X] at the end of any statement to view the original text.",
+                "right.tab_notes": "Notes",
+                "right.tab_source": "Source Reference",
+                "right.my_notebook": "My Notes",
+                "right.add_note": "Add Note",
+                "right.new_note_title": "New Mindset Note",
+                "right.note_content_placeholder": "Record your thoughts or conversation strategies here...",
+                "right.note_auto_save": "Changes are saved automatically",
+                "right.note_collapse": "Collapse Note",
+                "right.source_badge": "Cited Source",
+                "right.source_similarity": "Similarity",
+                "right.source_title_placeholder": "Title: Loading...",
+                "right.source_author_placeholder": "Author: Unknown",
+                "right.source_category_placeholder": "Path: Classics > CATCH",
+                "right.source_link_ptt": "View PTT Original Thread",
+                "right.source_text_placeholder": "Click [Source X] in the AI's reply to view the corresponding original paragraph.",
+                "right.source_header": "Cited Paragraph Fragment:",
+                "modal.add_doc_title": "Upload Personal Material / Article",
+                "modal.doc_title_label": "Document Title",
+                "modal.doc_title_placeholder": "e.g. Conversation screenshots / notes",
+                "modal.doc_author_label": "Author (Optional)",
+                "modal.doc_author_placeholder": "e.g. Me / Chat log",
+                "modal.doc_content_label": "Content (Will be auto-chunked & embedded)",
+                "modal.doc_content_placeholder": "Paste your conversation records, diary, or relationship articles here...",
+                "modal.cancel": "Cancel",
+                "modal.submit": "Process & Vectorize",
+                "chat.loading_sources": "Mentor is retrieving Catch board insights...",
+                "chat.loading_guide": "Mentor is parsing imported literature to prepare the Study Guide...",
+                "chat.guide_title": "📚 Love AI Study Guide",
+                "chat.save_to_notes": "Save to notes in one click",
+                "chat.save_guide_to_notes": "Save study guide to my notes",
+                "chat.reply_title": "Love AI Intelligent Reply",
+                "chat.failed_conn": "Connection failed: Please make sure your FastAPI service is running (run uvicorn app:app --reload on port 8000).",
+                "voice.status_connecting": "Establishing Live connection with Google AI Studio...",
+                "voice.status_connected": "Connected! Start your voice conversation.",
+                "voice.title": "AI Voice Consultation in Progress",
+                "voice.your_mic": "Your Mic",
+                "voice.master_voice": "AI Master Voice",
+                "voice.log_hint": "Once connected, the live voice transcript will appear here.",
+                "voice.auto_save_checkbox": "Auto save to notes on hangup",
+                "voice.summarize_checkbox": "Generate summarized notes (using AI Summary)",
+                "voice.auto_save_summarized_msg": "Voice Consultation Summary has been saved to your notes!",
+                "voice.summarizing_status": "Mentor is writing an intelligent summary of this conversation...",
+                "right.copy_note": "Copy note contents",
+                "voice.mute_tooltip": "Mute Microphone",
+                "voice.hangup_tooltip": "Hang Up"
+            }
+        };
+
+        function applyLanguage() {
+            localStorage.setItem('app_lang', currentLang);
+            document.getElementById('lang-btn-text').textContent = TRANSLATIONS[currentLang]["lang.btn"];
+            
+            // Translate all elements with data-i18n
+            document.querySelectorAll('[data-i18n]').forEach(el => {
+                const key = el.getAttribute('data-i18n');
+                const translation = TRANSLATIONS[currentLang][key];
+                if (translation) {
+                    if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+                        el.placeholder = translation;
+                    } else if (el.hasAttribute('data-i18n-html')) {
+                        el.innerHTML = translation;
+                    } else {
+                        el.textContent = translation;
+                    }
+                }
+            });
+            
+            // Update input placeholders dynamically
+            const chatInput = document.getElementById('chat-input');
+            if (chatInput) {
+                chatInput.placeholder = TRANSLATIONS[currentLang]["chat.input_placeholder"];
+            }
+
+            // Update tooltips and buttons
+            document.querySelectorAll('[data-i18n-title]').forEach(el => {
+                const key = el.getAttribute('data-i18n-title');
+                const translation = TRANSLATIONS[currentLang][key];
+                if (translation) {
+                    el.title = translation;
+                }
+            });
+
+            // Update voice status if currently loaded
+            const p1 = document.querySelector('#voice-transcript-log .text-slate-500 span');
+            if (p1 && p1.parentNode) {
+                p1.parentNode.innerHTML = `
+                    <i data-lucide="info" class="w-4 h-4 text-slate-700"></i>
+                    <span>${TRANSLATIONS[currentLang]["voice.log_hint"]}</span>
+                `;
+                lucide.createIcons();
+            }
+
+            updateNotebookHeader();
+        }
+
+        function toggleLanguage() {
+            currentLang = (currentLang === 'zh') ? 'en' : 'zh';
+            applyLanguage();
+            // Reload documents and notes to ensure list item descriptions are translated
+            loadDocuments();
+            loadNotes();
+        }
+
+        function showToast(message) {
+            let container = document.getElementById('toast-container');
+            if (!container) {
+                container = document.createElement('div');
+                container.id = 'toast-container';
+                container.className = 'fixed bottom-5 right-5 z-50 flex flex-col gap-2 pointer-events-none';
+                document.body.appendChild(container);
+            }
+            
+            const toast = document.createElement('div');
+            toast.className = 'bg-slate-900 border border-brand-500/30 text-slate-200 text-xs px-4 py-2.5 rounded-xl shadow-xl flex items-center gap-2 animate-in slide-in-from-bottom-2 duration-300 pointer-events-auto transition duration-500';
+            toast.innerHTML = `
+                <i data-lucide="check-circle" class="w-4 h-4 text-emerald-400 flex-shrink-0"></i>
+                <span>${message}</span>
+            `;
+            container.appendChild(toast);
+            lucide.createIcons();
+            
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => {
+                    toast.remove();
+                }, 500);
+            }, 2500);
+        }
 
         // --- API Key & Model Management ---
         function saveSelectedModel(val) {
@@ -442,15 +669,19 @@
             loadNotes();
             
             // Clear chat display smoothly without location.reload
+            const alertTitle = currentLang === 'zh' ? '系統提示' : 'System Prompt';
+            const alertText = currentLang === 'zh' 
+                ? `已成功切換至 <strong>${notebooksList.find(n => n.id === nbId)?.title || '新筆記本'}</strong>。請在下方輸入您的問題開始對話！`
+                : `Successfully switched to <strong>${notebooksList.find(n => n.id === nbId)?.title || 'New Notebook'}</strong>. Please type your question below to start chatting!`;
             document.getElementById('chat-messages').innerHTML = `
                 <div class="flex gap-4 max-w-3xl">
                     <div class="w-9 h-9 rounded-lg bg-brand-600 flex items-center justify-center flex-shrink-0 shadow shadow-brand-500/20">
                         <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
                     </div>
                     <div class="bg-slate-900/60 border border-slate-800 rounded-2xl px-5 py-4 max-w-full">
-                        <h4 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">系統提示</h4>
+                        <h4 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">${alertTitle}</h4>
                         <div class="prose max-w-none text-sm text-slate-350 leading-relaxed">
-                            已成功切換至 <strong>${notebooksList.find(n => n.id === nbId)?.title || '新筆記本'}</strong>。請在下方輸入您的問題開始對話！
+                            ${alertText}
                         </div>
                     </div>
                 </div>
@@ -460,6 +691,7 @@
 
         // Initialize lucide icons on load
         window.addEventListener('DOMContentLoaded', () => {
+            applyLanguage();
             lucide.createIcons();
             
             // 讀取 localStorage 並回填金鑰
@@ -487,12 +719,18 @@
                 
                 const listDiv = document.getElementById('document-list');
                 if (docs.length === 0) {
-                    listDiv.innerHTML = '<div class="text-center py-8 text-slate-500 text-xs">尚無參考文件</div>';
+                    listDiv.innerHTML = `<div class="text-center py-8 text-slate-500 text-xs">${currentLang === 'zh' ? '尚無參考文件' : 'No reference documents'}</div>`;
                     return;
                 }
                 
                 const isPua = (currentNotebookId === 'pua-books-notebook-uuid');
+                const authorLabel = currentLang === 'zh' ? '作者' : 'Author';
+                const unknownLabel = currentLang === 'zh' ? '未知' : 'Unknown';
+                const bookLabel = currentLang === 'zh' ? '經典書籍' : 'Classic Book';
+                const defaultCat = currentLang === 'zh' ? '精華區' : 'Classics';
+
                 listDiv.innerHTML = docs.map(doc => {
+                    const authorVal = doc.author || unknownLabel;
                     if (isPua) {
                         return `
                             <div class="group bg-slate-950/60 border border-slate-850 rounded-xl p-3 text-left transition duration-200">
@@ -500,19 +738,20 @@
                                     <i data-lucide="book" class="w-4 h-4 text-slate-400 mt-0.5 flex-shrink-0"></i>
                                     <div class="overflow-hidden w-full">
                                         <h4 class="text-xs font-semibold text-slate-200 truncate" title="${doc.title}">${doc.title}</h4>
-                                        <p class="text-[10px] text-slate-500 truncate mt-0.5">作者: ${doc.author || '未知'} • 經典書籍</p>
+                                        <p class="text-[10px] text-slate-500 truncate mt-0.5">${authorLabel}: ${authorVal} • ${bookLabel}</p>
                                     </div>
                                 </div>
                             </div>
                         `;
                     } else {
+                        const lastCat = doc.category_path[doc.category_path.length-1] || defaultCat;
                         return `
                             <a href="${doc.source_url || '#'}" target="_blank" class="block group bg-slate-950/60 hover:bg-slate-900/60 border border-slate-800 hover:border-slate-700 rounded-xl p-3 text-left transition duration-200 cursor-pointer no-underline">
                                 <div class="flex items-start gap-2">
                                     <i data-lucide="external-link" class="w-4 h-4 text-slate-400 group-hover:text-brand-400 mt-0.5 flex-shrink-0"></i>
                                     <div class="overflow-hidden w-full">
                                         <h4 class="text-xs font-semibold text-slate-200 truncate group-hover:text-brand-300" title="${doc.title}">${doc.title}</h4>
-                                        <p class="text-[10px] text-slate-500 truncate mt-0.5">作者: ${doc.author || '未知'} • ${doc.category_path[doc.category_path.length-1] || '精華區'}</p>
+                                        <p class="text-[10px] text-slate-500 truncate mt-0.5">${authorLabel}: ${authorVal} • ${lastCat}</p>
                                     </div>
                                 </div>
                             </a>
@@ -559,16 +798,24 @@
         function renderNotes() {
             const notesDiv = document.getElementById('notes-list');
             if (loadedNotes.length === 0) {
+                const noNotesMsg = currentLang === 'zh' ? '目前沒有筆記，可以在此記錄您的智慧心法！' : 'No notes yet. Record your insights here!';
                 notesDiv.innerHTML = `
                     <div class="text-center py-12 text-slate-600 flex flex-col items-center justify-center gap-2">
                         <i data-lucide="sticky-note" class="w-8 h-8 text-slate-700"></i>
-                        <span class="text-xs">目前沒有筆記，可以在此記錄您的智慧心法！</span>
+                        <span class="text-xs">${noNotesMsg}</span>
                     </div>
                 `;
                 lucide.createIcons();
                 return;
             }
             
+            const collapseTitle = currentLang === 'zh' ? '收起筆記' : 'Collapse Note';
+            const deleteTitle = currentLang === 'zh' ? '刪除筆記' : 'Delete Note';
+            const editTitle = currentLang === 'zh' ? '點開編輯詳細內容' : 'Click to edit details';
+            const autoSaveMsg = currentLang === 'zh' ? '編輯內容將自動儲存' : 'Changes are saved automatically';
+            const placeholderMsg = currentLang === 'zh' ? '在此紀錄您的思考或聊天對策...' : 'Record your thoughts or conversation strategies here...';
+            const copyTitle = TRANSLATIONS[currentLang]["right.copy_note"] || (currentLang === 'zh' ? '複製筆記內容' : 'Copy note contents');
+
             notesDiv.innerHTML = loadedNotes.map(note => {
                 const isExpanded = expandedNoteIds.has(note.id);
                 
@@ -581,19 +828,22 @@
                                     <input type="text" autocomplete="off" name="note-title-${note.id}" value="${note.title}" onblur="updateNoteTitle('${note.id}', this.value)" class="bg-transparent font-bold text-slate-200 text-xs focus:outline-none border-b border-transparent focus:border-brand-500/50 w-full pr-2 truncate">
                                 </div>
                                 <div class="flex items-center gap-1 flex-shrink-0">
-                                    <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" title="收起筆記" class="text-slate-400 hover:text-brand-300 transition p-1 hover:bg-slate-900 rounded">
+                                    <button onclick="copyNoteContent('${note.id}'); event.stopPropagation();" title="${copyTitle}" class="text-slate-400 hover:text-brand-300 transition p-1 hover:bg-slate-900 rounded">
+                                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                    <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" title="${collapseTitle}" class="text-slate-400 hover:text-brand-300 transition p-1 hover:bg-slate-900 rounded">
                                         <i data-lucide="chevron-up" class="w-3.5 h-3.5"></i>
                                     </button>
-                                    <button onclick="deleteNote('${note.id}'); event.stopPropagation();" title="刪除筆記" class="text-slate-550 hover:text-rose-450 transition p-1 hover:bg-slate-900 rounded">
+                                    <button onclick="deleteNote('${note.id}'); event.stopPropagation();" title="${deleteTitle}" class="text-slate-555 hover:text-rose-455 transition p-1 hover:bg-slate-900 rounded">
                                         <i data-lucide="trash" class="w-3.5 h-3.5"></i>
                                     </button>
                                 </div>
                             </div>
-                            <textarea onblur="updateNoteContent('${note.id}', this.value)" style="min-height: 150px; height: auto;" class="w-full bg-slate-900/40 border border-slate-800/85 rounded-lg p-2.5 text-slate-350 text-xs resize-none focus:outline-none focus:border-brand-500/30 leading-relaxed font-sans placeholder-slate-600" placeholder="在此紀錄您的思考或聊天對策...">${note.content}</textarea>
+                            <textarea onblur="updateNoteContent('${note.id}', this.value)" style="min-height: 150px; height: auto;" class="w-full bg-slate-900/40 border border-slate-800/85 rounded-lg p-2.5 text-slate-350 text-xs resize-none focus:outline-none focus:border-brand-500/30 leading-relaxed font-sans placeholder-slate-600" placeholder="${placeholderMsg}">${note.content}</textarea>
                             <div class="flex justify-between items-center text-[10px] text-slate-500">
-                                <span>編輯內容將自動儲存</span>
+                                <span>${autoSaveMsg}</span>
                                 <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" class="text-brand-400 hover:text-brand-300 flex items-center gap-0.5 font-medium">
-                                    收起筆記 <i data-lucide="chevron-up" class="w-3 h-3"></i>
+                                    ${collapseTitle} <i data-lucide="chevron-up" class="w-3 h-3"></i>
                                 </button>
                             </div>
                         </div>
@@ -606,10 +856,13 @@
                                 <input type="text" autocomplete="off" name="note-title-${note.id}" value="${note.title}" onblur="updateNoteTitle('${note.id}', this.value)" class="bg-transparent font-semibold text-slate-350 text-xs focus:outline-none border-b border-transparent focus:border-brand-500/50 w-full pr-2 truncate cursor-text" onclick="event.stopPropagation()">
                             </div>
                             <div class="flex items-center gap-0.5 flex-shrink-0">
-                                <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" title="點開編輯詳細內容" class="text-slate-550 hover:text-brand-300 transition p-1 rounded hover:bg-slate-900">
+                                    <button onclick="copyNoteContent('${note.id}'); event.stopPropagation();" title="${copyTitle}" class="text-slate-550 hover:text-brand-300 transition p-1 rounded hover:bg-slate-900">
+                                        <i data-lucide="copy" class="w-3.5 h-3.5"></i>
+                                    </button>
+                                <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" title="${editTitle}" class="text-slate-550 hover:text-brand-300 transition p-1 rounded hover:bg-slate-900">
                                     <i data-lucide="chevron-down" class="w-3.5 h-3.5"></i>
                                 </button>
-                                <button onclick="deleteNote('${note.id}'); event.stopPropagation();" title="刪除筆記" class="text-slate-655 hover:text-rose-455 opacity-0 group-hover:opacity-100 transition p-1 rounded hover:bg-slate-900">
+                                <button onclick="deleteNote('${note.id}'); event.stopPropagation();" title="${deleteTitle}" class="text-slate-655 hover:text-rose-455 opacity-0 group-hover:opacity-100 transition p-1 rounded hover:bg-slate-900">
                                     <i data-lucide="trash" class="w-3.5 h-3.5"></i>
                                 </button>
                             </div>
@@ -632,8 +885,34 @@
             lucide.createIcons();
         }
 
+        async function copyNoteContent(id) {
+            const note = loadedNotes.find(n => n.id === id);
+            if (!note) return;
+            try {
+                await navigator.clipboard.writeText(note.content);
+                showToast(currentLang === 'zh' ? '筆記內容已複製！' : 'Note content copied!');
+            } catch (err) {
+                console.error("Failed to copy:", err);
+                try {
+                    const textArea = document.createElement("textarea");
+                    textArea.value = note.content;
+                    textArea.style.position = 'fixed';
+                    textArea.style.opacity = '0';
+                    document.body.appendChild(textArea);
+                    textArea.select();
+                    document.execCommand("copy");
+                    document.body.removeChild(textArea);
+                    showToast(currentLang === 'zh' ? '筆記內容已複製！' : 'Note content copied!');
+                } catch (e) {
+                    alert(currentLang === 'zh' ? '複製失敗，請手動複製！' : 'Failed to copy note contents.');
+                }
+            }
+        }
+
         // Add Note
-        async function createNewNote(title = "新增智慧心法", content = "在此紀錄您的思考或聊天對策...") {
+        async function createNewNote(title = null, content = null) {
+            if (!title) title = currentLang === 'zh' ? "新增智慧心法" : "New Mindset Note";
+            if (!content) content = currentLang === 'zh' ? "在此紀錄您的思考或聊天對策..." : "Record your thoughts or conversation strategies here...";
             try {
                 const response = await fetch(`${API_BASE}/notebooks/${currentNotebookId}/notes`, {
                     method: 'POST',
@@ -706,7 +985,10 @@
             document.getElementById('add-doc-modal').classList.add('hidden');
         }
         function submitNewDoc() {
-            alert("此功能可直接上傳自己的情感文件。本地方案已自動內建數十篇 PTT 經典文章，您可以先體驗與 PTT 大師們的對話！");
+            const hint = currentLang === 'zh' 
+                ? "此功能可直接上傳自己的情感文件。本地方案已自動內建數十篇 PTT 經典文章，您可以先體驗與 PTT 大師們的對話！" 
+                : "This feature allows uploading personal documents. The local app is already populated with dozens of PTT classics, try chatting with the mentors first!";
+            alert(hint);
             closeAddDocModal();
         }
 
@@ -733,13 +1015,14 @@
                         <p class="text-sm leading-relaxed">${query}</p>
                     </div>
                     <div class="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center flex-shrink-0">
-                        <i data-lucide="user" class="w-4 h-4 text-slate-350"></i>
+                        <i data-lucide="user" class="w-4 h-4 text-slate-355"></i>
                     </div>
                 </div>
             `;
             
             // 渲染 AI 載入中動畫
             const loadingId = "ai-loading-" + Date.now();
+            const loadingMsg = TRANSLATIONS[currentLang]["chat.loading_sources"];
             chatDiv.innerHTML += `
                 <div id="${loadingId}" class="flex gap-4 max-w-3xl">
                     <div class="w-9 h-9 rounded-lg bg-brand-600 flex items-center justify-center flex-shrink-0 animate-pulse">
@@ -749,7 +1032,7 @@
                         <span class="w-2 h-2 rounded-full bg-brand-400 animate-bounce"></span>
                         <span class="w-2 h-2 rounded-full bg-brand-400 animate-bounce [animation-delay:0.2s]"></span>
                         <span class="w-2 h-2 rounded-full bg-brand-400 animate-bounce [animation-delay:0.4s]"></span>
-                        <span class="text-xs text-slate-500 ml-1">大師正在調閱 Catch 板精華心法...</span>
+                        <span class="text-xs text-slate-500 ml-1">${loadingMsg}</span>
                     </div>
                 </div>
             `;
@@ -787,7 +1070,6 @@
                 let answerHtml = marked.parse(data.answer);
                 
                 // 正則表達式匹配 [Source X]，並置換成帶有 onclick 的漂亮 badge
-                // 我們匹配 [Source X] 或是 Source X
                 const sourceRegex = /\[Source\s+(\d+)\]/g;
                 answerHtml = answerHtml.replace(sourceRegex, (match, p1) => {
                     const idx = parseInt(p1) - 1;
@@ -803,6 +1085,8 @@
                 });
 
                 const aiMsgId = "ai-msg-" + Date.now();
+                const replyTitle = TRANSLATIONS[currentLang]["chat.reply_title"];
+                const saveToNotes = TRANSLATIONS[currentLang]["chat.save_to_notes"];
                 
                 chatDiv.innerHTML += `
                     <div class="flex gap-4 max-w-3xl">
@@ -810,13 +1094,13 @@
                             <i data-lucide="sparkles" class="w-4 h-4 text-white"></i>
                         </div>
                         <div class="bg-slate-900/60 border border-slate-800 rounded-2xl px-5 py-4 max-w-full">
-                            <h4 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">戀愛AI 智慧回覆</h4>
+                            <h4 class="text-xs font-bold text-slate-400 mb-2 uppercase tracking-wide">${replyTitle}</h4>
                             <div class="prose max-w-none text-sm text-slate-350 leading-relaxed">${answerHtml}</div>
                             
                             <!-- Save to Note button -->
                             <div class="mt-4 pt-3 border-t border-slate-850 flex justify-end">
                                 <button onclick="saveMessageToNote('${aiMsgId}')" class="text-xs text-slate-400 hover:text-brand-300 flex items-center gap-1 transition">
-                                    <i data-lucide="sticky-note" class="w-3.5 h-3.5"></i>將此心法一鍵存入隨身筆記
+                                    <i data-lucide="sticky-note" class="w-3.5 h-3.5"></i>${saveToNotes}
                                 </button>
                             </div>
                             
@@ -832,13 +1116,14 @@
             } catch (err) {
                 console.error(err);
                 document.getElementById(loadingId).remove();
+                const failedConn = TRANSLATIONS[currentLang]["chat.failed_conn"];
                 chatDiv.innerHTML += `
                     <div class="flex gap-4 max-w-3xl">
                         <div class="w-9 h-9 rounded-lg bg-rose-950 flex items-center justify-center flex-shrink-0">
                             <i data-lucide="alert-circle" class="w-4 h-4 text-rose-400"></i>
                         </div>
                         <div class="bg-rose-950/20 border border-rose-900/40 rounded-2xl px-5 py-4 max-w-full text-rose-300 text-sm">
-                            連線失敗：請確保您的 FastAPI 後端服務正在啟動（在終端機運行 uvicorn app:app --reload 且埠號為 8000）。
+                            ${failedConn}
                         </div>
                     </div>
                 `;
@@ -863,6 +1148,7 @@
             
             // 渲染載入中動畫
             const loadingId = "guide-loading-" + Date.now();
+            const loadingGuideMsg = TRANSLATIONS[currentLang]["chat.loading_guide"];
             chatDiv.innerHTML += `
                 <div id="${loadingId}" class="flex gap-4 max-w-3xl">
                     <div class="w-9 h-9 rounded-lg bg-indigo-600 flex items-center justify-center flex-shrink-0 animate-pulse">
@@ -872,7 +1158,7 @@
                         <span class="w-2 h-2 rounded-full bg-indigo-400 animate-bounce"></span>
                         <span class="w-2 h-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:0.2s]"></span>
                         <span class="w-2 h-2 rounded-full bg-indigo-400 animate-bounce [animation-delay:0.4s]"></span>
-                        <span class="text-xs text-slate-500 ml-1">大師正在全方位解析 Catch 板導入文獻，整理智慧導讀大綱...</span>
+                        <span class="text-xs text-slate-500 ml-1">${loadingGuideMsg}</span>
                     </div>
                 </div>
             `;
@@ -893,6 +1179,9 @@
                 
                 const guideHtml = marked.parse(data.study_guide);
                 const guideMsgId = "guide-msg-" + Date.now();
+                const guideTitle = TRANSLATIONS[currentLang]["chat.guide_title"];
+                const saveGuide = TRANSLATIONS[currentLang]["chat.save_guide_to_notes"];
+                const defaultOutlineTitle = currentLang === 'zh' ? '📚 智慧導讀大綱' : '📚 Study Guide Outline';
                 
                 chatDiv.innerHTML += `
                     <div class="flex gap-4 max-w-3xl">
@@ -900,12 +1189,12 @@
                             <i data-lucide="book-open" class="w-4 h-4 text-white"></i>
                         </div>
                         <div class="bg-indigo-950/15 border border-indigo-900/40 rounded-2xl px-5 py-4 max-w-full">
-                            <h4 class="text-xs font-bold text-indigo-400 mb-2 uppercase tracking-wide">📚 戀愛AI 智慧導讀指南 (Study Guide)</h4>
+                            <h4 class="text-xs font-bold text-indigo-400 mb-2 uppercase tracking-wide">${guideTitle}</h4>
                             <div class="prose max-w-none text-sm text-slate-300 leading-relaxed">${guideHtml}</div>
                             
                             <div class="mt-4 pt-3 border-t border-indigo-950 flex justify-end">
-                                <button onclick="saveMessageToNote('${guideMsgId}', '📚 智慧導讀大綱')" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
-                                    <i data-lucide="sticky-note" class="w-3.5 h-3.5"></i>將此導讀存入我的隨身筆記
+                                <button onclick="saveMessageToNote('${guideMsgId}', '${defaultOutlineTitle}')" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
+                                    <i data-lucide="sticky-note" class="w-3.5 h-3.5"></i>${saveGuide}
                                 </button>
                             </div>
                             
@@ -952,15 +1241,23 @@
             switchRightTab('source');
             
             // 寫入引文詳情
-            document.getElementById('source-similarity').textContent = `相似度: ${(src.similarity * 100).toFixed(1)}%`;
-            document.getElementById('source-title').textContent = `標題: ${src.title}`;
-            document.getElementById('source-author').textContent = `作者: ${src.author || '未知'}`;
+            const similarityLabel = currentLang === 'zh' ? '相似度' : 'Similarity';
+            const titleLabel = currentLang === 'zh' ? '標題' : 'Title';
+            const authorLabel = currentLang === 'zh' ? '作者' : 'Author';
+            const unknownLabel = currentLang === 'zh' ? '未知' : 'Unknown';
+            const pathLabel = currentLang === 'zh' ? '路徑: 精華區' : 'Path: Classics';
+            const urlText = currentLang === 'zh' ? '前往 PTT 網頁版原文' : 'View PTT Original Thread';
+
+            document.getElementById('source-similarity').textContent = `${similarityLabel}: ${(src.similarity * 100).toFixed(1)}%`;
+            document.getElementById('source-title').textContent = `${titleLabel}: ${src.title}`;
+            document.getElementById('source-author').textContent = `${authorLabel}: ${src.author || unknownLabel}`;
             
             const cats = Array.isArray(src.category_path) ? src.category_path : JSON.parse(src.category_path || '[]');
-            document.getElementById('source-category').textContent = `路徑: 精華區 > ${cats.join(' > ') || 'CATCH'}`;
+            document.getElementById('source-category').textContent = `${pathLabel} > ${cats.join(' > ') || 'CATCH'}`;
             
             const urlEl = document.getElementById('source-url');
             urlEl.href = src.source_url;
+            document.getElementById('source-url-text').textContent = urlText;
             if (src.source_url === '#' || currentNotebookId === 'pua-books-notebook-uuid') {
                 urlEl.classList.add('hidden');
             } else {
@@ -974,17 +1271,25 @@
         }
 
         // Save AI output to local note
-        function saveMessageToNote(msgId, defaultTitle = "💡 AI 精華金句記錄") {
+        function saveMessageToNote(msgId, defaultTitle = null) {
+            if (!defaultTitle) {
+                defaultTitle = currentLang === 'zh' ? "💡 AI 精華金句記錄" : "💡 AI Key Points Record";
+            }
             const textContent = document.getElementById(msgId).textContent;
-            // 擷取前幾句作為筆記內容，或者存入完整內容
             createNewNote(defaultTitle, textContent);
             
             // 動態給個提示
-            alert("成功將 AI 回覆存入右側個人隨手筆記！您可以自由在筆記卡片中直接編輯與保存。");
+            const hint = currentLang === 'zh'
+                ? "成功將 AI 回覆存入右側個人隨手筆記！您可以自由在筆記卡片中直接編輯與保存。"
+                : "Successfully saved the AI reply to your notes! You can edit and save it in the notes tab.";
+            alert(hint);
         }
 
         function clearChat() {
-            if (confirm("確定要清空當前的對話紀錄嗎？")) {
+            const confirmMsg = currentLang === 'zh'
+                ? "確定要清空當前的對話紀錄嗎？"
+                : "Are you sure you want to clear the current chat history?";
+            if (confirm(confirmMsg)) {
                 location.reload();
             }
         }
@@ -997,7 +1302,7 @@
                 <div class="flex items-center gap-2">
                     <div class="w-2.5 h-2.5 rounded-full bg-amber-500 animate-pulse" id="voice-status-dot"></div>
                     <h3 class="font-bold text-slate-100 text-sm flex items-center gap-1.5">
-                        <i data-lucide="headphones" class="w-4 h-4 text-brand-400"></i>AI 語音通話諮詢中
+                        <i data-lucide="headphones" class="w-4 h-4 text-brand-400"></i><span data-i18n="voice.title">AI 語音通話諮詢中</span>
                     </h3>
                 </div>
                 <span id="voice-timer" class="text-xs font-mono text-slate-400">00:00</span>
@@ -1007,19 +1312,19 @@
             <div class="space-y-3 bg-slate-950/60 border border-slate-850 p-4 rounded-2xl">
                 <!-- User voice Canvas -->
                 <div class="relative flex flex-col items-center">
-                    <span class="text-[9px] uppercase tracking-wider text-slate-500 mb-1 flex items-center gap-1"><i data-lucide="user" class="w-2.5 h-2.5"></i> 您的麥克風</span>
+                    <span class="text-[9px] uppercase tracking-wider text-slate-500 mb-1 flex items-center gap-1"><i data-lucide="user" class="w-2.5 h-2.5"></i> <span data-i18n="voice.your_mic">您的麥克風</span></span>
                     <canvas id="voice-user-canvas" class="w-full h-10 rounded bg-slate-950/30"></canvas>
                 </div>
                 <!-- Gemini voice Canvas -->
                 <div class="relative flex flex-col items-center border-t border-slate-900/60 pt-3">
-                    <span class="text-[9px] uppercase tracking-wider text-brand-400 mb-1 flex items-center gap-1"><i data-lucide="brain" class="w-2.5 h-2.5"></i> AI 大師之聲</span>
+                    <span class="text-[9px] uppercase tracking-wider text-brand-400 mb-1 flex items-center gap-1"><i data-lucide="brain" class="w-2.5 h-2.5"></i> <span data-i18n="voice.master_voice">AI 大師之聲</span></span>
                     <canvas id="voice-gemini-canvas" class="w-full h-10 rounded bg-slate-950/30"></canvas>
                 </div>
             </div>
 
             <!-- Subtitle/Transcription Box -->
             <div class="bg-slate-950/40 border border-slate-850 rounded-xl p-3.5 h-28 overflow-y-auto flex flex-col space-y-2 text-xs leading-relaxed" id="voice-transcript-log">
-                <div class="text-slate-500 italic text-center py-6 flex flex-col items-center justify-center gap-1">
+                <div class="text-slate-500 italic text-center py-6 flex flex-col items-center justify-center gap-1" data-i18n="voice.log_hint">
                     <i data-lucide="info" class="w-4 h-4 text-slate-700"></i>
                     <span>通話連線後，大師的發言字幕將在此即時顯示。</span>
                 </div>
@@ -1030,7 +1335,7 @@
                 <!-- Auto save setting -->
                 <div class="flex items-center gap-1.5">
                     <input type="checkbox" id="voice-auto-save" checked class="rounded border-slate-800 bg-slate-950 text-brand-600 focus:ring-0 cursor-pointer">
-                    <label for="voice-auto-save" class="text-xs text-slate-400 select-none cursor-pointer">掛斷後自動存入隨身筆記</label>
+                    <label for="voice-auto-save" class="text-xs text-slate-400 select-none cursor-pointer" data-i18n="voice.auto_save_checkbox">掛斷後自動存入隨身筆記</label>
                 </div>
             </div>
 
@@ -1075,6 +1380,15 @@
         let voiceRecognition = null;
         let voiceRecBubble = null;
 
+        function toggleSummarizeCheckbox() {
+            const autoSave = document.getElementById('voice-auto-save').checked;
+            const summarizeCb = document.getElementById('voice-summarize-notes');
+            summarizeCb.disabled = !autoSave;
+            if (!autoSave) {
+                summarizeCb.checked = false;
+            }
+        }
+
         async function openVoiceCallModal() {
             if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
                 alert("語音功能需要安全連線環境（HTTPS 或 localhost）。如果您使用外部 IP 或者是未加密網域連線，瀏覽器會禁用麥克風與語音辨識。請改用 http://localhost:8000 開啟系統測試！");
@@ -1088,6 +1402,9 @@
             
             const modal = document.getElementById('voice-call-modal');
             modal.classList.remove('hidden');
+            
+            // 初始化摘要勾選框啟用狀態
+            toggleSummarizeCheckbox();
             
             voiceCurrentText = "";
             voiceCallLogHistory = [];
@@ -1223,7 +1540,7 @@
         }
 
         async function closeVoiceCallModal(forceNoNote = false) {
-            updateVoiceStatus("disconnected", "已中斷通話");
+            updateVoiceStatus("disconnected", currentLang === 'zh' ? "已中斷通話" : "Call disconnected");
             
             isVoiceReconnecting = false;
             voiceReconnectAttempts = 0;
@@ -1258,19 +1575,64 @@
             
             const autoSave = document.getElementById('voice-auto-save').checked;
             if (autoSave && !forceNoNote && voiceCallLogHistory.length > 0) {
-                let noteContent = `【諮詢主題】${document.getElementById('current-notebook-title').textContent}\n`;
-                noteContent += `【諮詢時間】${new Date().toLocaleString()}\n`;
-                noteContent += `【大師語音對話實錄】\n`;
+                const isZh = (currentLang === 'zh');
+                let noteContent = `${isZh ? '【諮詢主題】' : '[Subject] '}${document.getElementById('current-notebook-title').textContent}\n`;
+                noteContent += `${isZh ? '【諮詢時間】' : '[Time] '}${new Date().toLocaleString()}\n`;
+                noteContent += `${isZh ? '【大師語音對話實錄】' : '[Voice Call Transcripts]'}\n`;
                 noteContent += `====================================\n\n`;
                 
                 voiceCallLogHistory.forEach(turn => {
-                    const speaker = turn.role === 'user' ? '👤 您' : '🧠 情感導師';
+                    const speaker = turn.role === 'user' 
+                        ? (isZh ? '👤 您' : '👤 You') 
+                        : (isZh ? '🧠 情感導師' : '🧠 AI Tutor');
                     noteContent += `${speaker}：\n${turn.text}\n\n`;
                 });
                 
-                const noteTitle = `語音諮詢心法 - ${new Date().toLocaleDateString()}`;
-                await createNewNote(noteTitle, noteContent);
-                alert(`已自動為您將通話中大師所傳授的「語音諮詢心法筆記」一鍵存入右側個人筆記！`);
+                const summarizeNotes = document.getElementById('voice-summarize-notes').checked;
+                if (summarizeNotes) {
+                    showToast(TRANSLATIONS[currentLang]["voice.summarizing_status"]);
+                    try {
+                        const apiKey = localStorage.getItem('gemini_api_key') || "";
+                        const response = await fetch(`${API_BASE}/notebooks/${currentNotebookId}/notes/summarize`, {
+                            method: 'POST',
+                            headers: { 
+                                'Content-Type': 'application/json',
+                                'x-gemini-api-key': apiKey
+                            },
+                            body: JSON.stringify({
+                                transcript: voiceCallLogHistory,
+                                language: currentLang
+                            })
+                        });
+                        if (response.ok) {
+                            const resData = await response.json();
+                            const noteTitle = isZh 
+                                ? `語音諮詢摘要 - ${new Date().toLocaleDateString()}`
+                                : `Voice Consultation Summary - ${new Date().toLocaleDateString()}`;
+                            await createNewNote(noteTitle, resData.summary);
+                            showToast(TRANSLATIONS[currentLang]["voice.auto_save_summarized_msg"]);
+                        } else {
+                            throw new Error("Failed to summarize notes");
+                        }
+                    } catch (err) {
+                        console.error("Summarization error:", err);
+                        const noteTitle = isZh 
+                            ? `語音諮詢心法(摘要失敗備份) - ${new Date().toLocaleDateString()}`
+                            : `Voice Consultation (Summary Fallback) - ${new Date().toLocaleDateString()}`;
+                        await createNewNote(noteTitle, noteContent);
+                        alert(isZh ? "生成摘要失敗，已為您保存完整對話筆記。" : "Failed to generate summary. Saved full conversation notes instead.");
+                    }
+                } else {
+                    const noteTitle = isZh 
+                        ? `語音諮詢心法 - ${new Date().toLocaleDateString()}`
+                        : `Voice Consultation - ${new Date().toLocaleDateString()}`;
+                    await createNewNote(noteTitle, noteContent);
+                    
+                    const alertMsg = isZh
+                        ? `已自動為您將通話中大師所傳授的「語音諮詢心法筆記」一鍵存入右側個人筆記！`
+                        : `Automatically saved your "Voice Consultation Insights" to the personal notes on the right panel!`;
+                    alert(alertMsg);
+                }
             }
         }
 

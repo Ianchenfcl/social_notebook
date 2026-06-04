@@ -76,13 +76,13 @@ def init_db():
     if not cursor.fetchone():
         cursor.execute(
             "INSERT INTO notebooks (id, title, description) VALUES (?, ?, ?)",
-            ("default-catch-notebook-uuid", "PTT Catch 精華區", "PTT Catch 精華區經典文章智慧導讀知識庫")
+            ("default-catch-notebook-uuid", "PTT Catch 精華區 (PTT Catch Classics)", "PTT Catch 精華區經典文章智慧導讀知識庫 / AI Tutor for PTT Catch Relationship Classics")
         )
         print("Default notebook created.")
     else:
         cursor.execute(
             "UPDATE notebooks SET title = ?, description = ? WHERE id = ?",
-            ("PTT Catch 精華區", "PTT Catch 精華區經典文章智慧導讀知識庫", "default-catch-notebook-uuid")
+            ("PTT Catch 精華區 (PTT Catch Classics)", "PTT Catch 精華區經典文章智慧導讀知識庫 / AI Tutor for PTT Catch Relationship Classics", "default-catch-notebook-uuid")
         )
         print("Default notebook rebranded.")
         
@@ -91,9 +91,15 @@ def init_db():
     if not cursor.fetchone():
         cursor.execute(
             "INSERT INTO notebooks (id, title, description) VALUES (?, ?, ?)",
-            ("pua-books-notebook-uuid", "把妹與情感經典書籍", "收錄把妹達人、謎男方法等經典兩性相處與社交動力學書籍")
+            ("pua-books-notebook-uuid", "把妹與情感經典書籍 (Classic Relationship & PUA Books)", "收錄把妹達人、謎男方法等經典兩性相處與社交動力學書籍 / A curated collection of classic relationship & PUA literature")
         )
         print("PUA Books notebook created.")
+    else:
+        cursor.execute(
+            "UPDATE notebooks SET title = ?, description = ? WHERE id = ?",
+            ("把妹與情感經典書籍 (Classic Relationship & PUA Books)", "收錄把妹達人、謎男方法等經典兩性相處與社交動力學書籍 / A curated collection of classic relationship & PUA literature", "pua-books-notebook-uuid")
+        )
+        print("PUA Books notebook rebranded.")
         
     conn.commit()
     conn.close()

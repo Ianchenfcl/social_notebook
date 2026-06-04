@@ -5,3 +5,6 @@ pua_books_repo/
 .venv/
 venv/
 venv.bak/
+.env
+catch_notebook.db
+chroma_db/

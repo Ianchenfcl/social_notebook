@@ -37,6 +37,24 @@ TARGET_BOOKS = [
     "五步陷阱 - 死囚漫步.epub"
 ]
 
+BILINGUAL_TITLES = {
+    "謎男方法": "謎男方法 (The Mystery Method)",
+    "把妹達人": "把妹達人 (The Game)",
+    "把妹達人聖經": "把妹達人聖經 (Rules of the Game)",
+    "謎男啟示錄": "謎男啟示錄 (Revelation)",
+    "冷讀術": "冷讀術 (Cold Reading)",
+    "迷上我": "迷上我 (Attract Her)",
+    "魔鬼搭訕學": "魔鬼搭訕學 (Devil's Guide to Flirting)",
+    "魔鬼約會學": "魔鬼約會學 (Devil's Guide to Dating)",
+    "壞蛋之道": "壞蛋之道 (The Way of the Bad Boy)",
+    "如何和女人見面與溝通": "如何和女人見面與溝通 (How to Meet and Connect with Women)",
+    "搭訕聖經": "搭訕聖經 (Flirting Bible)",
+    "約會倍增術": "約會倍增術 (Double Your Dating)",
+    "正妹心理學": "正妹心理學 (Beautiful Girls Psychology)",
+    "吸引力原理": "吸引力原理 (The Principles of Attraction)",
+    "五步陷阱": "五步陷阱 (Five-Step Trap)"
+}
+
 def safe_print(text):
     try:
         encoding = sys.stdout.encoding or 'utf-8'
@@ -151,6 +169,8 @@ def process_and_embed_pua_books():
                 
             # 將提取之標題、作者與內容統一轉換為繁體中文，消除簡體干擾，符合用戶閱讀體驗
             title = zhconv.convert(title, 'zh-hant')
+            # 轉換為中英雙語書名
+            title = BILINGUAL_TITLES.get(title, title)
             author = zhconv.convert(author, 'zh-hant')
             content = zhconv.convert(content, 'zh-hant')
                 

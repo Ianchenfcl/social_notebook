@@ -55,20 +55,26 @@
 
 ---
 
-## 🛠️ 快速開始 (Windows 雙擊即用)
+## 🛠️ 快速開始
 
-本專案經過傻瓜化封裝，**使用者完全無需手動下指令安裝套件**！
+本專案經過自動化封裝，支援 Windows 與 macOS/Linux 系統！
 
 ### 步驟 1：取得免費的 Gemini API Key
 1. 前往 **[Google AI Studio](https://aistudio.google.com/)**。
 2. 點擊 **"Get API key"** -> **"Create API key"** 並複製您的金鑰（格式為 `AIzaSy...`）。
 
-### 步驟 2：一鍵啟動
-1. 在專案根目錄下，直接雙擊執行 **`start.bat`**。
-2. 啟動腳本會**全自動背景檢查並安裝**環境所需的 Python 套件（如已安裝將以毫秒級速度自動跳過），並自動於瀏覽器開啟：
-   👉 **`http://localhost:8000`**
-3. 貼上您的 API Key 並選擇模型，即可開始！
-   *(若暫無金鑰，直接 Enter 即可進入「展示檢索模式」體驗本地語意搜尋)*
+### 步驟 2：啟動系統
+*   **Windows 系統**：在專案根目錄下，直接雙擊執行 **`start.bat`**。
+*   **macOS / Linux 系統**：打開終端機（Terminal），切換至專案根目錄，執行以下指令：
+    ```bash
+    chmod +x start.sh
+    ./start.sh
+    ```
+啟動腳本會**全自動於背景檢查並安裝**環境所需的 Python 套件（採用 `.venv` 獨立虛擬環境隔離，不影響您原本的系統設定），並自動開啟瀏覽器：
+👉 **`http://localhost:8000`**
+
+貼上您的 API Key 並選擇模型，即可開始！
+*(若暫無金鑰，直接按 Enter 即可進入「展示檢索模式」體驗本地語意搜尋)*
 
 ---
 
@@ -103,17 +109,24 @@ To protect the open-source community and respect original authors, 戀愛AI impl
 
 ---
 
-## 🛠️ Quick Start (One-Click Setup)
+## 🛠️ Quick Start
 
-No manual CLI commands are required!
+This project is packaged with automation scripts for both Windows and macOS/Linux.
 
 ### Step 1: Obtain a Free Gemini API Key
 1. Go to **[Google AI Studio](https://aistudio.google.com/)**.
 2. Click **"Get API key"** -> **"Create API key"** and copy your `AIzaSy...` key.
 
-### Step 2: One-Click Launch
-1. Double-click **`start.bat`** in the project root folder.
-2. The batch script will **automatically verify and install all Python requirements in the background**, then open:
-   👉 **`http://localhost:8000`**
-3. Input your API Key and choose a model to start!
-   *(You can also skip key configuration by pressing Enter to start in "Demo Retrieval Mode")*
+### Step 2: Launch the System
+*   **Windows**: Double-click **`start.bat`** in the project root folder.
+*   **macOS / Linux**: Open your Terminal, navigate to the project root directory, and run:
+    ```bash
+    chmod +x start.sh
+    ./start.sh
+    ```
+The launch script will **automatically create a Python virtual environment (`.venv`), install all requirements**, and open:
+👉 **`http://localhost:8000`**
+
+Input your API Key and choose a model to start!
+*(You can also skip key configuration by pressing Enter to start in "Demo Retrieval Mode")*
+
