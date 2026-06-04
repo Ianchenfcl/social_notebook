@@ -7,6 +7,7 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 import json
 import uuid
 import re
+import time
 
 from fastapi import FastAPI, HTTPException, Body, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -249,34 +250,44 @@ def get_llm_response(prompt: str, context_sources: list, client_api_key: Optiona
             "您可以參考下方「參考來源」頁籤，點擊直接查看這些神人文章的原文段落。"
         )
     
-    try:
-        genai.configure(api_key=active_key)
-        model = genai.GenerativeModel(
-            model_name or "models/gemini-3.5-flash",
-            system_instruction=system_instruction
-        )
-        response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
-        
-        # Check if response was blocked (candidates list is empty)
-        if not getattr(response, "candidates", None):
-            feedback_str = ""
-            if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
-                feedback_str = f" (原因: {response.prompt_feedback})"
-            return f"⚠️ 呼召 AI 模型 ({model_name}) 失敗：內容被系統安全過濾器攔截。請嘗試換個相處詞彙或提問方式。{feedback_str}"
+    last_error = None
+    for attempt in range(3):
+        try:
+            genai.configure(api_key=active_key)
+            model = genai.GenerativeModel(
+                model_name or "models/gemini-1.5-flash",
+                system_instruction=system_instruction
+            )
+            response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
             
-        candidate = response.candidates[0]
-        finish_reason = getattr(candidate, "finish_reason", None)
-        if finish_reason:
-            fr_str = str(finish_reason).upper()
-            if "STOP" not in fr_str and "MAX_TOKENS" not in fr_str and "1" not in fr_str and "2" not in fr_str:
-                return f"⚠️ AI 回覆被安全過濾器攔截 (原因: {finish_reason})。請嘗試更換問題或使用其他模型。"
+            # Check if response was blocked (candidates list is empty)
+            if not getattr(response, "candidates", None):
+                feedback_str = ""
+                if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
+                    feedback_str = f" (原因: {response.prompt_feedback})"
+                last_error = f"⚠️ 內容被系統安全過濾器攔截。{feedback_str}"
+                time.sleep(1)
+                continue
                 
-        return clean_gemma_response(response.text, query_text=query_text)
-    except Exception as e:
-        err_msg = str(e)
-        if "response.parts quick accessor" in err_msg or "candidates is empty" in err_msg:
-            return f"⚠️ 呼召 AI 模型 ({model_name}) 失敗：您的問題或生成內容被安全過濾器攔截。請調整提問詞彙或換個模型。"
-        return f"呼召 AI 模型 ({model_name}) 時發生錯誤：{err_msg}\n請檢查您的 API Key 與網路連線。"
+            candidate = response.candidates[0]
+            finish_reason = getattr(candidate, "finish_reason", None)
+            if finish_reason:
+                fr_str = str(finish_reason).upper()
+                if "STOP" not in fr_str and "MAX_TOKENS" not in fr_str and "1" not in fr_str and "2" not in fr_str:
+                    last_error = f"⚠️ AI 回覆被安全過濾器攔截 (原因: {finish_reason})。"
+                    time.sleep(1)
+                    continue
+                    
+            return clean_gemma_response(response.text, query_text=query_text)
+        except Exception as e:
+            err_msg = str(e)
+            if "response.parts quick accessor" in err_msg or "candidates is empty" in err_msg:
+                last_error = f"⚠️ 您的問題或生成內容被安全過濾器攔截。"
+            else:
+                last_error = err_msg
+            time.sleep(1)
+            
+    return f"⚠️ 呼召 AI 模型 ({model_name}) 失敗（已自動重試 3 次）。\n原因：{last_error}\n請嘗試重新提問，或在左下角更換其他模型（例如 gemini-1.5-flash）。"
 
 
 
@@ -605,34 +616,44 @@ Please output the final response directly (start with 1. 💡 **Key Concerns**),
             )
         return {"summary": fallback_text}
 
-    try:
-        genai.configure(api_key=active_key)
-        model = genai.GenerativeModel(
-            "models/gemma-4-26b-a4b-it",
-            system_instruction=system_instruction
-        )
-        response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
-        
-        # Check if response was blocked (candidates list is empty)
-        if not getattr(response, "candidates", None):
-            feedback_str = ""
-            if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
-                feedback_str = f" (原因: {response.prompt_feedback})"
-            return {"summary": f"⚠️ 摘要生成失敗：內容被系統安全過濾器攔截。請調整筆記內容或換個模型。{feedback_str}"}
+    last_error = None
+    for attempt in range(3):
+        try:
+            genai.configure(api_key=active_key)
+            model = genai.GenerativeModel(
+                "models/gemma-4-26b-a4b-it",
+                system_instruction=system_instruction
+            )
+            response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
             
-        candidate = response.candidates[0]
-        finish_reason = getattr(candidate, "finish_reason", None)
-        if finish_reason:
-            fr_str = str(finish_reason).upper()
-            if "STOP" not in fr_str and "MAX_TOKENS" not in fr_str and "1" not in fr_str and "2" not in fr_str:
-                return {"summary": f"⚠️ 摘要生成失敗：回覆內容因安全原因被攔截 (原因: {finish_reason})。"}
+            # Check if response was blocked (candidates list is empty)
+            if not getattr(response, "candidates", None):
+                feedback_str = ""
+                if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
+                    feedback_str = f" (原因: {response.prompt_feedback})"
+                last_error = f"⚠️ 內容被系統安全過濾器攔截。{feedback_str}"
+                time.sleep(1)
+                continue
                 
-        return {"summary": clean_gemma_response(response.text)}
-    except Exception as e:
-        err_msg = str(e)
-        if "response.parts quick accessor" in err_msg or "candidates is empty" in err_msg:
-            return {"summary": "⚠️ 摘要生成失敗：您的筆記或生成內容被安全過濾器攔截。"}
-        return {"summary": f"生成摘要時發生錯誤：{err_msg}"}
+            candidate = response.candidates[0]
+            finish_reason = getattr(candidate, "finish_reason", None)
+            if finish_reason:
+                fr_str = str(finish_reason).upper()
+                if "STOP" not in fr_str and "MAX_TOKENS" not in fr_str and "1" not in fr_str and "2" not in fr_str:
+                    last_error = f"⚠️ 回覆內容因安全原因被攔截 (原因: {finish_reason})。"
+                    time.sleep(1)
+                    continue
+                    
+            return {"summary": clean_gemma_response(response.text)}
+        except Exception as e:
+            err_msg = str(e)
+            if "response.parts quick accessor" in err_msg or "candidates is empty" in err_msg:
+                last_error = "⚠️ 您的筆記或生成內容被安全過濾器攔截。"
+            else:
+                last_error = err_msg
+            time.sleep(1)
+            
+    return {"summary": f"⚠️ 摘要生成失敗（已自動重試 3 次）：{last_error}"}
 
 # ----------------- Study Guide (NotebookLM style) -----------------
 
@@ -698,13 +719,17 @@ This guide must be written in high-quality Markdown format and contain the follo
 
 Please ensure the tone is professional, empathetic, wise, and highly insightful, avoiding superficial advice. Write the output strictly in English.
 """
-        try:
-            genai.configure(api_key=active_key)
-            model = genai.GenerativeModel("models/gemini-1.5-flash")
-            response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
-            return {"study_guide": response.text}
-        except Exception as e:
-            pass # 失敗則 fallback 到預設的高質感導讀
+        last_error = None
+        for attempt in range(3):
+            try:
+                genai.configure(api_key=active_key)
+                model = genai.GenerativeModel("models/gemini-1.5-flash")
+                response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
+                return {"study_guide": response.text}
+            except Exception as e:
+                last_error = str(e)
+                time.sleep(1)
+        # 失敗則 fallback 到預設的高質感導讀
 
     # Fallback/預設的高質感導讀（展示 Catch 板的核心思想）
     if language == "zh":
