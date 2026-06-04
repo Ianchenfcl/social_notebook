@@ -362,7 +362,7 @@ Note:
 
     try:
         genai.configure(api_key=active_key)
-        model = genai.GenerativeModel("models/gemini-1.5-flash")
+        model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
         response = model.generate_content(prompt)
         return {"summary": response.text}
     except Exception as e:
