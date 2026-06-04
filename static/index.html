@@ -91,7 +91,7 @@
                 <i data-lucide="sparkles" class="w-5 h-5 text-white"></i>
             </div>
             <div>
-                <h1 class="text-xl font-bold tracking-wider bg-gradient-to-r from-brand-400 to-indigo-300 bg-clip-text text-transparent">戀愛AI</h1>
+                <h1 class="text-xl font-bold tracking-wider bg-gradient-to-r from-brand-400 to-indigo-300 bg-clip-text text-transparent" data-i18n="sidebar.logo_title">戀愛AI</h1>
                 <p class="text-xs text-slate-400" data-i18n="sidebar.logo_sub">PTT Catch 智慧知識庫</p>
             </div>
         </div>
@@ -380,6 +380,7 @@
         const TRANSLATIONS = {
             zh: {
                 "lang.btn": "English",
+                "sidebar.logo_title": "戀愛AI",
                 "sidebar.logo_sub": "PTT Catch 智慧知識庫",
                 "sidebar.current_notebook": "當前筆記本",
                 "sidebar.ref_docs": "參考來源文件",
@@ -450,6 +451,7 @@
             },
             en: {
                 "lang.btn": "繁體中文",
+                "sidebar.logo_title": "Love AI",
                 "sidebar.logo_sub": "PTT Catch AI Tutor",
                 "sidebar.current_notebook": "Current Notebook",
                 "sidebar.ref_docs": "Reference Documents",
@@ -523,6 +525,9 @@
         function applyLanguage() {
             localStorage.setItem('app_lang', currentLang);
             document.getElementById('lang-btn-text').textContent = TRANSLATIONS[currentLang]["lang.btn"];
+            document.title = currentLang === 'zh' 
+                ? "戀愛AI - PTT Catch 智慧情感知識庫" 
+                : "Love AI - PTT Catch Intelligent Relationship Tutor";
             
             // Translate all elements with data-i18n
             document.querySelectorAll('[data-i18n]').forEach(el => {
@@ -1133,7 +1138,8 @@
                     body: JSON.stringify({ 
                         query: query, 
                         top_k: 5,
-                        model: localStorage.getItem('gemini_model') || "models/gemini-3.5-flash"
+                        model: localStorage.getItem('gemini_model') || "models/gemini-3.5-flash",
+                        language: currentLang
                     })
                 });
 
@@ -1253,7 +1259,7 @@
             
             try {
                 const apiKey = localStorage.getItem('gemini_api_key') || "";
-                const response = await fetch(`${API_BASE}/notebooks/${currentNotebookId}/study-guide`, {
+                const response = await fetch(`${API_BASE}/notebooks/${currentNotebookId}/study-guide?language=${currentLang}`, {
                     headers: {
                         'X-Gemini-API-Key': apiKey
                     }
@@ -1589,7 +1595,8 @@
                         api_key: apiKey,
                         voice_name: document.getElementById('voice-voice-select').value,
                         notebook_id: currentNotebookId,
-                        history: []
+                        history: [],
+                        language: currentLang
                     };
                     voiceWs.send(JSON.stringify(setupMsg));
                     
