@@ -172,6 +172,19 @@
                     </button>
                 </div>
             </div>
+
+            <!-- Speech Rate Settings -->
+            <div class="space-y-1.5">
+                <div class="flex items-center justify-between">
+                    <span class="text-[10px] font-semibold tracking-wider text-slate-500 uppercase flex items-center gap-1">
+                        <i data-lucide="sliders" class="w-3 h-3 text-slate-400"></i><span data-i18n="sidebar.speech_rate">語音朗讀速度</span>
+                    </span>
+                    <span id="speech-rate-val" class="text-[10px] font-semibold text-brand-400">1.0x</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <input id="speech-rate-slider" type="range" min="0.5" max="2.0" step="0.1" value="1.0" oninput="updateSpeechRate(this.value)" class="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-brand-500">
+                </div>
+            </div>
         </div>
 
         <!-- Footer / API Connection Status -->
@@ -362,6 +375,7 @@
 
         // --- Internationalization System (i18n) ---
         let currentLang = localStorage.getItem('app_lang') || 'zh';
+        let currentSpeechRate = 1.0;
 
         const TRANSLATIONS = {
             zh: {
@@ -374,6 +388,7 @@
                 "sidebar.model_select": "AI 模型選擇",
                 "sidebar.key_settings": "Gemini 金鑰設定",
                 "sidebar.key_placeholder": "貼上您的 GEMINI_API_KEY...",
+                "sidebar.speech_rate": "語音朗讀速度",
                 "sidebar.status_ok": "系統連接正常",
                 "chat.voice_call": "撥打語音導師",
                 "chat.clear": "清空對話",
@@ -429,6 +444,7 @@
                 "voice.auto_save_summarized_msg": "已為您整理通話摘要並存入個人筆記！",
                 "voice.summarizing_status": "大師正在為您撰寫本次對話的智慧精華摘要...",
                 "right.copy_note": "複製筆記內容",
+                "right.summarize_note": "智慧摘要",
                 "voice.mute_tooltip": "靜音麥克風",
                 "voice.hangup_tooltip": "結束通話"
             },
@@ -442,6 +458,7 @@
                 "sidebar.model_select": "Select AI Model",
                 "sidebar.key_settings": "Gemini API Key",
                 "sidebar.key_placeholder": "Paste your GEMINI_API_KEY...",
+                "sidebar.speech_rate": "Speech Rate",
                 "sidebar.status_ok": "System Connected",
                 "chat.voice_call": "Call Voice Tutor",
                 "chat.clear": "Clear Chat",
@@ -497,6 +514,7 @@
                 "voice.auto_save_summarized_msg": "Voice Consultation Summary has been saved to your notes!",
                 "voice.summarizing_status": "Mentor is writing an intelligent summary of this conversation...",
                 "right.copy_note": "Copy note contents",
+                "right.summarize_note": "AI Summary",
                 "voice.mute_tooltip": "Mute Microphone",
                 "voice.hangup_tooltip": "Hang Up"
             }
@@ -618,6 +636,16 @@
             lucide.createIcons();
         }
 
+        function updateSpeechRate(val) {
+            const parsedRate = parseFloat(val);
+            currentSpeechRate = parsedRate;
+            localStorage.setItem('speech_rate', val);
+            const rateVal = document.getElementById('speech-rate-val');
+            if (rateVal) {
+                rateVal.textContent = parsedRate.toFixed(1) + "x";
+            }
+        }
+
         // --- Load notebooks list ---
         async function loadNotebooks() {
             try {
@@ -704,6 +732,14 @@
             // 讀取 localStorage 並回填模型選擇
             const savedModel = localStorage.getItem('gemini_model') || "models/gemini-3.5-flash";
             document.getElementById('web-model-select').value = savedModel;
+            
+            // 讀取 localStorage 並回填語速
+            const savedRate = localStorage.getItem('speech_rate') || "1.0";
+            const slider = document.getElementById('speech-rate-slider');
+            if (slider) slider.value = savedRate;
+            const rateVal = document.getElementById('speech-rate-val');
+            if (rateVal) rateVal.textContent = parseFloat(savedRate).toFixed(1) + "x";
+            currentSpeechRate = parseFloat(savedRate);
             
             // 載入筆記本清單並啟動文件加載
             loadNotebooks();
@@ -843,7 +879,13 @@
                             </div>
                             <textarea onblur="updateNoteContent('${note.id}', this.value)" style="min-height: 150px; height: auto;" class="w-full bg-slate-900/40 border border-slate-800/85 rounded-lg p-2.5 text-slate-350 text-xs resize-none focus:outline-none focus:border-brand-500/30 leading-relaxed font-sans placeholder-slate-600" placeholder="${placeholderMsg}">${note.content}</textarea>
                             <div class="flex justify-between items-center text-[10px] text-slate-500">
-                                <span>${autoSaveMsg}</span>
+                                <div class="flex items-center gap-2">
+                                    <span>${autoSaveMsg}</span>
+                                    <span class="text-slate-700">|</span>
+                                    <button onclick="summarizeNoteContent('${note.id}'); event.stopPropagation();" class="text-brand-400 hover:text-brand-300 flex items-center gap-1 font-semibold hover:underline">
+                                        <i data-lucide="sparkles" class="w-3 h-3 text-brand-400"></i>${TRANSLATIONS[currentLang]["right.summarize_note"] || '智慧摘要'}
+                                    </button>
+                                </div>
                                 <button onclick="toggleNoteExpand('${note.id}'); event.stopPropagation();" class="text-brand-400 hover:text-brand-300 flex items-center gap-0.5 font-medium">
                                     ${collapseTitle} <i data-lucide="chevron-up" class="w-3 h-3"></i>
                                 </button>
@@ -908,6 +950,44 @@
                 } catch (e) {
                     alert(currentLang === 'zh' ? '複製失敗，請手動複製！' : 'Failed to copy note contents.');
                 }
+            }
+        }
+
+        async function summarizeNoteContent(id) {
+            const note = loadedNotes.find(n => n.id === id);
+            if (!note) return;
+            
+            const isZh = (currentLang === 'zh');
+            showToast(isZh ? "正在進行智慧摘要..." : "Generating AI summary...");
+            
+            try {
+                const apiKey = localStorage.getItem('gemini_api_key') || "";
+                const response = await fetch(`${API_BASE}/notebooks/${currentNotebookId}/notes/summarize`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'x-gemini-api-key': apiKey
+                    },
+                    body: JSON.stringify({
+                        raw_text: note.content,
+                        language: currentLang
+                    })
+                });
+                
+                if (response.ok) {
+                    const resData = await response.json();
+                    const summaryTitle = isZh 
+                        ? `【智慧摘要】${note.title}`
+                        : `[AI Summary] ${note.title}`;
+                    await createNewNote(summaryTitle, resData.summary);
+                    showToast(isZh ? "智慧摘要已生成並存入筆記！" : "AI summary generated and saved to notes!");
+                } else {
+                    const errData = await response.json();
+                    throw new Error(errData.detail || "Failed to summarize note");
+                }
+            } catch (err) {
+                console.error("Summarize note error:", err);
+                alert(isZh ? `智慧摘要失敗：${err.message}` : `Failed to generate summary: ${err.message}`);
             }
         }
 
@@ -1316,6 +1396,9 @@
             utterance.msgId = msgId;
             currentUtterance = utterance;
             
+            // 套用自訂語速
+            utterance.rate = currentSpeechRate;
+            
             if (currentLang === 'zh') {
                 utterance.lang = 'zh-TW';
             } else {
@@ -1387,13 +1470,8 @@
             <div class="flex flex-col gap-2 items-center justify-center text-xs pt-2 border-t border-slate-800/40">
                 <!-- Auto save setting -->
                 <div class="flex items-center gap-1.5">
-                    <input type="checkbox" id="voice-auto-save" checked class="rounded border-slate-800 bg-slate-950 text-brand-600 focus:ring-0 cursor-pointer" onchange="toggleSummarizeCheckbox()">
+                    <input type="checkbox" id="voice-auto-save" checked class="rounded border-slate-800 bg-slate-950 text-brand-600 focus:ring-0 cursor-pointer">
                     <label for="voice-auto-save" class="text-xs text-slate-400 select-none cursor-pointer" data-i18n="voice.auto_save_checkbox">掛斷後自動存入隨身筆記</label>
-                </div>
-                <!-- Summarize setting -->
-                <div class="flex items-center gap-1.5">
-                    <input type="checkbox" id="voice-summarize-notes" class="rounded border-slate-800 bg-slate-950 text-brand-600 focus:ring-0 cursor-pointer">
-                    <label for="voice-summarize-notes" class="text-xs text-slate-400 select-none cursor-pointer" data-i18n="voice.summarize_checkbox">產出摘要版筆記 (使用 AI 智慧總結)</label>
                 </div>
             </div>
 
@@ -1438,14 +1516,7 @@
         let voiceRecognition = null;
         let voiceRecBubble = null;
 
-        function toggleSummarizeCheckbox() {
-            const autoSave = document.getElementById('voice-auto-save').checked;
-            const summarizeCb = document.getElementById('voice-summarize-notes');
-            summarizeCb.disabled = !autoSave;
-            if (!autoSave) {
-                summarizeCb.checked = false;
-            }
-        }
+
 
         async function openVoiceCallModal() {
             if (window.location.protocol !== 'https:' && window.location.hostname !== 'localhost' && window.location.hostname !== '127.0.0.1') {
@@ -1460,9 +1531,6 @@
             
             const modal = document.getElementById('voice-call-modal');
             modal.classList.remove('hidden');
-            
-            // 初始化摘要勾選框啟用狀態
-            toggleSummarizeCheckbox();
             
             voiceCurrentText = "";
             voiceCallLogHistory = [];
@@ -1646,51 +1714,15 @@
                     noteContent += `${speaker}：\n${turn.text}\n\n`;
                 });
                 
-                const summarizeNotes = document.getElementById('voice-summarize-notes').checked;
-                if (summarizeNotes) {
-                    showToast(TRANSLATIONS[currentLang]["voice.summarizing_status"]);
-                    try {
-                        const apiKey = localStorage.getItem('gemini_api_key') || "";
-                        const response = await fetch(`${API_BASE}/notebooks/${currentNotebookId}/notes/summarize`, {
-                            method: 'POST',
-                            headers: { 
-                                'Content-Type': 'application/json',
-                                'x-gemini-api-key': apiKey
-                            },
-                            body: JSON.stringify({
-                                transcript: voiceCallLogHistory,
-                                language: currentLang
-                            })
-                        });
-                        if (response.ok) {
-                            const resData = await response.json();
-                            const noteTitle = isZh 
-                                ? `語音諮詢摘要 - ${new Date().toLocaleDateString()}`
-                                : `Voice Consultation Summary - ${new Date().toLocaleDateString()}`;
-                            await createNewNote(noteTitle, resData.summary);
-                            showToast(TRANSLATIONS[currentLang]["voice.auto_save_summarized_msg"]);
-                        } else {
-                            throw new Error("Failed to summarize notes");
-                        }
-                    } catch (err) {
-                        console.error("Summarization error:", err);
-                        const noteTitle = isZh 
-                            ? `語音諮詢心法(摘要失敗備份) - ${new Date().toLocaleDateString()}`
-                            : `Voice Consultation (Summary Fallback) - ${new Date().toLocaleDateString()}`;
-                        await createNewNote(noteTitle, noteContent);
-                        alert(isZh ? "生成摘要失敗，已為您保存完整對話筆記。" : "Failed to generate summary. Saved full conversation notes instead.");
-                    }
-                } else {
-                    const noteTitle = isZh 
-                        ? `語音諮詢心法 - ${new Date().toLocaleDateString()}`
-                        : `Voice Consultation - ${new Date().toLocaleDateString()}`;
-                    await createNewNote(noteTitle, noteContent);
-                    
-                    const alertMsg = isZh
-                        ? `已自動為您將通話中大師所傳授的「語音諮詢心法筆記」一鍵存入右側個人筆記！`
-                        : `Automatically saved your "Voice Consultation Insights" to the personal notes on the right panel!`;
-                    alert(alertMsg);
-                }
+                const noteTitle = isZh 
+                    ? `語音諮詢心法 - ${new Date().toLocaleDateString()}`
+                    : `Voice Consultation - ${new Date().toLocaleDateString()}`;
+                await createNewNote(noteTitle, noteContent);
+                
+                const alertMsg = isZh
+                    ? `已自動為您將通話中大師所傳授的「語音諮詢心法筆記」一鍵存入右側個人筆記！您可以在右側點選該筆記並點擊「智慧摘要」生成 AI 精華總結。`
+                    : `Automatically saved your "Voice Consultation Insights" to the personal notes on the right panel! You can click on the note and select "AI Summary" to generate the summary.`;
+                alert(alertMsg);
             }
         }
 

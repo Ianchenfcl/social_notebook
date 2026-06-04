@@ -2,8 +2,11 @@ import os
 from dotenv import load_dotenv
 load_dotenv() # 讀取 .env 檔案中的環境變數
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
 import json
 import uuid
+import re
 
 from fastapi import FastAPI, HTTPException, Body, Header
 from fastapi.middleware.cors import CORSMiddleware
@@ -35,12 +38,21 @@ GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 if GEMINI_API_KEY:
     genai.configure(api_key=GEMINI_API_KEY)
 
+SAFETY_SETTINGS = [
+    {"category": "HARM_CATEGORY_HARASSMENT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_HATE_SPEECH", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_SEXUALLY_EXPLICIT", "threshold": "BLOCK_NONE"},
+    {"category": "HARM_CATEGORY_DANGEROUS_CONTENT", "threshold": "BLOCK_NONE"},
+]
+
+
 # ----------------- Data Models -----------------
 
 class QueryRequest(BaseModel):
     query: str
     top_k: Optional[int] = 5
     model: Optional[str] = "models/gemini-1.5-flash"
+    language: Optional[str] = "zh"
 
 class NoteCreate(BaseModel):
     title: str
@@ -55,12 +67,131 @@ class TranscriptTurn(BaseModel):
     text: str
 
 class SummarizeRequest(BaseModel):
-    transcript: List[TranscriptTurn]
+    transcript: Optional[List[TranscriptTurn]] = None
+    raw_text: Optional[str] = None
     language: Optional[str] = "zh"
 
 # ----------------- Helper Functions -----------------
 
-def get_llm_response(prompt: str, context_sources: list, client_api_key: Optional[str] = None, model_name: Optional[str] = "models/gemini-1.5-flash") -> str:
+def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
+    if not text:
+        return text
+        
+    lines = text.splitlines()
+    cleaned_lines = []
+    in_meta_block = True
+    
+    # Regular expression for matching meta keys like "Role:", "Input:", "Task:", etc.
+    meta_pattern = re.compile(
+        r'^\s*[\*\-\+•]?\s*(Role|Input|Task|Structure|Tone|Language|Constraints|User\s+Question|System\s+Instruction|Context|Prompt|Instructions):\s*',
+        re.IGNORECASE
+    )
+    
+    # Regular expression for planning headers, constraints, sources, etc.
+    planning_header_pattern = re.compile(
+        r'^\s*[\*\-\+•]?\s*(Constraint|Source|Rule|Instruction|Step|Phase|Frame\s*Theory|Push[- ]?Pull|Intro|Tone|Language|Actionable\s*Steps|Context|Response|Summary|Outline)\s*\d*(\s*\(.*\))?:\s*',
+        re.IGNORECASE
+    )
+    
+    def normalize_line(line_str: str) -> str:
+        # Lowercase
+        s = line_str.strip().lower()
+        # Remove leading list numbers/bullets (e.g. "1.", "a.", "-", "*")
+        s = re.sub(r'^[\-\+•\s\d\.\*]+\s*', '', s)
+        # Remove non-alphanumeric characters (keep Chinese characters and spaces)
+        s = re.sub(r'[^a-z0-9\s\u4e00-\u9fff]', '', s)
+        # Normalize spaces
+        s = re.sub(r'\s+', ' ', s).strip()
+        return s
+
+    normalized_query = normalize_line(query_text) if query_text else ""
+    
+    # Specific constraint phrases/keywords to skip
+    constraint_phrases = {
+        "strictly base on context",
+        "strictly based on context",
+        "base on context",
+        "base on context provided sources",
+        "precise source citation",
+        "precise source citations",
+        "precise source citations source x",
+        "actionable steps",
+        "no thinking process",
+        "no thinking process in output",
+        "no ai like tone",
+        "avoid generic ai tone",
+        "no metainstruction echoing",
+        "no metainstruction",
+        "metainstruction echoing",
+        "strictly english",
+        "english only",
+        "relationship and mindset master",
+        "relationship and mindset master warm rational humorous sharp avoid generic ai tone strictly english",
+        "warm rational humorous sharp",
+        "please answer the following users relationship question",
+        "users question",
+        "users query",
+        "here is the reference context data",
+        "please output the final response directly"
+    }
+    
+    planning_keywords = ["source", "citation", "tone", "english only", "intro", "outro", "conclusion", "body", "action plan"]
+    
+    for line in lines:
+        stripped = line.strip().lower()
+        normalized_l = normalize_line(line)
+        
+        if in_meta_block:
+            if not stripped:
+                continue
+            
+            # If it's a meta pattern key-value
+            if meta_pattern.match(line):
+                continue
+                
+            # If it matches a planning header pattern (e.g. "Source 1: ...", "Frame Theory: ...")
+            if planning_header_pattern.match(line):
+                continue
+                
+            # If it is exactly the query text
+            if normalized_query and normalized_l == normalized_query:
+                continue
+                
+            # If it contains any known constraint phrase
+            if normalized_l in constraint_phrases or any(phrase in normalized_l for phrase in [
+                "strictly base on context",
+                "strictly based on context",
+                "precise source citations",
+                "no thinking process",
+                "no metainstruction",
+                "relationship and mindset master",
+                "please answer the following user"
+            ]):
+                continue
+                
+            # If it references a source directly (e.g. "Source 4")
+            if re.search(r'source\s*\d', stripped):
+                continue
+                
+            # If it is a short line containing planning keywords
+            if len(stripped) < 90 and any(kw in stripped for kw in planning_keywords):
+                continue
+                
+            # If it is the indented template structure lines
+            if re.match(r'^\s+\d+\.\s*(💡|🔑|🛠️)', line):
+                continue
+            if re.match(r'^\s*\d+\.\s*(💡|🔑|🛠️)\s*(Core Problem Summary|Master\'s Core Mindset|Concrete Action Plan|Key Concerns|Core Insights|Actionable Steps)\s*(\(.*\))?$', line.strip(), re.IGNORECASE):
+                continue
+                
+            # Otherwise, we have reached the actual content
+            in_meta_block = False
+            cleaned_lines.append(line)
+        else:
+            cleaned_lines.append(line)
+            
+    return "\n".join(cleaned_lines).strip()
+
+def get_llm_response(prompt: str, context_sources: list, client_api_key: Optional[str] = None, model_name: Optional[str] = "models/gemini-1.5-flash", system_instruction: Optional[str] = None, query_text: Optional[str] = None) -> str:
     """呼叫 Gemini LLM 獲取回答"""
     active_key = client_api_key or GEMINI_API_KEY
     if not active_key:
@@ -76,11 +207,33 @@ def get_llm_response(prompt: str, context_sources: list, client_api_key: Optiona
     
     try:
         genai.configure(api_key=active_key)
-        model = genai.GenerativeModel(model_name or "models/gemini-1.5-flash")
-        response = model.generate_content(prompt)
-        return response.text
+        model = genai.GenerativeModel(
+            model_name or "models/gemini-3.5-flash",
+            system_instruction=system_instruction
+        )
+        response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
+        
+        # Check if response was blocked (candidates list is empty)
+        if not getattr(response, "candidates", None):
+            feedback_str = ""
+            if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
+                feedback_str = f" (原因: {response.prompt_feedback})"
+            return f"⚠️ 呼召 AI 模型 ({model_name}) 失敗：內容被系統安全過濾器攔截。請嘗試換個相處詞彙或提問方式。{feedback_str}"
+            
+        candidate = response.candidates[0]
+        finish_reason = getattr(candidate, "finish_reason", None)
+        if finish_reason:
+            fr_str = str(finish_reason).upper()
+            if "STOP" not in fr_str and "MAX_TOKENS" not in fr_str and "1" not in fr_str and "2" not in fr_str:
+                return f"⚠️ AI 回覆被安全過濾器攔截 (原因: {finish_reason})。請嘗試更換問題或使用其他模型。"
+                
+        return clean_gemma_response(response.text, query_text=query_text)
     except Exception as e:
-        return f"呼召 AI 模型 ({model_name}) 時發生錯誤：{str(e)}\n請檢查您的 API Key 與網路連線。"
+        err_msg = str(e)
+        if "response.parts quick accessor" in err_msg or "candidates is empty" in err_msg:
+            return f"⚠️ 呼召 AI 模型 ({model_name}) 失敗：您的問題或生成內容被安全過濾器攔截。請調整提問詞彙或換個模型。"
+        return f"呼召 AI 模型 ({model_name}) 時發生錯誤：{err_msg}\n請檢查您的 API Key 與網路連線。"
+
 
 
 # ----------------- API Endpoints -----------------
@@ -120,6 +273,8 @@ def get_documents(notebook_id: str):
 @app.post("/api/notebooks/{notebook_id}/query")
 def query_notebook(notebook_id: str, payload: QueryRequest, x_gemini_api_key: Optional[str] = Header(None)):
     """RAG 智慧問答介面"""
+    with open(os.path.join(BASE_DIR, "debug_log.txt"), "w", encoding="utf-8") as f:
+        f.write(f"x_gemini_api_key = '{x_gemini_api_key}'\n")
     query_text = payload.query
     top_k = payload.top_k
     
@@ -183,40 +338,79 @@ def query_notebook(notebook_id: str, payload: QueryRequest, x_gemini_api_key: Op
             
         conn.close()
     
-    # 3. 組合 Prompt
-    if not context_sources:
-        # 如果沒有找到任何文檔
-        prompt = f"使用者問了一個問題：'{query_text}'。目前知識庫中沒有相關參考資料，請以溫和且智慧的語氣，身為情場導師來回答他的問題。"
-    else:
-        context_str = ""
-        for src in context_sources:
-            context_str += f"--- [Source {src['source_index']}] ---\n"
-            context_str += f"標題: {src['title']}\n"
-            context_str += f"作者: {src['author']}\n"
-            context_str += f"內容片段: {src['content']}\n\n"
-            
-        prompt = f"""你是一位情場大師，擅長根據兩性心理學和 PTT Catch 板經典文章來提供充滿智慧、同理心且具建設性的建議。
-請根據以下提供的 PTT Catch 板精華文章片段 (Context) 來回答使用者的問題。
+    # 3. 組合 Prompt 與 System Instruction
+    lang = payload.language or "zh"
+    if lang == "zh":
+        system_instruction = """你是一位情場大師，擅長根據兩性心理學和 PTT Catch 板經典文章來提供充滿智慧、同理心且具建設性的建議。
 
 你的回答必須嚴格遵守以下規則：
-1. **嚴格根據 Context 回答**：請充分利用下方提供的 [Source X] 段落進行回答。如果 Context 中沒有相關資訊，請誠實說明，但可以用 Catch 板的核心精神（如心態提升、建立自我價值、不要暴露需求感、推拉技巧）進行有建設性的引導。
+1. **嚴格根據 Context 回答**：請充分利用提供的 [Source X] 段落進行回答。如果 Context 中沒有相關資訊，請誠實說明，但可以用 Catch 板的核心精神（如心態提升、建立自我價值、不要暴露需求感、推拉技巧）進行有建設性的引導。
 2. **精準溯源引用**：在引用某個觀點、金句或案例時，請務必在句尾加上來源標記，格式為 `[Source X]`（例如：`心態上要保持無欲則剛 [Source 1]`）。這非常重要，前端會將其轉化為可點擊的原文對照按鈕。
 3. **具體行動指南 (Actionable Steps)**：回答應結構化，並給出具體的下一步行動建議，而非純粹的心靈雞湯。
-4. **語氣風格**：溫暖、理智、幽默且一針見血，切忌刻板的 AI 腔調。
-5. **絕對禁止輸出思考過程 (No Thinking Process)**：你的輸出將直接展示給使用者，請**絕對不要**在回答中輸出任何思考步驟、推理大綱、對 Context 的摘要、草稿或自我審查（例如不要輸出 "Relationship Master...", "Source 1:...", "Critique:..." 等大綱內容）。請直接開始你的最終正文回覆。
-6. **一律使用繁體中文**：不論使用者的提問語言為何，請一律使用繁體中文（Taiwanese Mandarin）進行最終回答。
+4. **語氣風格**：溫慢、理智、幽默且一針見血，切忌刻板的 AI 腔調。
+5. **絕對禁止輸出任何思考過程或格式設定 (No Thinking Process & No Echoing Meta-instructions)**：你的輸出將直接展示給使用者，請**絕對不要**在回答中輸出任何思考步驟、推理大綱、對 Context 的摘要、草稿、或重複/列出任何系統約束、角色與問題設定的大綱（例如絕對不要輸出 "User Question:...", "Role:...", "Constraints:...", "Relationship Master..." 等大綱內容）。請直接開始你的最終正文回覆。
+6. **一律使用繁體中文**：不論使用者的提問語言為何，請一律使用繁體中文（Taiwanese Mandarin）進行最終回答。"""
+
+        if not context_sources:
+            prompt = f"使用者的提問：'{query_text}'\n\n目前知識庫中沒有相關參考資料，請以溫和且智慧的語氣，身為情場導師直接回答他的問題。"
+        else:
+            context_str = ""
+            for src in context_sources:
+                context_str += f"--- [Source {src['source_index']}] ---\n"
+                context_str += f"標題: {src['title']}\n"
+                context_str += f"作者: {src['author']}\n"
+                context_str += f"內容片段: {src['content']}\n\n"
+                
+            prompt = f"""請回答以下使用者的情感提問。
 
 使用者的問題：
 "{query_text}"
 
-請直接輸出最終回答（直接以情場大師的口吻對使用者進行回覆），禁止輸出任何思考過程、大綱、對來源的摘要或自我審查。請一律使用繁體中文回答。
-
 以下是可參考的 Context 資料：
 {context_str}
-"""
+
+請直接輸出最終回答（直接以情場大師的口吻對使用者進行回覆），禁止輸出任何思考過程、大綱、重複/列出系統約束與角色大綱。請一律使用繁體中文回答。"""
+    else:
+        system_instruction = """You are a relationship and mindset master, skilled in offering wise, empathetic, and constructive advice based on relationship psychology and classic PTT Catch board articles.
+
+Your response must strictly adhere to the following rules:
+1. **Strictly base on Context**: Please fully leverage the provided [Source X] sections for your answer. If the context does not contain relevant information, state so honestly, but you may guide them constructively using the core spirit of the Catch board (such as self-worth improvement, building frame, not exposing neediness, and push-pull techniques).
+2. **Precise Source Citation**: When referencing a viewpoint, quote, or case, you must append the source marker at the end of the sentence in the format `[Source X]` (e.g., `Mindset-wise, keep outcome-independent [Source 1]`). This is extremely important, as the frontend will transform it into clickable original text buttons.
+3. **Actionable Steps**: The response should be structured and provide concrete next steps instead of just emotional comfort.
+4. **Tone & Style**: Warm, rational, humorous, and sharp. Avoid a generic "AI-like" tone.
+5. **Absolutely No Thinking Process or Meta-instruction Echoing**: Your output will be shown directly to the user. Please do not output any thinking processes, reasoning outlines, context summaries, drafts, or duplicate/list system constraints, role-play settings, or question parameters (e.g., never output "User Question:...", "Role:...", "Constraints:...", "Relationship Master..." outlines). Start directly with your final response text.
+6. **Write strictly in English**: Regardless of the user's input language, please respond strictly in English."""
+
+        if not context_sources:
+            prompt = f"User's Question: '{query_text}'\n\nThere is no relevant reference material in the current knowledge base. Please reply to the question directly as a relationship mentor with a warm and wise tone."
+        else:
+            context_str = ""
+            for src in context_sources:
+                context_str += f"--- [Source {src['source_index']}] ---\n"
+                context_str += f"Title: {src['title']}\n"
+                context_str += f"Author: {src['author']}\n"
+                context_str += f"Content Segment: {src['content']}\n\n"
+                
+            prompt = f"""Please answer the following user's relationship question.
+
+User's Question:
+"{query_text}"
+
+Here is the reference Context data:
+{context_str}
+
+Please output the final response directly (reply to the user in the tone of a relationship master), and do not output any thinking processes, outlines, or duplicates/lists of system constraints and role outlines. Please reply strictly in English."""
 
     # 4. 呼叫 LLM
-    ai_answer = get_llm_response(prompt, context_sources, client_api_key=x_gemini_api_key, model_name=payload.model)
+    ai_answer = get_llm_response(
+        prompt, 
+        context_sources, 
+        client_api_key=x_gemini_api_key, 
+        model_name=payload.model,
+        system_instruction=system_instruction,
+        query_text=query_text
+    )
+
     
     return {
         "query": query_text,
@@ -299,79 +493,107 @@ def delete_note(notebook_id: str, note_id: str):
 def summarize_transcript(notebook_id: str, payload: SummarizeRequest, x_gemini_api_key: Optional[str] = Header(None)):
     """將語音通話逐字稿摘要為高質感的個人情感隨身筆記"""
     transcript = payload.transcript
+    raw_text = payload.raw_text
     lang = payload.language or "zh"
     
-    if not transcript:
-        raise HTTPException(status_code=400, detail="Transcript is empty")
+    if not transcript and not raw_text:
+        raise HTTPException(status_code=400, detail="Both transcript and raw_text are empty")
         
-    formatted_transcript = ""
-    for turn in transcript:
-        speaker = "使用者" if turn.role == "user" else "AI 情感導師"
-        formatted_transcript += f"{speaker}: {turn.text}\n"
+    if transcript:
+        formatted_transcript = ""
+        for turn in transcript:
+            speaker = "使用者" if turn.role == "user" else "AI 情感導師"
+            formatted_transcript += f"{speaker}: {turn.text}\n"
+    else:
+        formatted_transcript = raw_text
         
     active_key = x_gemini_api_key or GEMINI_API_KEY
     
     if lang == "zh":
-        prompt = f"""請以專業兩性情感導師的視角，為以下的「語音諮詢對話實錄」整理出一份**「摘要版筆記」**。
-該對話實錄是使用者與 AI 導師針對情感問題進行語音對話的紀錄。
+        system_instruction = """請以專業兩性情感導師的視角，為以下的對話實錄或筆記內容整理出一份**「摘要版筆記」**。
 
-對話實錄內容：
+你的回答必須嚴格遵守以下規則：
+1. **結構分明**：生成一份結構分明、排版美觀、語氣溫暖的繁體中文筆記，包含以下部分：
+   - 💡 **核心問題簡述**：精簡說明使用者遇到的主要情感痛點或諮詢主題。
+   - 🔑 **大師核心心法**：提煉最關鍵的 2-3 個心態心法（如：減少需求感、建立框架、幽默推拉等）。
+   - 🛠️ **具體行動方案**：條列出使用者在生活中可以立刻執行的下一步動作。
+2. **絕對禁止輸出任何思考過程或格式設定 (No Thinking Process & No Echoing Meta-instructions)**：請直接輸出筆記內容本身，絕對不要在回答中輸出任何思考步驟、大綱、推理步驟、或重複/列出任何系統約束、角色與任務設定的大綱（例如絕對不要輸出 "Role:...", "Input:...", "Task:...", "Structure:...", "Tone:...", "Language:..." 等內容）。請直接以 1. 💡 **核心問題簡述** 開始你的最終回答。
+3. **一律使用繁體中文**：請使用繁體中文（Taiwanese Mandarin）撰寫。"""
+        
+        prompt = f"""請為以下內容生成摘要版筆記：
+
+內容：
 {formatted_transcript}
 
-請生成一份結構分明、排版美觀、語氣溫暖的繁體中文筆記，包含以下部分：
-1. 💡 **核心問題簡述**：精簡說明使用者遇到的主要情感痛點或諮詢主題。
-2. 🔑 **大師核心心法**：提煉對話中 AI 導師傳授的最關鍵的 2-3 個心態心法（如：減少需求感、建立框架、幽默推拉等）。
-3. 🛠️ **具體行動方案**：條列出使用者在生活中可以立刻執行的下一步動作。
-
-注意事項：
-- 請使用繁體中文（Taiwanese Mandarin）撰寫。
-- 請直接輸出筆記內容本身，不要包含任何開頭介紹或多餘的標籤（例如：不要寫「這是為您整理的筆記...」）。
-"""
+請直接輸出最終回答（直接以 1. 💡 **核心問題簡述** 開始），禁止輸出任何思考大綱或系統設定。"""
     else:
-        prompt = f"""Please act as a professional relationship coach and summarize the following "Voice Consultation Transcript" into a concise and well-structured **"Summarized Note"**.
+        system_instruction = """Please act as a professional relationship coach and summarize the provided transcript or note into a concise and well-structured **"Summarized Note"**.
 
-Transcript:
+Your response must strictly adhere to the following rules:
+1. **Beautiful Structure**: Generate a beautifully formatted, structured, and warm-toned note in English containing:
+   - 💡 **Key Concerns**: Summarize the user's primary emotional pain points or consultation topics.
+   - 🔑 **Core Insights**: Extract the 2-3 most critical mindset or relationship strategies (e.g., reducing neediness, frame control, push-pull).
+   - 🛠️ **Actionable Steps**: List the concrete next steps the user can execute immediately in their daily life.
+2. **No Thinking Process or Meta-instruction Echoing**: Direct output the note content only. Do not include any introductory sentences, outlines, or list the system instructions/role definitions (e.g., do not output "Role:...", "Task:...", "Structure:..."). Start directly with 1. 💡 **Key Concerns**.
+3. **Language**: Write strictly in English."""
+
+        prompt = f"""Please generate a summarized note for the following content:
+
+Content:
 {formatted_transcript}
 
-Please generate a beautifully formatted, structured, and warm-toned note in English containing:
-1. 💡 **Key Concerns**: Summarize the user's primary emotional pain points or consultation topics.
-2. 🔑 **Core Insights**: Extract the 2-3 most critical mindset or relationship strategies taught by the AI tutor (e.g., reducing neediness, frame control, push-pull).
-3. 🛠️ **Actionable Steps**: List the concrete next steps the user can execute immediately in their daily life.
-
-Note:
-- Please write in English.
-- Direct output the note content only. Do not include any introductory sentences like "Here is the summary...".
-"""
+Please output the final response directly (start with 1. 💡 **Key Concerns**), without any introductory sentences or meta-instruction outlines."""
 
     if not active_key:
         if lang == "zh":
             fallback_text = (
                 "⚠️ 【展示模式：偵測到未設定 GEMINI_API_KEY，無法生成 AI 智慧摘要】\n\n"
-                "以下是您的通話大綱速記：\n"
-                f"- 通話長度: {len(transcript)} 回合對話。\n"
+                "以下是您的對話大綱速記：\n"
+                f"- 內容長度: {len(formatted_transcript)} 字元。\n"
                 "- 請在左側設定您的 API 金鑰以啟用 Gemini 自動分析與摘要生成功能！"
             )
         else:
             fallback_text = (
                 "⚠️ [Demo Mode: GEMINI_API_KEY not configured. Cannot generate AI summary]\n\n"
-                "Here is your call summary outline:\n"
-                f"- Call length: {len(transcript)} conversational turns.\n"
+                "Here is your note summary outline:\n"
+                f"- Content length: {len(formatted_transcript)} characters.\n"
                 "- Please set your API Key to enable Gemini automatic summarization."
             )
         return {"summary": fallback_text}
 
     try:
         genai.configure(api_key=active_key)
-        model = genai.GenerativeModel("models/gemma-4-26b-a4b-it")
-        response = model.generate_content(prompt)
-        return {"summary": response.text}
+        model = genai.GenerativeModel(
+            "models/gemma-4-26b-a4b-it",
+            system_instruction=system_instruction
+        )
+        response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
+        
+        # Check if response was blocked (candidates list is empty)
+        if not getattr(response, "candidates", None):
+            feedback_str = ""
+            if hasattr(response, 'prompt_feedback') and response.prompt_feedback:
+                feedback_str = f" (原因: {response.prompt_feedback})"
+            return {"summary": f"⚠️ 摘要生成失敗：內容被系統安全過濾器攔截。請調整筆記內容或換個模型。{feedback_str}"}
+            
+        candidate = response.candidates[0]
+        finish_reason = getattr(candidate, "finish_reason", None)
+        if finish_reason:
+            fr_str = str(finish_reason).upper()
+            if "STOP" not in fr_str and "MAX_TOKENS" not in fr_str and "1" not in fr_str and "2" not in fr_str:
+                return {"summary": f"⚠️ 摘要生成失敗：回覆內容因安全原因被攔截 (原因: {finish_reason})。"}
+                
+        return {"summary": clean_gemma_response(response.text)}
     except Exception as e:
-        return {"summary": f"生成摘要時發生錯誤：{str(e)}"}
+        err_msg = str(e)
+        if "response.parts quick accessor" in err_msg or "candidates is empty" in err_msg:
+            return {"summary": "⚠️ 摘要生成失敗：您的筆記或生成內容被安全過濾器攔截。"}
+        return {"summary": f"生成摘要時發生錯誤：{err_msg}"}
 
 # ----------------- Study Guide (NotebookLM style) -----------------
 
 @app.get("/api/notebooks/{notebook_id}/study-guide")
-def get_study_guide(notebook_id: str, x_gemini_api_key: Optional[str] = Header(None)):
+def get_study_guide(notebook_id: str, language: Optional[str] = "zh", x_gemini_api_key: Optional[str] = Header(None)):
     """自動生成當前筆記本的智慧學習導讀與 FAQ (NotebookLM style)"""
     conn = database.get_db_connection()
     cursor = conn.cursor()
@@ -382,25 +604,30 @@ def get_study_guide(notebook_id: str, x_gemini_api_key: Optional[str] = Header(N
     conn.close()
     
     if not docs:
-        return {
-            "study_guide": (
-                "# PTT Catch 智慧導讀指南\n\n"
-                "目前您的筆記本中還沒有任何參考文章！\n"
-                "請先運行 `embedder.py` 將爬取到的 Catch 板精華區文章寫入向量資料庫，我將能為您自動分析這些文章的觀念圖譜與核心問題解答。"
-            )
-        }
+        if language == "zh":
+            return {
+                "study_guide": (
+                    "# PTT Catch 智慧導讀指南\n\n"
+                    "目前您的筆記本中還沒有任何參考文章！\n"
+                    "請先運行 `embedder.py` 將爬取到的 Catch 板精華區文章寫入向量資料庫，我將能為您自動分析這些文章的觀念圖譜與核心問題解答。"
+                )
+            }
+        else:
+            return {
+                "study_guide": (
+                    "# PTT Catch Study Guide\n\n"
+                    "Currently there are no reference articles in your notebook!\n"
+                    "Please run `embedder.py` first to ingest Catch classic articles into the vector database. Then I can automatically analyze the concept map and answer core questions for you."
+                )
+            }
         
-    # 如果有文章，我們生成一個非常高質感的 Study Guide
-    # 這裡我們使用一個精心設計的範本，結合了 Catch 版的經典核心概念（如框架、不敗、吸引力、兩性動態平衡）
-    # 如果有 API Key，我們也可以讓 Gemini 自動根據實際導入的文章標題 and 內容來生成！
-    
     doc_titles = [f"- {d['title']} (作者: {d['author']})" for d in docs]
     doc_titles_str = "\n".join(doc_titles)
     
     active_key = x_gemini_api_key or GEMINI_API_KEY
     if active_key:
-        # 呼叫 Gemini 來做智慧生成
-        prompt = f"""你是一位擁有多年實戰與諮詢經驗的兩性情感導師。
+        if language == "zh":
+            prompt = f"""你是一位擁有多年實戰與諮詢經驗的兩性情感導師。
 你的任務是根據當前筆記本內已上傳的文章標題（如下所示），為使用者生成一份極具深度、結構精美、專業且富含行動指引的 **「PTT Catch 經典智慧學習導讀 (Study Guide)」**。
 
 已導入的經典文章標題：
@@ -413,16 +640,31 @@ def get_study_guide(notebook_id: str, x_gemini_api_key: Optional[str] = Header(N
 
 請確保語氣專業、同理、睿智且極具洞察力，避免空泛。
 """
+        else:
+            prompt = f"""You are a relationship mentor with years of practical coaching and consulting experience.
+Your task is to generate a highly detailed, beautifully structured, professional, and action-oriented **"PTT Catch Classic Wisdom Study Guide"** for the user based on the titles of the uploaded articles in the current notebook (shown below).
+
+Imported Classic Article Titles:
+{doc_titles_str}
+
+This guide must be written in high-quality Markdown format and contain the following core modules:
+1. 📈 **Core Concept Map**: Extract the 3 most critical mindsets or theories from these articles (e.g., establishing a winning/invincible mindset, the struggle of male-female frames, the dynamic balance between attraction and pursuit), and provide plain-language explanations with real-world scenarios.
+2. ❓ **Frequently Asked Questions (FAQ)**: List 3 questions dating beginners struggle with the most (e.g., what to do when read and ignored? how to step out of the comfort zone to chat with girls?), and provide sharp, direct answers referencing the article viewpoints.
+3. 🎯 **Step-by-Step Action Plan**: Provide a concrete 3-stage self-improvement plan that the user can immediately execute in daily life.
+
+Please ensure the tone is professional, empathetic, wise, and highly insightful, avoiding superficial advice. Write the output strictly in English.
+"""
         try:
             genai.configure(api_key=active_key)
             model = genai.GenerativeModel("models/gemini-1.5-flash")
-            response = model.generate_content(prompt)
+            response = model.generate_content(prompt, safety_settings=SAFETY_SETTINGS)
             return {"study_guide": response.text}
         except Exception as e:
             pass # 失敗則 fallback 到預設的高質感導讀
 
     # Fallback/預設的高質感導讀（展示 Catch 板的核心思想）
-    default_guide = f"""# 📈 PTT Catch 兩性智能導讀指南 (戀愛AI Study Guide)
+    if language == "zh":
+        default_guide = f"""# 📈 PTT Catch 兩性智能導讀指南 (戀愛AI Study Guide)
 
 本導讀基於您目前導入的 **{len(docs)} 篇 Catch 板精華區經典文獻**。透過系統分析，為您梳理出兩性互動的核心心法、常見痛點 FAQ 以及可立刻執行的行動指南。
 
@@ -472,6 +714,58 @@ def get_study_guide(notebook_id: str, x_gemini_api_key: Optional[str] = Header(N
     *   在日常生活中，主動與便利商店店員、路人進行 1-2 句的友善閒聊，訓練自己「不帶目的性」的社交直覺。
 3.  **第三階段：框架建立 (Week 5-6)**
     *   在與心儀對象的對話中，嘗試進行一次「推拉」或幽默回絕，感受「拿回主導權」的互動張力。
+"""
+    else:
+        default_guide = f"""# 📈 PTT Catch Relationship Wisdom Study Guide (Love AI Study Guide)
+
+This guide is based on the **{len(docs)} classic PTT Catch articles** currently imported. It summarizes the core relationship mindsets, FAQ for common pain points, and actionable next steps.
+
+---
+
+## I. Core Concept Map
+
+In the extensive knowledge repository of Catch board, relationship dynamics are built upon three core pillars:
+
+### 1. "Self-Worth & Outcome Independence" (The Mindset)
+*   **Definition**: The starting point of attraction. Most beginners fail early on because they expose too much **"neediness"**, causing their own frame to collapse.
+*   **Actionable Wisdom**: Refocus your life on yourself (career, hobbies, fitness). When you feel "I can live well without her," you emit genuine confidence and charm, which is the classic "invincible mindset."
+
+### 2. "The Frame Battle & Dynamic Balance" (The Frame)
+*   **Definition**: In relationship dynamics, whoever controls the rhythm of life and standard of values holds the frame.
+*   **Actionable Wisdom**: Do not blindly please or be on-call 24/7. When the other party makes unreasonable demands or performs "shit tests", learn to handle them with humor and raise your posture (push-pull techniques) to maintain an equal attraction dynamic.
+
+### 3. "Emotional Resonance & Push-Pull" (The Connection)
+*   **Definition**: Chatting is not for reporting schedules or exchanging raw information, but to "steer emotions."
+*   **Actionable Wisdom**: Use storytelling and emotional resonance instead of boring Q&As. Apply push-pull techniques (praising then teasing, or being warm then cold) to create tension and fun in conversation.
+
+---
+
+## II. Frequently Asked Questions (FAQ)
+
+### Q1: What should I do if the girl I like replies slowly or reads and ignores my messages?
+> **Love AI Mentor Answer**:
+> Read and ignore essentially means "lack of attraction" or "excessive pressure in interaction".
+> 1.  **Stop loss immediately**: Do not spam questions (e.g., "Busy?", "Why aren't you replying?"). This completely exposes your anxiety and low-value frame.
+> 2.  **Cool down**: Give each other 3 to 5 days of silence.
+> 3.  **Pressure-free restart**: Start with a fun, low-pressure topic that doesn't demand a reply (e.g., a photo of food with "Had this amazing pudding today, let's go next time"). If she is still cold, attraction needs to be rebuilt.
+
+### Q2: How to start a conversation with a girl I'm not familiar with naturally?
+> **Love AI Mentor Answer**:
+> The key is to "observe the environment" and "share your state" rather than asking abrupt questions.
+> *   **Poor demonstration**: "What is your name?" "How old are you?" "Where do you live?" (sounds like a police interrogation, highly unattractive).
+> *   **Good demonstration**: "The music in this cafe sounds so 90s retro, I love it. Did you come here for the vibe too?" — Share your own subjective feeling first, then pass the ball.
+
+---
+
+## III. 3-Stage Beginner Self-Improvement Plan
+
+1.  **Stage 1: Life Restructuring (Week 1-2)**
+    *   Write down 3 personal goals unrelated to dating (e.g., reading, finance, working out).
+    *   Force yourself to check your phone only at fixed times, reducing anxiety over messages.
+2.  **Stage 2: Social Desensitization (Week 3-4)**
+    *   In daily life, start 1-2 sentences of friendly small talk with convenience store staff or strangers to train your pressure-free social intuition.
+3.  **Stage 3: Frame Establishment (Week 5-6)**
+    *   In conversations with your target person, try applying a "push-pull" or humorously declining once to experience taking back conversational control.
 """
     return {"study_guide": default_guide}
 
@@ -523,6 +817,7 @@ async def websocket_endpoint(websocket: WebSocket):
         voice_name = setup_json.get("voice_name", DEFAULT_VOICE)
         notebook_id = setup_json.get("notebook_id", "default-catch-notebook-uuid")
         history = setup_json.get("history", [])
+        language = setup_json.get("language", "zh")
         
         if not api_key:
             print("DEBUG ERROR: api_key is missing")
@@ -530,8 +825,8 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.close()
             return
             
-        print(f"DEBUG 6: api_key len = {len(api_key)}, notebook_id={notebook_id}, voice_name={voice_name}")
-        logger.info(f"語音通話正在連線... Notebook: {notebook_id}, 語音: {voice_name}")
+        print(f"DEBUG 6: api_key len = {len(api_key)}, notebook_id={notebook_id}, voice_name={voice_name}, language={language}")
+        logger.info(f"語音通話正在連線... Notebook: {notebook_id}, 語音: {voice_name}, 語言: {language}")
         await websocket.send_json({"type": "status", "status": "connecting", "message": "正在建立與 Google AI Studio 的 Live 連線..."})
 
         # 2. 建立 Gemini 客戶端
@@ -551,36 +846,61 @@ async def websocket_endpoint(websocket: WebSocket):
             docs = cursor.fetchall()
             conn.close()
             if docs:
-                titles_str = ", ".join([f"《{d['title']}》" for d in docs])
-                study_guide_instruction = (
-                    f"\n【重要知識背景】您目前代表的情感知識庫包含這些經典文章/書籍：{titles_str}。\n"
-                    "請站在兩性心理學和這些精華文章的智慧角度回答，提供溫暖、有自信、不暴露需求感、幽默推拉的具體關係指南。"
-                )
+                if language == "zh":
+                    titles_str = ", ".join([f"《{d['title']}》" for d in docs])
+                    study_guide_instruction = (
+                        f"\n【重要知識背景】您目前代表的情感知識庫包含這些經典文章/書籍：{titles_str}。\n"
+                        "請站在兩性心理學和這些精華文章的智慧角度回答，提供溫慢、有自信、不暴露需求感、幽默推拉的具體關係指南。"
+                    )
+                else:
+                    titles_str = ", ".join([f"\"{d['title']}\"" for d in docs])
+                    study_guide_instruction = (
+                        f"\n[Important Knowledge Background] The emotional knowledge base you represent currently includes these classic articles/books: {titles_str}.\n"
+                        "Please respond from the perspective of relationship psychology and the wisdom of these classic articles. Provide warm, confident, and concrete relationship guidance without exposing needy feelings, using humor and push-pull."
+                    )
         except Exception as db_err:
             print(f"DEBUG DB ERROR: {db_err}")
             logger.error(f"Error querying documents for voice: {db_err}")
 
-        base_instruction = (
-            "你是一位情感心靈大師，擅長根據兩性心理學來提供充滿智慧、同理心且具建設性的語音建議。\n"
-            "請務必使用繁體中文（台灣，Taiwanese Mandarin）與使用者進行語音交談，並用繁體中文回答所有問題。\n"
-            "答話請保持精簡、口語、溫慢且一針見血，符合日常交談習慣，不要使用長篇大論的書面語。\n"
-            f"{study_guide_instruction}"
-        )
+        if language == "zh":
+            base_instruction = (
+                "你是一位情感心靈大師，擅長根據兩性心理學來提供充滿智慧、同理心且具建設性的語音建議。\n"
+                "請務必使用繁體中文（台灣，Taiwanese Mandarin）與使用者進行語音交談，並用繁體中文回答所有問題。\n"
+                "答話請保持精簡、口語、溫慢且一針見血，符合日常交談習慣，不要使用長篇大論的書面語。\n"
+                f"{study_guide_instruction}"
+            )
+        else:
+            base_instruction = (
+                "You are a relationship and mindset master, skilled in offering wise, empathetic, and constructive voice advice based on relationship psychology.\n"
+                "Please make sure to converse with the user in English and answer all questions in English.\n"
+                "Keep your responses concise, oral, warm, slow, and to the point. Match the pattern of daily conversations and avoid long-winded written style.\n"
+                f"{study_guide_instruction}"
+            )
         
         if history:
             history_lines = []
             for turn in history:
-                role_name = "使用者" if turn.get("role") == "user" else "助理"
+                if language == "zh":
+                    role_name = "使用者" if turn.get("role") == "user" else "助理"
+                else:
+                    role_name = "User" if turn.get("role") == "user" else "Assistant"
                 txt = turn.get("text", "")
                 if txt:
                     history_lines.append(f"{role_name}：{txt}")
             
             history_context = "\n".join(history_lines)
-            system_instruction = (
-                f"{base_instruction}\n\n"
-                f"【注意】以下是我們在連線中斷前進行的對話歷史紀錄，請牢記這些上下文，並在接下來的對話中無縫延續，但不要主動重複這些對話或在此時立刻發聲回應：\n"
-                f"{history_context}"
-            )
+            if language == "zh":
+                system_instruction = (
+                    f"{base_instruction}\n\n"
+                    f"【注意】以下是我們在連線中斷前進行的對話歷史紀錄，請牢記這些上下文，並在接下來的對話中無縫延續，但不要主動重複這些對話或在此時立刻發聲回應：\n"
+                    f"{history_context}"
+                )
+            else:
+                system_instruction = (
+                    f"{base_instruction}\n\n"
+                    f"[Note] Below is the chat history before the connection was interrupted. Please keep this context in mind and continue seamlessly in the subsequent conversation, but do not actively repeat this history or respond to it immediately at this moment:\n"
+                    f"{history_context}"
+                )
         else:
             system_instruction = base_instruction
 
@@ -669,9 +989,8 @@ async def websocket_endpoint(websocket: WebSocket):
                                 video=live_types.Blob(data=item_data, mime_type="image/jpeg")
                             )
                         elif item_type == "text":
-                            await session.send_client_content(
-                                turns={"parts": [{"text": item_data}]},
-                                turn_complete=True
+                            await session.send_realtime_input(
+                                text=item_data
                             )
                         to_gemini_queue.task_done()
                 except asyncio.CancelledError:
@@ -745,8 +1064,6 @@ async def websocket_endpoint(websocket: WebSocket):
 
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
-
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # 託管前端靜態資源
 app.mount("/static", StaticFiles(directory=os.path.join(BASE_DIR, "static")), name="static")
