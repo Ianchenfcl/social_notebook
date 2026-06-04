@@ -82,7 +82,7 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
     
     # Regular expression for matching meta keys like "Role:", "Input:", "Task:", etc.
     meta_pattern = re.compile(
-        r'^\s*[\*\-\+•]?\s*(Role|Input|Task|Structure|Tone|Language|Constraints|User\s+Question|System\s+Instruction|Context|Prompt|Instructions|Negative\s+Constraints|Source\s+Usage|Citations):\s*',
+        r'^\s*[\*\-\+•]?\s*(Role|Input|Task|Structure|Tone|Language|Constraints|User\s+Question|System\s+Instruction|Context|Prompt|Instructions|Negative\s+Constraints|Source\s+Usage|Citations|Sources):\s*',
         re.IGNORECASE
     )
     
@@ -121,6 +121,7 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
         "english only",
         "relationship and mindset master",
         "relationship master",
+        "romantic master",
         "relationship and mindset master warm rational humorous sharp avoid generic ai tone strictly english",
         "warm rational humorous sharp",
         "please answer the following users relationship question",
@@ -131,14 +132,22 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
         "user wants to know about",
         "negative constraints",
         "source usage",
-        "citations"
+        "citations",
+        "traditional chinese only",
+        "traditional chinese"
     }
     
     planning_keywords = [
         "source", "citation", "tone", "english only", "intro", "outro", 
         "conclusion", "body", "action plan", "constraint", "role", 
         "structure", "language", "negative constraints", "meta-instructions",
-        "echoing prompts"
+        "echoing prompts", "romantic master", "relationship master", "traditional chinese"
+    ]
+    
+    meta_keywords_for_bullets = [
+        "strictly", "context", "citation", "thinking", "chinese", "english", 
+        "language", "role", "romantic", "relationship", "master", "instruction", 
+        "constraint", "source", "prompt", "query", "question"
     ]
     
     in_meta_block = True
@@ -148,25 +157,33 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
         normalized_l = normalize_line(line)
         
         if in_meta_block:
+            # 1. Empty line
             if not stripped:
                 continue
             
-            # If it's a meta pattern key-value
+            # 2. Matches meta pattern
             if meta_pattern.match(line):
                 continue
                 
-            # If it matches a planning header pattern
+            # 3. Matches planning header pattern
             if planning_header_pattern.match(line):
                 continue
                 
-            # If it is exactly the query text or starts with user inquiry template
+            # 4. Normalized query match
             if normalized_query and normalized_l == normalized_query:
                 continue
                 
-            if "user wants to know about" in stripped or "user is asking about" in stripped:
+            # 5. Query / user wants to know patterns
+            if any(phrase in stripped for phrase in [
+                "user wants to know about", 
+                "user is asking about", 
+                "user wants to know",
+                "what are 'frame theory'",
+                "what are \"frame theory\""
+            ]):
                 continue
                 
-            # If it contains any known constraint phrase
+            # 6. Exact match in constraint phrases or starts with constraint pattern
             if normalized_l in constraint_phrases or any(phrase in normalized_l for phrase in [
                 "strictly base on context",
                 "strictly based on context",
@@ -176,22 +193,35 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
                 "no meta-instruction",
                 "relationship and mindset master",
                 "relationship master",
+                "romantic master",
                 "please answer the following user",
                 "negative constraint",
                 "echoing prompts",
-                "avoid generic ai tone"
+                "avoid generic ai tone",
+                "traditional chinese only"
             ]):
                 continue
                 
-            # If it references a source directly (e.g. "Source 4") in a meta-like line
+            # 7. Short lines referencing sources in meta
             if len(stripped) < 150 and re.search(r'source\s*\d', stripped):
                 continue
                 
-            # If it is a short line containing planning keywords
+            # 8. Short lines containing planning keywords
             if len(stripped) < 120 and any(kw in stripped for kw in planning_keywords):
                 continue
                 
-            # If it is the indented template structure lines
+            # 9. A line that is just a bullet or starts with a colon
+            if stripped in ('*', '-', '+', '•') or stripped.startswith(':'):
+                continue
+                
+            # 10. List bullets containing meta keywords
+            is_bullet = re.match(r'^\s*[\*\-\+•\d\.]+\s+', line)
+            if is_bullet:
+                # Check if it contains any meta keywords
+                if any(kw in stripped for kw in meta_keywords_for_bullets):
+                    continue
+                    
+            # 11. Indented template structure lines
             if re.match(r'^\s+\d+\.\s*(💡|🔑|🛠️)', line):
                 continue
             if re.match(r'^\s*\d+\.\s*(💡|🔑|🛠️)\s*(Core Problem Summary|Master\'s Core Mindset|Concrete Action Plan|Key Concerns|Core Insights|Actionable Steps)\s*(\(.*\))?$', line.strip(), re.IGNORECASE):
