@@ -79,11 +79,10 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
         
     lines = text.splitlines()
     cleaned_lines = []
-    in_meta_block = True
     
     # Regular expression for matching meta keys like "Role:", "Input:", "Task:", etc.
     meta_pattern = re.compile(
-        r'^\s*[\*\-\+•]?\s*(Role|Input|Task|Structure|Tone|Language|Constraints|User\s+Question|System\s+Instruction|Context|Prompt|Instructions):\s*',
+        r'^\s*[\*\-\+•]?\s*(Role|Input|Task|Structure|Tone|Language|Constraints|User\s+Question|System\s+Instruction|Context|Prompt|Instructions|Negative\s+Constraints|Source\s+Usage|Citations):\s*',
         re.IGNORECASE
     )
     
@@ -94,19 +93,14 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
     )
     
     def normalize_line(line_str: str) -> str:
-        # Lowercase
         s = line_str.strip().lower()
-        # Remove leading list numbers/bullets (e.g. "1.", "a.", "-", "*")
         s = re.sub(r'^[\-\+•\s\d\.\*]+\s*', '', s)
-        # Remove non-alphanumeric characters (keep Chinese characters and spaces)
         s = re.sub(r'[^a-z0-9\s\u4e00-\u9fff]', '', s)
-        # Normalize spaces
         s = re.sub(r'\s+', ' ', s).strip()
         return s
 
     normalized_query = normalize_line(query_text) if query_text else ""
     
-    # Specific constraint phrases/keywords to skip
     constraint_phrases = {
         "strictly base on context",
         "strictly based on context",
@@ -126,16 +120,28 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
         "strictly english",
         "english only",
         "relationship and mindset master",
+        "relationship master",
         "relationship and mindset master warm rational humorous sharp avoid generic ai tone strictly english",
         "warm rational humorous sharp",
         "please answer the following users relationship question",
         "users question",
         "users query",
         "here is the reference context data",
-        "please output the final response directly"
+        "please output the final response directly",
+        "user wants to know about",
+        "negative constraints",
+        "source usage",
+        "citations"
     }
     
-    planning_keywords = ["source", "citation", "tone", "english only", "intro", "outro", "conclusion", "body", "action plan"]
+    planning_keywords = [
+        "source", "citation", "tone", "english only", "intro", "outro", 
+        "conclusion", "body", "action plan", "constraint", "role", 
+        "structure", "language", "negative constraints", "meta-instructions",
+        "echoing prompts"
+    ]
+    
+    in_meta_block = True
     
     for line in lines:
         stripped = line.strip().lower()
@@ -149,12 +155,15 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
             if meta_pattern.match(line):
                 continue
                 
-            # If it matches a planning header pattern (e.g. "Source 1: ...", "Frame Theory: ...")
+            # If it matches a planning header pattern
             if planning_header_pattern.match(line):
                 continue
                 
-            # If it is exactly the query text
+            # If it is exactly the query text or starts with user inquiry template
             if normalized_query and normalized_l == normalized_query:
+                continue
+                
+            if "user wants to know about" in stripped or "user is asking about" in stripped:
                 continue
                 
             # If it contains any known constraint phrase
@@ -164,17 +173,22 @@ def clean_gemma_response(text: str, query_text: Optional[str] = None) -> str:
                 "precise source citations",
                 "no thinking process",
                 "no metainstruction",
+                "no meta-instruction",
                 "relationship and mindset master",
-                "please answer the following user"
+                "relationship master",
+                "please answer the following user",
+                "negative constraint",
+                "echoing prompts",
+                "avoid generic ai tone"
             ]):
                 continue
                 
-            # If it references a source directly (e.g. "Source 4")
-            if re.search(r'source\s*\d', stripped):
+            # If it references a source directly (e.g. "Source 4") in a meta-like line
+            if len(stripped) < 150 and re.search(r'source\s*\d', stripped):
                 continue
                 
             # If it is a short line containing planning keywords
-            if len(stripped) < 90 and any(kw in stripped for kw in planning_keywords):
+            if len(stripped) < 120 and any(kw in stripped for kw in planning_keywords):
                 continue
                 
             # If it is the indented template structure lines

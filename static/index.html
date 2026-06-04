@@ -432,6 +432,7 @@
                 "chat.save_to_notes": "將此心法一鍵存入隨身筆記",
                 "chat.save_guide_to_notes": "將此導讀存入我的隨身筆記",
                 "chat.speak_button": "語音朗讀",
+                "chat.stop_speak_button": "停止朗讀",
                 "chat.reply_title": "戀愛AI 智慧回覆",
                 "chat.failed_conn": "連線失敗：請確保您的 FastAPI 後端服務正在啟動（在終端機運行 uvicorn app:app --reload 且埠號為 8000）。",
                 "voice.status_connecting": "正在建立與 Google AI Studio 的 Live 連線...",
@@ -503,6 +504,7 @@
                 "chat.save_to_notes": "Save to notes in one click",
                 "chat.save_guide_to_notes": "Save study guide to my notes",
                 "chat.speak_button": "Speak Reply",
+                "chat.stop_speak_button": "Stop Speech",
                 "chat.reply_title": "Love AI Intelligent Reply",
                 "chat.failed_conn": "Connection failed: Please make sure your FastAPI service is running (run uvicorn app:app --reload on port 8000).",
                 "voice.status_connecting": "Establishing Live connection with Google AI Studio...",
@@ -1188,8 +1190,8 @@
                             
                             <!-- Save / Speak buttons -->
                             <div class="mt-4 pt-3 border-t border-slate-850 flex justify-end gap-3.5">
-                                <button onclick="speakMessage('${aiMsgId}')" class="text-xs text-slate-400 hover:text-brand-300 flex items-center gap-1 transition">
-                                    <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>${speakButtonText}
+                                <button onclick="speakMessage('${aiMsgId}', this)" class="text-xs text-slate-400 hover:text-brand-300 flex items-center gap-1 transition">
+                                    <i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>${speakButtonText}</span>
                                 </button>
                                 <button onclick="saveMessageToNote('${aiMsgId}')" class="text-xs text-slate-400 hover:text-brand-300 flex items-center gap-1 transition">
                                     <i data-lucide="sticky-note" class="w-3.5 h-3.5"></i>${saveToNotes}
@@ -1286,8 +1288,8 @@
                             <div class="prose max-w-none text-sm text-slate-300 leading-relaxed">${guideHtml}</div>
                             
                             <div class="mt-4 pt-3 border-t border-indigo-950 flex justify-end gap-3.5">
-                                <button onclick="speakMessage('${guideMsgId}')" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
-                                    <i data-lucide="volume-2" class="w-3.5 h-3.5"></i>${speakButtonText}
+                                <button onclick="speakMessage('${guideMsgId}', this)" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
+                                    <i data-lucide="volume-2" class="w-3.5 h-3.5"></i><span>${speakButtonText}</span>
                                 </button>
                                 <button onclick="saveMessageToNote('${guideMsgId}', '${defaultOutlineTitle}')" class="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition">
                                     <i data-lucide="sticky-note" class="w-3.5 h-3.5"></i>${saveGuide}
@@ -1381,8 +1383,23 @@
             alert(hint);
         }
 
+        function resetAllSpeakButtons() {
+            const speakButtons = document.querySelectorAll('button[onclick^="speakMessage"]');
+            speakButtons.forEach(btn => {
+                const span = btn.querySelector('span');
+                const icon = btn.querySelector('i');
+                if (span) {
+                    span.textContent = TRANSLATIONS[currentLang]["chat.speak_button"] || (currentLang === 'zh' ? '語音朗讀' : 'Speak Reply');
+                }
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'volume-2');
+                }
+            });
+            lucide.createIcons();
+        }
+
         let currentUtterance = null;
-        function speakMessage(msgId) {
+        function speakMessage(msgId, btnElement) {
             const textElement = document.getElementById(msgId);
             if (!textElement) return;
             const textToSpeak = textElement.textContent;
@@ -1391,10 +1408,13 @@
                 window.speechSynthesis.cancel();
                 if (currentUtterance && currentUtterance.msgId === msgId) {
                     currentUtterance = null;
+                    resetAllSpeakButtons();
                     showToast(currentLang === 'zh' ? '已停止朗讀' : 'Speech stopped');
                     return;
                 }
             }
+            
+            resetAllSpeakButtons();
             
             let cleanedText = textToSpeak.replace(/\[Source\s+\d+\]/g, "");
             
@@ -1411,15 +1431,29 @@
                 utterance.lang = 'en-US';
             }
             
+            if (btnElement) {
+                const span = btnElement.querySelector('span');
+                const icon = btnElement.querySelector('i');
+                if (span) {
+                    span.textContent = TRANSLATIONS[currentLang]["chat.stop_speak_button"] || (currentLang === 'zh' ? '停止朗讀' : 'Stop Speech');
+                }
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'volume-x');
+                }
+                lucide.createIcons();
+            }
+            
             utterance.onend = () => {
                 if (currentUtterance === utterance) {
                     currentUtterance = null;
+                    resetAllSpeakButtons();
                 }
             };
             
             utterance.onerror = () => {
                 if (currentUtterance === utterance) {
                     currentUtterance = null;
+                    resetAllSpeakButtons();
                 }
             };
             
