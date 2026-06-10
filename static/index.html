@@ -330,110 +330,112 @@
                 </div>
             </div>
         </div>
-    </aside>
-
-    <!-- Add Document Modal -->
-    <div id="add-doc-modal" class="fixed inset-0 bg-black/60 flex items-center justify-center z-50 hidden">
-        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-lg p-6 space-y-4 shadow-2xl glass-panel">
-            <div class="flex items-center justify-between">
-                <h3 class="text-lg font-bold text-slate-200 flex items-center gap-2">
-                    <i data-lucide="file-plus-2" class="text-brand-400"></i><span data-i18n="modal.add_doc_title">上傳個人情感資料/文章</span>
-                </h3>
-                <button onclick="closeAddDocModal()" class="text-slate-400 hover:text-slate-200">
-                    <i data-lucide="x" class="w-5 h-5"></i>
-                </button>
-            </div>
-            
-            <div class="space-y-3">
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1" data-i18n="modal.doc_title_label">文件標題</label>
-                    <input id="new-doc-title" type="text" data-i18n="modal.doc_title_placeholder" placeholder="例如：與小美的對話截圖 / 聊天筆記" class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
-                </div>
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1" data-i18n="modal.doc_author_label">作者 (選填)</label>
-                    <input id="new-doc-author" type="text" data-i18n="modal.doc_author_placeholder" placeholder="例如：我 / 聊天紀錄" class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500">
-                </div>
-                <div>
-                    <label class="text-xs text-slate-400 block mb-1" data-i18n="modal.doc_content_label">文件內容 (文字內容將自動進行向量分段與 Embedding)</label>
-                    <textarea id="new-doc-content" rows="6" data-i18n="modal.doc_content_placeholder" placeholder="請在此貼上對話紀錄、兩性相處日記或相關情感文章..." class="w-full bg-slate-950 border border-slate-800 rounded-lg py-2 px-3 text-sm text-slate-200 focus:outline-none focus:border-brand-500 resize-none"></textarea>
-                </div>
-            </div>
-            
-            <div class="flex justify-end gap-3 pt-2">
-                <button onclick="closeAddDocModal()" class="px-4 py-2 text-sm bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700" data-i18n="modal.cancel">取消</button>
-                <button onclick="submitNewDoc()" class="px-4 py-2 text-sm bg-brand-600 text-white rounded-lg hover:bg-brand-500 shadow shadow-brand-500/20" data-i18n="modal.submit">開始處理並向量化</button>
-            </div>
-        </div>
-    </div>
-
-    
         <!-- Tab 3: Quiz Content (Initially hidden) -->
         <div id="panel-quiz-content" class="flex-1 overflow-y-auto p-4 hidden flex-col">
-            <!-- Header: Title and Description -->
-            <div id="quiz-header" class="mb-4">
-                <h3 class="text-sm font-semibold text-brand-400 mb-1" data-i18n="quiz.title">初級兩性情感測驗</h3>
-                <p class="text-xs text-slate-400" data-i18n="quiz.desc">測驗您對聊天心法、男女框架與情感動力學的理解程度（共 10 題）。</p>
-            </div>
-            
-            <!-- Quiz Body -->
-            <div id="quiz-body" class="flex-1 flex flex-col space-y-4">
-                <div class="flex items-center justify-between text-xs text-slate-400 font-medium pb-0.5">
-                    <span id="quiz-progress-text">第 1 / 10 題</span>
-                    <span id="quiz-score-text" class="text-brand-400 font-semibold">答對: 0 題</span>
-                </div>
-                <div class="w-full bg-slate-800 rounded-full h-1.5">
-                    <div id="quiz-progress-bar" class="bg-brand-500 h-1.5 rounded-full transition-all duration-300" style="width: 10%;"></div>
+            <!-- 1. Quiz Catalog (Initially shown) -->
+            <div id="quiz-catalog" class="flex flex-col space-y-4">
+                <div class="mb-4 pb-2 border-b border-slate-800/40">
+                    <h3 class="text-sm font-bold text-brand-400 mb-1" data-i18n="quiz.catalog_title">情感互動測驗目錄</h3>
+                    <p class="text-xs text-slate-400" data-i18n="quiz.catalog_desc">選擇一個測驗來考驗您的情感商數與吸引力科學心法。</p>
                 </div>
                 
-                <!-- Question Card -->
-                <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col space-y-3">
-                    <h4 id="quiz-question-text" class="text-base font-bold text-slate-100 leading-relaxed">載入中...</h4>
-                    <div>
-                        <button onclick="toggleQuizHint()" class="flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 transition focus:outline-none">
-                            <i data-lucide="lightbulb" class="w-3 h-3"></i>
-                            <span id="quiz-hint-btn-text">顯示提示 (Hint)</span>
-                        </button>
-                        <div id="quiz-hint-box" class="hidden mt-2 p-2.5 bg-brand-950/20 border border-brand-900/20 text-brand-300 rounded-xl text-xs leading-relaxed"></div>
-                    </div>
-                </div>
-                
-                <!-- Options -->
-                <div id="quiz-options" class="flex flex-col space-y-2.5"></div>
-                
-                <!-- Feedback Summary -->
-                <div id="quiz-feedback-summary" class="hidden rounded-2xl p-3.5 flex flex-col space-y-1">
-                    <div class="flex items-center gap-1.5">
-                        <span id="quiz-feedback-title" class="text-xs font-semibold"></span>
-                    </div>
-                    <p id="quiz-feedback-desc" class="text-[11px] text-slate-400 leading-relaxed"></p>
-                </div>
-                
-                <!-- Next Button -->
-                <div id="quiz-footer" class="flex justify-end pt-1">
-                    <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs shadow-md shadow-brand-500/25 transition flex items-center gap-1">
-                        <span>下一題 (Next)</span>
-                        <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                <div class="flex flex-col space-y-3">
+                    <!-- Quiz Card 1 -->
+                    <button onclick="startSpecificQuiz('basic-relationship')" class="w-full text-left bg-slate-950/40 hover:bg-slate-900/50 border border-slate-800/80 hover:border-brand-500/30 rounded-2xl p-4 transition flex flex-col space-y-2 group shadow-sm">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-bold text-slate-200 group-hover:text-brand-400 transition">初級兩性情感測驗</span>
+                            <span id="quiz-status-basic" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium">未測驗</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">測驗您對聊天心法、男女框架與情感動力學的理解程度（共 10 題）。</p>
                     </button>
+                    
+                    <!-- Quiz Card 2 (Coming Soon) -->
+                    <div class="w-full text-left bg-slate-950/20 border border-slate-900 opacity-60 rounded-2xl p-4 flex flex-col space-y-2 relative">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-bold text-slate-400">PTT Catch 經典心法挑戰</span>
+                            <span class="text-[10px] bg-slate-950 text-slate-500 px-2 py-0.5 rounded-full font-medium">即將推出</span>
+                        </div>
+                        <p class="text-[11px] text-slate-500 leading-relaxed">考驗您對 PTT Catch 板歷代大師之經典爆文、聊天心法與推拉術的熟悉度。</p>
+                    </div>
                 </div>
             </div>
             
-            <!-- Quiz Results Panel -->
-            <div id="quiz-results" class="hidden flex-1 flex flex-col items-center justify-center text-center space-y-4 py-6">
-                <div class="w-16 h-16 bg-brand-950/40 border border-brand-500/30 text-brand-400 rounded-full flex items-center justify-center shadow-lg shadow-brand-500/10">
-                    <i data-lucide="award" class="w-8 h-8"></i>
+            <!-- 2. Quiz Active View (Initially hidden) -->
+            <div id="quiz-active-view" class="hidden flex-1 flex flex-col">
+                <!-- Header with Back Button -->
+                <div class="flex items-center justify-between mb-4 pb-2 border-b border-slate-800/60">
+                    <button onclick="exitQuizToCatalog()" class="text-xs text-slate-400 hover:text-slate-200 flex items-center gap-1 transition focus:outline-none">
+                        <i data-lucide="chevron-left" class="w-3.5 h-3.5"></i>
+                        <span>返回目錄</span>
+                    </button>
+                    <span id="quiz-active-title" class="text-xs font-bold text-brand-400">初級兩性情感測驗</span>
                 </div>
-                <div class="space-y-1">
-                    <h3 class="text-md font-semibold text-slate-200">測驗完成！</h3>
-                    <p id="quiz-score-summary" class="text-xs text-slate-400">您答對了 8 / 10 題！</p>
-                    <p id="quiz-rank-text" class="text-[11px] text-brand-300 font-medium bg-brand-950/30 border border-brand-900/30 px-3 py-0.5 rounded-full inline-block">實戰大師 🌟</p>
+                
+                <!-- Quiz Body -->
+                <div id="quiz-body" class="flex-1 flex flex-col space-y-4">
+                    <div class="flex items-center justify-between text-xs text-slate-400 font-medium pb-0.5">
+                        <span id="quiz-progress-text">第 1 / 10 題</span>
+                        <span id="quiz-score-text" class="text-brand-400 font-semibold">答對: 0 題</span>
+                    </div>
+                    <div class="w-full bg-slate-800 rounded-full h-1.5">
+                        <div id="quiz-progress-bar" class="bg-brand-500 h-1.5 rounded-full transition-all duration-300" style="width: 10%;"></div>
+                    </div>
+                    
+                    <!-- Question Card -->
+                    <div class="bg-slate-950/60 border border-slate-800/80 rounded-2xl p-4 flex flex-col space-y-3">
+                        <h4 id="quiz-question-text" class="text-base font-bold text-slate-100 leading-relaxed">載入中...</h4>
+                        <div>
+                            <button onclick="toggleQuizHint()" class="flex items-center gap-1 text-xs text-brand-400 hover:text-brand-300 transition focus:outline-none">
+                                <i data-lucide="lightbulb" class="w-3 h-3"></i>
+                                <span id="quiz-hint-btn-text">顯示提示 (Hint)</span>
+                            </button>
+                            <div id="quiz-hint-box" class="hidden mt-2 p-2.5 bg-brand-950/20 border border-brand-900/20 text-brand-300 rounded-xl text-xs leading-relaxed"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Options -->
+                    <div id="quiz-options" class="flex flex-col space-y-2.5"></div>
+                    
+                    <!-- Feedback Summary -->
+                    <div id="quiz-feedback-summary" class="hidden rounded-2xl p-4 flex flex-col space-y-1.5">
+                        <div class="flex items-center gap-1.5">
+                            <span id="quiz-feedback-title" class="text-xs font-semibold"></span>
+                        </div>
+                        <p id="quiz-feedback-desc" class="text-xs md:text-sm text-slate-300 leading-relaxed"></p>
+                    </div>
+                    
+                    <!-- Next Button -->
+                    <div id="quiz-footer" class="flex justify-end pt-1">
+                        <button id="quiz-next-btn" onclick="nextQuizQuestion()" class="hidden px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs shadow-md shadow-brand-500/25 transition flex items-center gap-1">
+                            <span>下一題 (Next)</span>
+                            <i data-lucide="arrow-right" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
                 </div>
-                <div id="quiz-rank-desc" class="text-[11px] text-slate-400 max-w-xs leading-relaxed px-4"></div>
-                <button onclick="restartQuiz()" class="px-5 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-medium text-xs shadow-md shadow-brand-500/25 transition">
-                    重新測驗 (Restart)
-                </button>
+                
+                <!-- Quiz Results Panel (Enlarged elements) -->
+                <div id="quiz-results" class="hidden flex-1 flex flex-col items-center justify-center text-center space-y-6 py-8">
+                    <div class="w-24 h-24 bg-brand-950/40 border border-brand-500/30 text-brand-400 rounded-full flex items-center justify-center shadow-lg shadow-brand-500/10">
+                        <i data-lucide="award" class="w-12 h-12"></i>
+                    </div>
+                    <div class="space-y-2">
+                        <h3 class="text-2xl md:text-3xl font-extrabold text-slate-100">測驗完成！</h3>
+                        <p id="quiz-score-summary" class="text-lg md:text-xl font-bold text-slate-200">您答對了 8 / 10 題！</p>
+                        <p id="quiz-rank-text" class="text-sm md:text-base font-bold text-brand-300 bg-brand-950/30 border border-brand-900/30 px-4 py-1.5 rounded-full inline-block">實戰大師 🌟</p>
+                    </div>
+                    <div id="quiz-rank-desc" class="text-xs md:text-sm text-slate-300 max-w-sm leading-relaxed px-4"></div>
+                    <div class="flex items-center gap-3 pt-2">
+                        <button onclick="restartQuiz()" class="px-5 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-semibold text-xs md:text-sm transition">
+                            重新測驗
+                        </button>
+                        <button onclick="exitQuizToCatalog()" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs md:text-sm shadow-md shadow-brand-500/25 transition">
+                            返回測驗目錄
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
-<!-- Frontend logic scripts -->
+        <!-- Frontend logic scripts -->
     <script>
         const API_BASE = "http://localhost:8000/api";
         let currentNotebookId = "default-catch-notebook-uuid";
@@ -2324,257 +2326,299 @@
         // --- 情感互動測驗系統 (Dating Quiz System) ---
         const QUIZ_QUESTIONS = [
             {
-                        "number": 1,
-                        "question": "當女性在對談中突然對你說：「你是不是對每個女生都這樣說？」根據資料，這最可能是哪種心理狀態的反應？",
-                        "hint": "思考這是一個「阻礙」還是女性在篩選「高價值對象」的信號。",
-                        "choices": [
-                                    {
-                                                "text": "she正在尋求邏輯上的解釋，以確認你的社交頻率。",
-                                                "explanation": "close\nNot quite\n女性在社交互動中更受情緒驅使，而非真的想統計你的社交數據。"
-                                    },
-                                    {
-                                                "text": "她在進行一致性測試，試探你是否具備真正的自信而非偽裝。",
-                                                "explanation": "done\nRight answer\n女性常透過這類帶有挑戰性的問題來觀察男性的反應是否穩定，以判斷其自信心是真實的還是表面功夫。"
-                                    },
-                                    {
-                                                "text": "她對你的行為感到厭惡，並希望你立即停止交談。",
-                                                "explanation": "如果她真的厭惡，通常會選擇迴避眼神或直接走開，而非透過提問來延續互動。"
-                                    },
-                                    {
-                                                "text": "她感到極度的不安全感，需要你立即給予忠誠的承諾。",
-                                                "explanation": "雖然看似在問忠誠度，但在關係初期這通常是社交測試，過早給予嚴肅承諾反而會顯示出低價值。"
-                                    }
-                        ],
-                        "correct_index": 1
+                "number": 1,
+                "question": "當女性在對談中突然對你說：「你是不是對每個女生都這樣說？」根據資料，這最可能是哪種心理狀態的反應？",
+                "hint": "思考這是一個「阻礙」還是女性在篩選「高價值對象」的信號。",
+                "choices": [
+                    {
+                        "text": "她正在尋求邏輯上的解釋，以確認你的社交頻率。",
+                        "explanation": "close\nNot quite\n女性在社交互動中更受情緒驅使，而非真的想統計你的社交數據。"
+                    },
+                    {
+                        "text": "她在進行一致性測試，試探你是否具備真正的自信而非偽裝。",
+                        "explanation": "done\nRight answer\n女性常透過這類帶有挑戰性的問題來觀察男性的反應是否穩定，以判斷其自信心是真實的還是表面功夫。"
+                    },
+                    {
+                        "text": "她對你的行為感到厭惡，並希望你立即停止交談。",
+                        "explanation": "如果她真的厭惡，通常會選擇迴避眼神或直接走開，而非透過提問來延續互動。"
+                    },
+                    {
+                        "text": "她感到極度的不安全感，需要你立即給予忠誠的承諾。",
+                        "explanation": "雖然看似在問忠誠度，但在關係初期這通常是社交測試，過早給予嚴肅承諾反而會顯示出低價值。"
+                    }
+                ],
+                "correct_index": 1
             },
             {
-                        "number": 2,
-                        "question": "在社交場合中，若女性的朋友們都去洗手間了，但她卻獨自留下來繼續與你交談，這代表了什麼？",
-                        "hint": "注意她「沒有做」的事情（跟隨朋友離開）所傳達的隱性含意。",
-                        "choices": [
-                                    {
-                                                "text": "她希望你幫她看管座位或隨身物品。",
-                                                "explanation": "close\nNot quite\n這將社交互動誤解為功能性服務，忽略了兩人關係中的情緒流動。"
-                                    },
-                                    {
-                                                "text": "她在測試你是否會因為她的朋友離開而感到緊張。",
-                                                "explanation": "雖然可能觀察你的反應，但其行為核心更偏向於釋放願意深入交流的訊號。"
-                                    },
-                                    {
-                                                "text": "她只是懶得走動，與你本人是否有吸引力無關。",
-                                                "explanation": "在群體社交動力中，女性通常會集體行動以獲得安全感，留下來是一個明顯的偏好選擇。"
-                                    },
-                                    {
-                                                "text": "這是一種被動的興趣指標，顯示她願意在互動中投入更多時間。",
-                                                "explanation": "done\nRight answer\n她放棄了與朋友同行的機會而選擇與你停留，這在行為上暗示了對當前互動的好感。"
-                                    }
-                        ],
-                        "correct_index": 3
+                "number": 2,
+                "question": "在社交場合中，若女性的朋友們都去洗手間了，但她卻獨自留下來繼續與你交談，這代表了什麼？",
+                "hint": "注意她「沒有做」的事情（跟隨朋友離開）所傳達的隱性含意。",
+                "choices": [
+                    {
+                        "text": "她希望你幫她看管座位或隨身物品。",
+                        "explanation": "close\nNot quite\n這將社交互動誤解為功能性服務，忽略了兩人關係中的情緒流動。"
+                    },
+                    {
+                        "text": "她在測試你是否會因為她的朋友離開而感到緊張。",
+                        "explanation": "雖然可能觀察你的反應，但其行為核心更偏向於釋放願意深入交流的訊號。"
+                    },
+                    {
+                        "text": "她只是懶得走動，與你本人是否有吸引力無關。",
+                        "explanation": "在群體社交動力中，女性通常會集體行動以獲得安全感，留下來是一個明顯的偏好選擇。"
+                    },
+                    {
+                        "text": "這是一種被動的興趣指標，顯示她願意在互動中投入更多時間。",
+                        "explanation": "done\nRight answer\n她放棄了與朋友同行的機會而選擇與你停留，這在行為上暗示了對當前互動的好感。"
+                    }
+                ],
+                "correct_index": 3
             },
             {
-                        "number": 3,
-                        "question": "當女生抱怨工作很累、老闆很煩時，男性最好的情緒應對方式為何？",
-                        "hint": "分辨「解決問題」與「情感共鳴」在女性溝通中的差異。",
-                        "choices": [
-                                    {
-                                                "text": "運用上堆法提供邏輯分析，幫她找出解決工作壓力的具體方案。",
-                                                "explanation": "close\nNot quite\n男性思維習慣解決問題，但在情感交流中，過早給建議會切斷情緒的流動。"
-                                    },
-                                    {
-                                                "text": "展示高價值，告訴她你以前處理過更困難的工作挑戰。",
-                                                "explanation": "這會讓對方覺得你在競爭或說教，而非在傾聽她的感受。"
-                                    },
-                                    {
-                                                "text": "保持沉默以示尊重，讓她把所有不滿完全宣洩出來。",
-                                                "explanation": "單純沉默可能被誤解為不在乎，適度的情感回饋才能建立深層聯繫。"
-                                    },
-                                    {
-                                                "text": "使用下切法，對她的感受進行共鳴，例如說：「這一定感覺很糟糕」。",
-                                                "explanation": "done\nRight answer\n女性在分享情緒時尋求的是連結與理解，共情能讓她覺得被看見，而非需要被教導。"
-                                    }
-                        ],
-                        "correct_index": 3
+                "number": 3,
+                "question": "當女生抱怨工作很累、老闆很煩時，男性最好的情緒應對方式為何？",
+                "hint": "分辨「解決問題」與「情感共鳴」在女性溝通中的差異。",
+                "choices": [
+                    {
+                        "text": "運用上堆法提供邏輯分析，幫她找出解決工作壓力的具體方案。",
+                        "explanation": "close\nNot quite\n男性思維習慣解決問題，但在情感交流中，過早給建議會切斷情緒的流動。"
+                    },
+                    {
+                        "text": "展示高價值，告訴她你以前處理過更困難的工作挑戰。",
+                        "explanation": "這會讓對方覺得你在競爭或說教，而非在傾聽她的感受。"
+                    },
+                    {
+                        "text": "保持沉默以示尊重，讓她把所有不滿完全宣洩出來。",
+                        "explanation": "單純沉默可能被誤解為不在乎，適度的情感回饋才能建立深層聯繫。"
+                    },
+                    {
+                        "text": "使用下切法，對她的感受進行共鳴，例如說：「這一定感覺很糟糕」。",
+                        "explanation": "done\nRight answer\n女性在分享情緒時尋求的是連結與理解，共情能讓她覺得被看見，而非需要被教導。"
+                    }
+                ],
+                "correct_index": 3
             },
             {
-                        "number": 4,
-                        "question": "若女性在互動中表現出「反蕩婦防衛機制（ASD）」，例如突然說：「我們這樣太快了」，男性的正確判斷應為何？",
-                        "hint": "思考女性在社會壓力下，如何透過「象徵性抵抗」來保護自己的心理名譽。",
-                        "choices": [
-                                    {
-                                                "text": "她擔心需要為即將發生的親密行為負擔責任，需要「合理推諉」的藉口。",
-                                                "explanation": "done\nThat's right!\n女性為了保護名聲或避免內疚感，會產生這種干擾機制，此時男性應主導並帶走她的責任感。"
-                                    },
-                                    {
-                                                "text": "她對你完全失去了興趣，這是明確的拒絕訊號。",
-                                                "explanation": "若完全沒興趣，她通常會選擇身體上的撤離，而非停留在原地與你討論「速度」。"
-                                    },
-                                    {
-                                                "text": "她在暗示你應該立即表白，以確定長期的情感忠誠。",
-                                                "explanation": "過早的表白會增加社交壓力，未必能解除她對當下行為的防禦心理。"
-                                    },
-                                    {
-                                                "text": "她覺得你表現得不夠紳士，要求你退回到純友誼階段。",
-                                                "explanation": "這是一種情緒上的暫停而非終止，誤解為純友誼會讓你錯失推進關係的時機。"
-                                    }
-                        ],
-                        "correct_index": 0
+                "number": 4,
+                "question": "若女性在互動中表現出「反蕩婦防衛機制（ASD）」，例如突然說：「我們這樣太快了」，男性的正確判斷應為何？",
+                "hint": "思考女性在社會壓力下，如何透過「象徵性抵抗」來保護自己的心理名譽。",
+                "choices": [
+                    {
+                        "text": "她擔心需要為即將發生的親密行為負擔責任，需要「合理推諉」的藉口。",
+                        "explanation": "done\nThat's right!\n女性為了保護名聲或避免內疚感，會產生這種干擾機制，此時男性應主導並帶走她的責任感。"
+                    },
+                    {
+                        "text": "她對你完全失去了興趣，這是明確的拒絕訊號。",
+                        "explanation": "若完全沒興趣，她通常會選擇身體上的撤離，而非停留在原地與你討論「速度」。"
+                    },
+                    {
+                        "text": "她在暗示你應該立即表白，以確定長期的情感忠誠。",
+                        "explanation": "過早的表白會增加社交壓力，未必能解除她對當下行為的防禦心理。"
+                    },
+                    {
+                        "text": "她覺得你表現得不夠紳士，要求你退回到純友誼階段。",
+                        "explanation": "這是一種情緒上的暫停而非終止，誤解為純友誼會讓你錯失推進關係的時機。"
+                    }
+                ],
+                "correct_index": 0
             },
             {
-                        "number": 5,
-                        "question": "在剛認識的階段，為什麼「向後靠（Lean back）」的坐姿通常比「向前傾」更有吸引力？",
-                        "hint": "考慮「需求感」如何影響一個人在對方眼中的社交價值。",
-                        "choices": [
-                                    {
-                                                "text": "向後靠能讓對方看清楚你的穿搭細節，展示你的經濟價值。",
-                                                "explanation": "close\nNot quite\n吸引力的核心在於潛溝通的特質，而非單純的視覺展示。"
-                                    },
-                                    {
-                                                "text": "向前傾會阻擋對方的視線，讓她感到視覺上的壓迫。",
-                                                "explanation": "這僅是物理上的觀察，未觸及社交價值與心理需求的層面。"
-                                    },
-                                    {
-                                                "text": "向後靠傳達了無需求感與高地位，讓對方感到舒適且不具威脅。",
-                                                "explanation": "done\nRight answer\n身體前傾常顯示出過度的熱切或討好，而後靠則顯示出對現狀的掌控與自信。"
-                                    },
-                                    {
-                                                "text": "向後靠是為了隨時準備起身離開，營造假性時間限制。",
-                                                "explanation": "雖然有此效果，但其主要功能在於調節互動中的壓力，使女性不覺得被追逐。"
-                                    }
-                        ],
-                        "correct_index": 2
+                "number": 5,
+                "question": "在剛認識的階段，為什麼「向後靠（Lean back）」的坐姿通常比「向前傾」更有吸引力？",
+                "hint": "考慮「需求感」如何影響一個人在對方眼中的社交價值。",
+                "choices": [
+                    {
+                        "text": "向後靠能讓對方看清楚你的穿搭細節，展示你的經濟價值。",
+                        "explanation": "close\nNot quite\n吸引力的核心在於潛溝通的特質，而非單純的視覺展示。"
+                    },
+                    {
+                        "text": "向前傾會阻擋對方的視線，讓她感到視覺上的壓迫。",
+                        "explanation": "這僅是物理上的觀察，未觸及社交價值與心理需求的層面。"
+                    },
+                    {
+                        "text": "向後靠傳達了無需求感與高地位，讓對方感到舒適且不具威脅。",
+                        "explanation": "done\nRight answer\n身體前傾常顯示出過度的熱切或討好，而後靠則顯示出對現狀的掌控與自信。"
+                    },
+                    {
+                        "text": "向後靠是為了隨時準備起身離開，營造假性時間限制。",
+                        "explanation": "雖然有此效果，但其主要功能在於調節互動中的壓力，使女性不覺得被追逐。"
+                    }
+                ],
+                "correct_index": 2
             },
             {
-                        "number": 6,
-                        "question": "當你正與一群女性聊天，而其中一位你心儀的目標女生突然打斷你，你對她說「我又沒問你」，這在心理戰術上起到了什麼作用？",
-                        "hint": "想想這句話如何影響目標女性在團體中的「被關注需求」。",
-                        "choices": [
-                                    {
-                                                "text": "這是在明確表達你對她的厭惡，轉而將注意力放在其他女性身上。",
-                                                "explanation": "close\nNot quite\n這通常是調情的一環，若真的厭惡則會選擇完全忽視。"
-                                    },
-                                    {
-                                                "text": "這是一種否定（Neg），用來降低對方的自我防衛並讓她渴望獲得你的認同。",
-                                                "explanation": "done\nRight answer\n對於受歡迎的美女，這種「無興趣指標」能打破她習慣被奉承的慣例，使其產生追逐你的動力。"
-                                    },
-                                    {
-                                                "text": "這是為了展現你的權威感，讓團體中的所有人都服從你的指令。",
-                                                "explanation": "社交互動的核心是吸引而非強迫服從，過度的權威會顯得無禮。"
-                                    },
-                                    {
-                                                "text": "這是在測試她的耐心，看她是否具備溫柔體貼的傳統美德。",
-                                                "explanation": "這類否定主要是為了平衡價值差異，而非測試道德品質。"
-                                    }
-                        ],
-                        "correct_index": 1
+                "number": 6,
+                "question": "當你正與一群女性聊天，而其中一位你心儀的目標女生突然打斷你，你對她說「我又沒問你」，這在心理戰術上起到了什麼作用？",
+                "hint": "思考這句話如何影響目標女性在團體中的「被關注需求」。",
+                "choices": [
+                    {
+                        "text": "這是在明確表達你對她的厭惡，轉而將注意力放在其他女性身上。",
+                        "explanation": "close\nNot quite\n這通常是調情的一環，若真的厭惡則會選擇完全忽視。"
+                    },
+                    {
+                        "text": "這是一種否定（Neg），用來降低對方的自我防衛並讓她渴望獲得你的認同。",
+                        "explanation": "done\nRight answer\n對於受歡迎的美女，這種「無興趣指標」能打破她習慣被奉承的慣例，使其產生追逐你的動力。"
+                    },
+                    {
+                        "text": "這是為了展現你的權威感，讓團體中的所有人都服從你的指令。",
+                        "explanation": "社交互動的核心是吸引而非強迫服從，過度的權威會顯得無禮。"
+                    },
+                    {
+                        "text": "這是在測試她的耐心，看她是否具備溫柔體貼的傳統美德。",
+                        "explanation": "這類否定主要是為了平衡價值差異，而非測試道德品質。"
+                    }
+                ],
+                "correct_index": 1
             },
             {
-                        "number": 7,
-                        "question": "根據資料，女性之所以容易受環境 and 情緒影響（如：原本約好卻因為沒心情而取消），其進化上的原因最可能為何？",
-                        "hint": "將「情緒」看作是一種高效的、用於判斷複雜環境變量的感應器。",
-                        "choices": [
-                                    {
-                                                "text": "女性在演化中主要負責狩獵，需要根據氣候變化隨時調整策略。",
-                                                "explanation": "close\nNot quite\n根據分工論，狩獵通常是男性的任務，要求的是目標的精準度而非環境的全面感知。"
-                                    },
-                                    {
-                                                "text": "這是一種社交操縱手段，用來測試男性的耐心與財富資源。",
-                                                "explanation": "情緒化更多是內在的心理狀態反映，而非全然有意識的策略計算。"
-                                    },
-                                    {
-                                                "text": "因為女性體力較弱，情緒變化可以作為一種求救訊號以吸引群體注意。",
-                                                "explanation": "情緒的主要功能是環境判斷與內部導航，而非單純的求救機制。"
-                                    },
-                                    {
-                                                "text": "遠古女性需要時刻關注周圍變化以確保哺育環境的安全，因此演化出敏銳的情緒感知能力。",
-                                                "explanation": "done\nRight answer\n情緒被視為判斷環境變量的快速工具，幫助女性更細微地評估當下的生存風險。"
-                                    }
-                        ],
-                        "correct_index": 3
+                "number": 7,
+                "question": "根據資料，女性之所以容易受環境 and 情緒影響（如：原本約好卻因為沒心情而取消），其進化上的原因最可能為何？",
+                "hint": "將「情緒」看作是一種高效的、用於判斷複雜環境變量的感應器。",
+                "choices": [
+                    {
+                        "text": "女性在演化中主要負責狩獵，需要根據氣候變化隨時調整策略。",
+                        "explanation": "close\nNot quite\n根據分工論，狩獵通常是男性的任務，要求的是目標的精準度而非環境的全面感知。"
+                    },
+                    {
+                        "text": "這是一種社交操縱手段，用來測試男性的耐心與財富資源。",
+                        "explanation": "情緒化更多是內在的心理狀態反映，而非全然有意識的策略計算。"
+                    },
+                    {
+                        "text": "因為女性體力較弱，情緒變化可以作為一種求救訊號以吸引群體注意。",
+                        "explanation": "情緒的主要功能是環境判斷與內部導航，而非單純的求救機制。"
+                    },
+                    {
+                        "text": "遠古女性需要時刻關注周圍變化以確保哺育環境的安全，因此演化出敏銳的情緒感知能力。",
+                        "explanation": "done\nRight answer\n情緒被視為判斷環境變量的快速工具，幫助女性更細微地評估當下的生存風險。"
+                    }
+                ],
+                "correct_index": 3
             },
             {
-                        "number": 8,
-                        "question": "在一段關係中，如果女性開始詢問你的「過去情感經歷」或「星座」，這通常傳達了什麼樣的需求？",
-                        "hint": "思考「好奇心」在吸引力過程中所代表的意義。",
-                        "choices": [
-                                    {
-                                                "text": "她對你產生了好奇心與關注，正試圖尋求彼此的相似性或潛在聯繫感。",
-                                                "explanation": "done\nThat's right!\n這些問題是她試圖了解你並將你納入她的「生活圈」或「情緒地圖」的指標。"
-                                    },
-                                    {
-                                                "text": "她在收集證據以證明你是一個不誠實的人。",
-                                                "explanation": "除非已有衝突，否則初期這類問題更多是建立熟悉感的表現。"
-                                    },
-                                    {
-                                                "text": "她正處於邏輯思維狀態，需要這些數據來做理性的配對分析。",
-                                                "explanation": "女性詢問這些往往是為了感受「來電」的過程，而非撰寫科學報告。"
-                                    },
-                                    {
-                                                "text": "這代表她覺得現在的話題很無聊，只是隨口找話填補空白。",
-                                                "explanation": "若覺得無聊，她更可能選擇結束對話，而非深入探詢個人私事。"
-                                    }
-                        ],
-                        "correct_index": 0
+                "number": 8,
+                "question": "在一段關係中，如果女性開始詢問你的「過去情感經歷」或「星座」，這通常傳達了什麼樣的需求？",
+                "hint": "思考「好奇心」在吸引力過程中所代表的意義。",
+                "choices": [
+                    {
+                        "text": "她對你產生了好奇心與關注，正試圖尋求彼此的相似性或潛在聯繫感。",
+                        "explanation": "done\nThat's right!\n這些問題是她試圖了解你並將你納入她的「生活圈」或「情緒地圖」的指標。"
+                    },
+                    {
+                        "text": "她在收集證據以證明你是一個不誠實的人。",
+                        "explanation": "除非已有衝突，否則初期這類問題更多是建立熟悉感的表現。"
+                    },
+                    {
+                        "text": "她正處於邏輯思維狀態，需要這些數據來做理性的配對分析。",
+                        "explanation": "女性詢問這些往往是為了感受「來電」的過程，而非撰寫科學報告。"
+                    },
+                    {
+                        "text": "這代表她覺得現在的話題很無聊，只是隨口找話填補空白。",
+                        "explanation": "若覺得無聊，她更可能選擇結束對話，而非深入探詢個人私事。"
+                    }
+                ],
+                "correct_index": 0
             },
             {
-                        "number": 9,
-                        "question": "當一個女生問：「你覺得我是個不正經的女人嗎？」若男性急忙回答：「當然不是！」，為什麼這通常是錯誤的應對？",
-                        "hint": "考慮「跳入對方的圈套（跳入框架）」如何影響你在這段關係中的社交地位。",
-                        "choices": [
-                                    {
-                                                "text": "因為這句話本身就是拒絕的預兆，無論怎麼回答都無法挽回。",
-                                                "explanation": "close\nNot quite\n這通常是個測試，處理得當反而能讓吸引力大幅提升。"
-                                    },
-                                    {
-                                                "text": "因為你掉入了她的框架，這顯示出你急於討好她並受她控制。",
-                                                "explanation": "done\nRight answer\n直接老實回答測試題會喪失挑戰性，正確做法應該是幽默曲解或拒絕進入該嚴肅框架。"
-                                    },
-                                    {
-                                                "text": "因為你應該實話實說，根據她的穿著給予客觀的評價。",
-                                                "explanation": "社交互動並非誠實比賽，過於直接的負面評價會破壞舒適感。"
-                                    },
-                                    {
-                                                "text": "因為這顯得你缺乏社交經驗，不知道「正經」是一個主觀詞彙。",
-                                                "explanation": "重點在於情緒的張力與主導權，而非詞彙的定義問題。"
-                                    }
-                        ],
-                        "correct_index": 1
+                "number": 9,
+                "question": "當一個女生問：「你覺得我是個不正經的女人嗎？」若男性急忙回答：「當然不是！」，為什麼這通常是錯誤的應對？",
+                "hint": "考慮「跳入對方的圈套（跳入框架）」如何影響你在這段關係中的社交地位。",
+                "choices": [
+                    {
+                        "text": "因為這句話本身就是拒絕的預兆，無論怎麼回答都無法挽回。",
+                        "explanation": "close\nNot quite\n這通常是個測試，處理得當反而能讓吸引力大幅提升。"
+                    },
+                    {
+                        "text": "because你掉入了她的框架，這顯示出你急於討好她並受她控制。",
+                        "explanation": "done\nRight answer\n直接老實回答測試題會喪失挑戰性，正確做法應該是幽默曲解或拒絕進入該嚴肅框架。"
+                    },
+                    {
+                        "text": "因為你應該實話實說，根據她的穿著給予客觀的評價。",
+                        "explanation": "社交互動並非誠實比賽，過於直接的負面評價會破壞舒適感。"
+                    },
+                    {
+                        "text": "因為這顯得你缺乏社交經驗，不知道「正經」是一個主觀詞彙。",
+                        "explanation": "重點在於情緒的張力與主導權，而非詞彙的定義問題。"
+                    }
+                ],
+                "correct_index": 1
             },
             {
-                        "number": 10,
-                        "question": "若一個女性表現得非常物質（如直接問薪水、車子），根據資料，這反映了她內心什麼樣的狀態？",
-                        "hint": "注意「應激狀態」下的人，其思維模式會發生什麼樣的轉變。",
-                        "choices": [
-                                    {
-                                                "text": "她是在展現高價值，暗示你必須有相當的財富才配得上她。",
-                                                "explanation": "close\nNot quite\n真正的吸引力通常來自情緒的波動，而非單純的條件交換。"
-                                    },
-                                    {
-                                                "text": "她是在試探你是否有幽默感，看你如何化解這類尷尬問題。",
-                                                "explanation": "雖然可以幽默化解，但其原始動機通常與生存資源的焦慮有關。"
-                                    },
-                                    {
-                                                "text": "這代表她社交智慧極高，懂得效率最大化。",
-                                                "explanation": "過於直接的物質索求在社交禮儀中通常被視為低價值或不具女性魅力的行為。"
-                                    },
-                                    {
-                                                "text": "她可能正處於極低的安全感中，因此像男性一樣採用目的導向的思維來面對世界。",
-                                                "explanation": "done\nRight answer\n缺乏安全感的女性會傾向於用直接、物質的標準來快速篩選，以換取生存上的保障。"
-                                    }
-                        ],
-                        "correct_index": 3
+                "number": 10,
+                "question": "若一個女性表現得非常物質（如直接問薪水、車子），根據資料，這反映了她內心什麼樣的狀態？",
+                "hint": "注意「應激狀態」下的人，其思維模式會發生什麼樣的轉變。",
+                "choices": [
+                    {
+                        "text": "她是在展現高價值，暗示你必須有相當的財富才配得上她。",
+                        "explanation": "close\nNot quite\n真正的吸引力通常來自情緒的波動，而非單純的條件交換。"
+                    },
+                    {
+                        "text": "她是在試探你是否有幽默感，看你如何化解這類尷尬問題。",
+                        "explanation": "雖然可以幽默化解，但其原始動機通常與生存資源的焦慮有關。"
+                    },
+                    {
+                        "text": "這代表她社交智慧極高，懂得效率最大化。",
+                        "explanation": "過於直接的物質索求在社交禮儀中通常被視為低價值或不具女性魅力的行為。"
+                    },
+                    {
+                        "text": "她可能正處於極低的安全感中，因此像男性一樣採用目的導向的思維來面對世界。",
+                        "explanation": "done\nRight answer\n缺乏安全感的女性會傾向於用直接、物質的標準來快速篩選，以換取生存上的保障。"
+                    }
+                ],
+                "correct_index": 3
             }
-];
-        
+        ];
+
         let currentQuestionIndex = 0;
         let quizScore = 0;
         let isQuestionAnswered = false;
+        let activeQuizId = 'basic-relationship';
         
         function initQuiz() {
-            // Make sure header and body are visible, results hidden on first load
-            document.getElementById('quiz-header').classList.remove('hidden');
-            document.getElementById('quiz-body').classList.remove('hidden');
+            // Load catalog screen
+            document.getElementById('quiz-catalog').classList.remove('hidden');
+            document.getElementById('quiz-active-view').classList.add('hidden');
+            
+            // Render catalog status
+            const record = JSON.parse(localStorage.getItem('quiz_scores_record')) || {};
+            const basicStatus = document.getElementById('quiz-status-basic');
+            if (record['basic-relationship']) {
+                const score = record['basic-relationship'].score;
+                const total = record['basic-relationship'].total;
+                basicStatus.textContent = `已完成：${score}/${total} 分`;
+                basicStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+            } else {
+                basicStatus.textContent = "未測驗";
+                basicStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
+            }
+            
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+        
+        function startSpecificQuiz(quizId) {
+            activeQuizId = quizId;
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            
+            // Switch views
+            document.getElementById('quiz-catalog').classList.add('hidden');
+            document.getElementById('quiz-active-view').classList.remove('hidden');
             document.getElementById('quiz-results').classList.add('hidden');
+            document.getElementById('quiz-body').classList.remove('hidden');
+            
+            if (quizId === 'basic-relationship') {
+                document.getElementById('quiz-active-title').textContent = "初級兩性情感測驗";
+            }
+            
             renderQuestion();
+        }
+        
+        function exitQuizToCatalog() {
+            document.getElementById('quiz-active-view').classList.add('hidden');
+            document.getElementById('quiz-catalog').classList.remove('hidden');
+            
+            // Refresh catalog status
+            initQuiz();
         }
         
         function renderQuestion() {
@@ -2617,11 +2661,11 @@
                 
                 choiceBtn.innerHTML = `
                     <div class="flex items-start gap-3 w-full">
-                        <span class="w-5.5 h-5.5 rounded-full bg-slate-800 text-slate-300 font-bold text-[10px] flex items-center justify-center flex-shrink-0 group-hover:bg-slate-700 transition">${prefixes[idx]}</span>
-                        <span class="text-xs md:text-[13px] text-slate-200 leading-relaxed flex-1 pt-0.5 font-medium">${choice.text}</span>
-                        <div id="choice-icon-${idx}" class="w-5.5 h-5.5 rounded-full flex items-center justify-center flex-shrink-0 hidden text-white font-bold text-[10px]"></div>
+                        <span class="w-7 h-7 rounded-full bg-slate-800 text-slate-300 font-bold text-xs flex items-center justify-center flex-shrink-0 group-hover:bg-slate-700 transition">${prefixes[idx]}</span>
+                        <span class="text-lg md:text-[19px] text-slate-200 leading-relaxed flex-1 pt-0.5 font-bold">${choice.text}</span>
+                        <div id="choice-icon-${idx}" class="w-7 h-7 rounded-full flex items-center justify-center flex-shrink-0 hidden text-white font-bold text-xs"></div>
                     </div>
-                    <div id="choice-explanation-${idx}" class="hidden pl-8 pr-2 text-[11px] text-slate-400 leading-relaxed border-l-2 border-slate-800 mt-2 transition-all duration-300">
+                    <div id="choice-explanation-${idx}" class="hidden pl-9 pr-2 text-xs md:text-sm text-slate-400 leading-relaxed border-l-2 border-slate-800 mt-2 transition-all duration-300">
                         ${choice.explanation.replace('close\nNot quite\n', '').replace('done\nRight answer\n', '').replace('done\nThat\'s right!\n', '')}
                     </div>
                 `;
@@ -2660,21 +2704,21 @@
                 if (idx === question.correct_index) {
                     // Correct answer (green border)
                     choiceBtn.className = "w-full text-left bg-emerald-950/15 border border-emerald-500/80 rounded-2xl p-4 transition flex flex-col space-y-2.5 relative";
-                    expBox.className = "pl-8 pr-2 text-[11px] text-emerald-400 leading-relaxed border-l-2 border-emerald-500 mt-2 transition-all duration-300";
-                    iconContainer.className = "w-5.5 h-5.5 rounded-full bg-emerald-500 text-slate-950 font-bold text-[10px] flex items-center justify-center flex-shrink-0";
-                    iconContainer.innerHTML = '<i data-lucide="check" class="w-3.5 h-3.5 text-slate-950 font-bold"></i>';
+                    expBox.className = "pl-9 pr-2 text-xs md:text-sm text-emerald-400 leading-relaxed border-l-2 border-emerald-500 mt-2 transition-all duration-300 font-semibold";
+                    iconContainer.className = "w-7 h-7 rounded-full bg-emerald-500 text-slate-950 font-bold text-xs flex items-center justify-center flex-shrink-0";
+                    iconContainer.innerHTML = '<i data-lucide="check" class="w-4 h-4 text-slate-950 font-bold"></i>';
                     iconContainer.classList.remove('hidden');
                 } else if (idx === choiceIdx) {
                     // Selected incorrect answer (red border)
                     choiceBtn.className = "w-full text-left bg-rose-950/15 border border-rose-500/80 rounded-2xl p-4 transition flex flex-col space-y-2.5 relative";
-                    expBox.className = "pl-8 pr-2 text-[11px] text-rose-400 leading-relaxed border-l-2 border-rose-500 mt-2 transition-all duration-300";
-                    iconContainer.className = "w-5.5 h-5.5 rounded-full bg-rose-500 text-slate-950 font-bold text-[10px] flex items-center justify-center flex-shrink-0";
-                    iconContainer.innerHTML = '<i data-lucide="x" class="w-3.5 h-3.5 text-slate-950 font-bold"></i>';
+                    expBox.className = "pl-9 pr-2 text-xs md:text-sm text-rose-400 leading-relaxed border-l-2 border-rose-500 mt-2 transition-all duration-300 font-semibold";
+                    iconContainer.className = "w-7 h-7 rounded-full bg-rose-500 text-slate-950 font-bold text-xs flex items-center justify-center flex-shrink-0";
+                    iconContainer.innerHTML = '<i data-lucide="x" class="w-4 h-4 text-slate-950 font-bold"></i>';
                     iconContainer.classList.remove('hidden');
                 } else {
                     // Other options (faded style)
                     choiceBtn.className = "w-full text-left bg-slate-950/15 border border-slate-900/60 rounded-2xl p-4 opacity-40 transition flex flex-col space-y-2.5 relative";
-                    expBox.className = "pl-8 pr-2 text-[11px] text-slate-400/80 leading-relaxed border-l-2 border-slate-800 mt-2 transition-all duration-300";
+                    expBox.className = "pl-9 pr-2 text-xs md:text-sm text-slate-400/80 leading-relaxed border-l-2 border-slate-800 mt-2 transition-all duration-300";
                 }
             });
             
@@ -2695,7 +2739,7 @@
             }
             
             // Feedback text should show a summary of the correct answer explanation
-            fbDesc.textContent = question.choices[question.correct_index].explanation.replace("done\nRight answer\n", "").replace("done\nThat\'s right!\n", "");
+            fbDesc.textContent = question.choices[question.correct_index].explanation.replace("done\nRight answer\n", "").replace("done\nThat's right!\n", "");
             
             // Show Next button
             document.getElementById('quiz-next-btn').classList.remove('hidden');
@@ -2726,7 +2770,6 @@
         
         function showQuizResults() {
             document.getElementById('quiz-body').classList.add('hidden');
-            document.getElementById('quiz-header').classList.add('hidden');
             
             const resultsPanel = document.getElementById('quiz-results');
             resultsPanel.classList.remove('hidden');
@@ -2741,7 +2784,7 @@
             
             if (quizScore === 10) {
                 rank = "極致魅影 👑";
-                desc = "太不可思議了！您答對了所有題目！您已經是神級的情感吸引力大師，對男女框架、一致性測試與高價值展示了然於胸，在兩性社交中簡直游刃有餘。";
+                desc = "太不可思議了！您答對了所有題目！您已經是神級的情感吸引力大師，對男女框架、一致性測試與高價值展示了然於胸，在兩性社交中簡集游刃有餘。";
             } else if (quizScore >= 8) {
                 rank = "實戰大師 🌟";
                 desc = "恭喜您！您對兩性溝通心法與社交框架已經有了相當出色的掌握！在實際社交互動中，您將更懂得應對挑戰、化解防禦並創造強烈的吸引力。";
@@ -2755,6 +2798,11 @@
             
             rankText.textContent = rank;
             rankDesc.textContent = desc;
+            
+            // Save results to localStorage
+            const record = JSON.parse(localStorage.getItem('quiz_scores_record')) || {};
+            record[activeQuizId] = { score: quizScore, total: QUIZ_QUESTIONS.length };
+            localStorage.setItem('quiz_scores_record', JSON.stringify(record));
         }
         
         function restartQuiz() {
@@ -2762,11 +2810,9 @@
             quizScore = 0;
             
             document.getElementById('quiz-results').classList.add('hidden');
-            document.getElementById('quiz-header').classList.remove('hidden');
             document.getElementById('quiz-body').classList.remove('hidden');
             
             renderQuestion();
-        }
-</script>
+        }</script>
 </body>
 </html>
