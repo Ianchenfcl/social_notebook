@@ -14,14 +14,27 @@ import database
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY")
 
 class EmbeddingService:
-    def __init__(self):
-        self.api_key = GEMINI_API_KEY
-        if self.api_key:
-            print("Gemini API Key detected. Using Google 'text-embedding-004' model.")
-            genai.configure(api_key=self.api_key)
+    def __init__(self, api_key=None):
+        # Read multiple keys if present
+        keys_str = os.environ.get("GEMINI_API_KEYS")
+        if keys_str:
+            self.api_keys = [k.strip() for k in keys_str.split(",") if k.strip()]
+        else:
+            self.api_keys = []
+            
+        single_key = api_key or os.environ.get("GEMINI_API_KEY") or GEMINI_API_KEY
+        if single_key and single_key not in self.api_keys:
+            self.api_keys.append(single_key)
+            
+        self.key_index = 0
+        
+        if self.api_keys:
+            print(f"Gemini API Keys detected ({len(self.api_keys)} keys). Key rotation enabled.")
+            # Configure initial key
+            genai.configure(api_key=self.api_keys[0])
             self.use_mock = False
         else:
-            print("WARNING: GEMINI_API_KEY not found in environment variables!")
+            print("WARNING: GEMINI_API_KEY not found in environment variables or parameters!")
             print("To actually compute vectors, please set GEMINI_API_KEY.")
             print("Fallback: Using Mock Embedding Generator (Random vectors) for local development/testing.")
             self.use_mock = True
@@ -29,46 +42,109 @@ class EmbeddingService:
     def get_embedding(self, text, is_query=False):
         """計算文本的 Embedding 向量"""
         if self.use_mock:
-            # text-embedding-004 的維度是 768
+            # gemini-embedding-001 的維度是 768
             # 隨機產生一個單位向量
             vec = np.random.randn(768)
             vec /= np.linalg.norm(vec)
             return vec.tolist()
         
-        try:
-            task_type = "retrieval_query" if is_query else "retrieval_document"
-            result = genai.embed_content(
-                model="models/text-embedding-004",
-                contents=text,
-                task_type=task_type
-            )
-            return result['embedding']
-        except Exception as e:
-            print(f"Error calling Google Embedding API: {str(e)}")
-            print("Falling back to mock vector.")
-            vec = np.random.randn(768)
-            vec /= np.linalg.norm(vec)
-            return vec.tolist()
+        import time
+        import re
+        task_type = "retrieval_query" if is_query else "retrieval_document"
+        
+        max_retries = 8
+        for attempt in range(max_retries):
+            # Rotate key for this attempt
+            current_key = self.api_keys[self.key_index]
+            genai.configure(api_key=current_key)
+            self.key_index = (self.key_index + 1) % len(self.api_keys)
+            
+            try:
+                result = genai.embed_content(
+                    model="models/gemini-embedding-2",
+                    content=text,
+                    task_type=task_type,
+                    output_dimensionality=768
+                )
+                return result['embedding']
+            except Exception as e:
+                err_msg = str(e)
+                if "429" in err_msg or "quota" in err_msg.lower() or "limit" in err_msg.lower():
+                    sleep_time = 10.0
+                    match = re.search(r"Please retry in ([0-9.]+)s", err_msg)
+                    if match:
+                        sleep_time = float(match.group(1)) + 1.5
+                    else:
+                        match_proto = re.search(r"seconds:\s*(\d+)", err_msg)
+                        if match_proto:
+                            sleep_time = float(match_proto.group(1)) + 1.5
+                    print(f"  [!] Rate limited (429) in get_embedding. Retrying in {sleep_time:.2f} seconds (attempt {attempt + 1}/{max_retries})...")
+                    time.sleep(sleep_time)
+                else:
+                    print(f"Error calling Google Embedding API: {err_msg}")
+                    break
+        
+        print("Falling back to mock vector after failing all retries.")
+        vec = np.random.randn(768)
+        vec /= np.linalg.norm(vec)
+        return vec.tolist()
 
     def get_embeddings_batch(self, texts):
         """批次計算文本的 Embedding 向量"""
         if self.use_mock:
             return [self.get_embedding(t) for t in texts]
         
-        try:
-            result = genai.embed_content(
-                model="models/text-embedding-004",
-                contents=texts,
-                task_type="retrieval_document"
-            )
-            # 返回 embedding 陣列
-            return result['embeddings']
-        except Exception as e:
-            print(f"Error in batch embedding: {str(e)}. Falling back to individual requests.")
-            embeddings = []
-            for t in texts:
-                embeddings.append(self.get_embedding(t))
-            return embeddings
+        import time
+        import re
+        max_retries = 8
+        for attempt in range(max_retries):
+            # Rotate key for this attempt
+            current_key = self.api_keys[self.key_index]
+            genai.configure(api_key=current_key)
+            self.key_index = (self.key_index + 1) % len(self.api_keys)
+            
+            try:
+                result = genai.embed_content(
+                    model="models/gemini-embedding-2",
+                    content=texts,
+                    task_type="retrieval_document",
+                    output_dimensionality=768
+                )
+                # Success pacing: sleep is dynamic based on number of keys to stay safely under 100 RPM limit (1 chunk = 1 request)
+                # If 1 key: 9.0 seconds sleep
+                # If 2 keys: 5.0 seconds sleep
+                # If 3+ keys: 3.0 seconds sleep
+                num_keys = len(self.api_keys)
+                if num_keys >= 3:
+                    sleep_time = 3.0
+                elif num_keys == 2:
+                    sleep_time = 5.0
+                else:
+                    sleep_time = 13.5
+                time.sleep(sleep_time)
+                # 返回 embedding 陣列
+                return result['embedding']
+            except Exception as e:
+                err_msg = str(e)
+                if "429" in err_msg or "quota" in err_msg.lower() or "limit" in err_msg.lower():
+                    sleep_time = 60.0
+                    match = re.search(r"Please retry in ([0-9.]+)s", err_msg)
+                    if match:
+                        sleep_time = float(match.group(1)) + 1.5
+                    else:
+                        match_proto = re.search(r"seconds:\s*(\d+)", err_msg)
+                        if match_proto:
+                            sleep_time = float(match_proto.group(1)) + 1.5
+                    print(f"  [!] Rate limited (429) in batch. Error: {err_msg}")
+                    print(f"      Sleeping {sleep_time:.2f} seconds to reset rate limit (attempt {attempt + 1}/{max_retries})...")
+                    time.sleep(sleep_time)
+                else:
+                    print(f"Error in batch embedding: {err_msg}.")
+                    break
+        
+        # If batch embedding fails, fallback to generating mock vectors to prevent crash
+        print("CRITICAL: Batch embedding failed after all retries. Falling back to mock vectors.")
+        return [self.get_embedding(t) for t in texts]
 
 def process_and_embed_catch_data(json_file_path=None):
     if json_file_path is None:
@@ -103,7 +179,7 @@ def process_and_embed_catch_data(json_file_path=None):
     default_notebook_id = "default-catch-notebook-uuid"
     
     # 批次處理大小
-    BATCH_SIZE = 20
+    BATCH_SIZE = 15
     
     all_chunks_to_embed = []
     

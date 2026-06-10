@@ -333,7 +333,7 @@ def query_notebook(notebook_id: str, payload: QueryRequest, x_gemini_api_key: Op
     query_text = payload.query
     top_k = payload.top_k
     
-    embed_service = embedder.EmbeddingService()
+    embed_service = embedder.EmbeddingService(api_key=x_gemini_api_key)
     
     # 1. 計算 query embedding
     query_vector = embed_service.get_embedding(query_text, is_query=True)
