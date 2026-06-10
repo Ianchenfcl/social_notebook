@@ -349,7 +349,25 @@
                         <p class="text-[11px] text-slate-400 leading-relaxed">測驗您對聊天心法、男女框架與情感動力學的理解程度（共 10 題）。</p>
                     </button>
                     
-                    <!-- Quiz Card 2 (Coming Soon) -->
+                    <!-- Quiz Card 2 -->
+                    <button onclick="startSpecificQuiz('quiz-nlp-escalation')" class="w-full text-left bg-slate-950/40 hover:bg-slate-900/50 border border-slate-800/80 hover:border-brand-500/30 rounded-2xl p-4 transition flex flex-col space-y-2 group shadow-sm">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-bold text-slate-200 group-hover:text-brand-400 transition">肢體接觸與吸引升級測驗</span>
+                            <span id="quiz-status-escalation" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium">未測驗</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">評估您對肢體進挪原則、冷讀術應用以及建立深層聯繫感溝通策略的掌握（共 12 題）。</p>
+                    </button>
+                    
+                    <!-- Quiz Card 3 -->
+                    <button onclick="startSpecificQuiz('quiz-frame-testing')" class="w-full text-left bg-slate-950/40 hover:bg-slate-900/50 border border-slate-800/80 hover:border-brand-500/30 rounded-2xl p-4 transition flex flex-col space-y-2 group shadow-sm">
+                        <div class="flex items-center justify-between w-full">
+                            <span class="text-xs font-bold text-slate-200 group-hover:text-brand-400 transition">社交框架與服從測試挑戰</span>
+                            <span id="quiz-status-testing" class="text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium">未測驗</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400 leading-relaxed">挑戰您對一致性測試應對、幽默曲解、假性失格以及反蕩婦機制（ASD）防禦的框架拆解力（共 10 題）。</p>
+                    </button>
+                    
+                    <!-- Quiz Card 4 (Coming Soon) -->
                     <div class="w-full text-left bg-slate-950/20 border border-slate-900 opacity-60 rounded-2xl p-4 flex flex-col space-y-2 relative">
                         <div class="flex items-center justify-between w-full">
                             <span class="text-xs font-bold text-slate-400">PTT Catch 經典心法挑戰</span>
@@ -435,6 +453,7 @@
                 </div>
             </div>
         </div>
+        
         <!-- Frontend logic scripts -->
     <script>
         const API_BASE = "http://localhost:8000/api";
@@ -2324,7 +2343,7 @@
         }
     
         // --- 情感互動測驗系統 (Dating Quiz System) ---
-        const QUIZ_QUESTIONS = [
+        const QUIZ_QUESTIONS_BASIC = [
             {
                 "number": 1,
                 "question": "當女性在對談中突然對你說：「你是不是對每個女生都這樣說？」根據資料，這最可能是哪種心理狀態的反應？",
@@ -2567,6 +2586,541 @@
             }
         ];
 
+        const QUIZ_QUESTIONS_ESCALATION = [
+            {
+                        "number": 1,
+                        "question": "在社交场合中，小明发现女性在择偶时，往往比男性更看重对方的社会地位、雄心与资源。根据演化心理学的观点，这种现象的根本原因是什么？",
+                        "hint": "请从生物繁衍与后代生存的角度思考。",
+                        "choices": [
+                                    {
+                                                "text": "演化让女性天生缺乏独立生存能力，必须依赖男性。",
+                                                "explanation": "close\nNot quite\n这并非演化的重点，重点在于通过选择高资源伴侣来最大化后代的繁衍成功率。"
+                                    },
+                                    {
+                                                "text": "现代社会赋予女性的审美偏好，与原始本能无关。",
+                                                "explanation": "来源材料指出，这种偏好是经过数百万年演化而写入基因的本能，并非单纯的现代文化产物。"
+                                    },
+                                    {
+                                                "text": "女性比男性更理智，因此更看重现实物质条件。",
+                                                "explanation": "这种择偶偏好通常是下意识的情绪电路反应，而非逻辑理智的计算。"
+                                    },
+                                    {
+                                                "text": "社会地位象征生存资源，能增加后代在远古恶劣环境下的存活率。",
+                                                "explanation": "done\nRight answer\n女性在演化过程中，由于生育成本较高，本能上倾向于寻找能提供稳定生存资源（S价值）的伴侣。"
+                                    }
+                        ],
+                        "correct_index": 3
+            },
+            {
+                        "number": 2,
+                        "question": "小华正与一位初次见面的女性聊天。他注意到对方不仅身体前倾、频繁玩弄头发，甚至在他停止说话时，对方会主动寻找新话题。这些行为在社交力学中代表什么？",
+                        "hint": "注意这些行为是增加了还是减少了双方的互动。",
+                        "choices": [
+                                    {
+                                                "text": "对方正在进行「服从测试」，试图控制谈话节奏。",
+                                                "explanation": "close\nNot quite\n主动寻找话题和展示女性特质（如撩发）通常是投入互动的表现，而非测试对方。"
+                                    },
+                                    {
+                                                "text": "对方正发出「兴趣指标」（IOI），表示对小华有好感。",
+                                                "explanation": "done\nRight answer\n玩弄头发、身体前倾以及主动重啟对话都是典型的无意识兴趣指标，显示对方被吸引。"
+                                    },
+                                    {
+                                                "text": "对方感到焦虑或不安，想要尽快结束对话。",
+                                                "explanation": "焦虑者通常会表现出回避眼神或身体远离，而非寻找话题吸引注意。"
+                                    },
+                                    {
+                                                "text": "这只是基本的社交礼貌，没有任何特殊含义。",
+                                                "explanation": "社交力学认为无意识的肢体语言（如撩发）是内心真实情绪的反映，具有指标意义。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 3,
+                        "question": "小明对一位打扮精致的女性说：「妳的指甲很漂亮，是真的吗？」当对方承认是假指甲时，小明微笑着说：「喔，没关系，反正还是很好看。」这种表达方式的主要目的是什么？",
+                        "hint": "思考这种「先给糖再抽走」的行为对高价值女性心理的影响。",
+                        "choices": [
+                                    {
+                                                "text": "故意激怒对方，测试她的情绪稳定性。",
+                                                "explanation": "close\nNot quite\n否定（Neg）应当是非羞辱性的，若是真激怒对方则属于社交失誤。"
+                                    },
+                                    {
+                                                "text": "透过微小的否定（Neg）来解除对方的防护罩，并平衡双方的社交地位。",
+                                                "explanation": "done\nRight answer\n这种作法能显示自己并不受对方美貌影响，从而引发对方想要赢取你认同的动机。"
+                                    },
+                                    {
+                                                "text": "揭穿对方的虚假，展示自己的观察敏锐度。",
+                                                "explanation": "重点不在于揭穿事实，而在于表达一种「我对妳没那么着迷」的无兴趣指标。"
+                                    },
+                                    {
+                                                "text": "诚心地讚美对方，以建立深层的信任感。",
+                                                "explanation": "赞美后的「反转」实际上带有戏谑成分，目的是为了打破对方被惯坏的优越感。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 4,
+                        "question": "在约会过程中，女性突然问道：「你觉得我是不是一个不正经的女人？」根据来源材料，面对这种「废物测试」，以下哪种回应最为理想？",
+                        "hint": "这种测试是在看你是否有自信，还是在看你的逻辑分析能力？",
+                        "choices": [
+                                    {
+                                                "text": "严肃且认真地回答：「当然不是，妳在我心中很纯洁。」",
+                                                "explanation": "close\nNot quite\n认真解释会让你陷入对方的框架，显得你急于寻求她的认同，降低吸引力。"
+                                    },
+                                    {
+                                                "text": "幽默地曲解或将其转为玩笑，显示自己不受其框架影响。",
+                                                "explanation": "done\nRight answer\n废物测试旨在测试男性的自信与框架，幽默应对比认真辩解更能展示高价值。"
+                                    },
+                                    {
+                                                "text": "反问对方：「妳为什么会这样问？妳做了什么吗？」",
+                                                "explanation": "这种反击式回答带有攻击性，容易破坏双方建立的舒适感。"
+                                    },
+                                    {
+                                                "text": "立刻道歉并转换话题，以免气氛尴尬。",
+                                                "explanation": "逃避测试会直接导致吸引力降为零，显示你缺乏自信。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 5,
+                        "question": "如果你在社交场合看到一个男人被几位女性包围且谈笑风生，你可能会直觉认为此人很有魅力。这种现象背后的社交原理是什么？",
+                        "hint": "想象「大众的眼光」如何影响一个人的价值评分。",
+                        "choices": [
+                                    {
+                                                "text": "因为他主动提供了物质资源，所以女性才愿意围着他。",
+                                                "explanation": "close\nNot quite\n这种现象通常源于其展现的社交能力（DHV），而非单纯的物质收买。"
+                                    },
+                                    {
+                                                "text": "单纯的偶然现象，在社交力学中没有分析价值。",
+                                                "explanation": "预选被视为吸引力力学中最核心且有力的开关之一。"
+                                    },
+                                    {
+                                                "text": "孔雀原理：他一定穿了非常奇装异服才吸引到注意。",
+                                                "explanation": "材料中提到预选是指他人对你的反应，而非你自身的打扮。"
+                                    },
+                                    {
+                                                "text": "预选原理（Pre-selection）：其他女性的关注证明了他的社交价值。",
+                                                "explanation": "done\nRight answer\n当一个男人已被其他女性「筛选」过并接受，这会成为其他女性眼中强力的价值信号。"
+                                    }
+                        ],
+                        "correct_index": 3
+            },
+            {
+                        "number": 6,
+                        "question": "小强在约会时说：「我觉得我们两个一定合不来，妳太善良了，而我有点坏。」随后他又温柔地为对方拉开椅子。这种做法属于哪种吸引技巧？",
+                        "hint": "注意说话内容的「拒人千里」与行为的「温文儒雅」构成的矛盾。",
+                        "choices": [
+                                    {
+                                                "text": "逻辑说服：透过分析性格差异来确立关系。",
+                                                "explanation": "close\nNot quite\n吸引力建立在情绪而非逻辑之上，这种说法主要是为了调动情绪。"
+                                    },
+                                    {
+                                                "text": "建立熟悉感：寻找双方的共同点以增加信任。",
+                                                "explanation": "寻找共同点属于「拉」或「建立融洽」，但否定对方适合自己属于「推」。"
+                                    },
+                                    {
+                                                "text": "推拉法（Push-Pull）：制造情绪波动与不可预测性，产生吸引力。",
+                                                "explanation": "done\nRight answer\n透过口头上的推开与行动上的拉近，创造情绪起伏，让对方产生迷恋感。"
+                                    },
+                                    {
+                                                "text": "直接表白：向对方传达明确的交往意向。",
+                                                "explanation": "「合不来」是负面叙述，属于失格（Disqualifier），与表白相反。"
+                                    }
+                        ],
+                        "correct_index": 2
+            },
+            {
+                        "number": 7,
+                        "question": "关于肢体接触（进挪升高）的原则，以下哪项描述最符合来源材料的建议？",
+                        "hint": "重点在于「测试」与「渐进」。",
+                        "choices": [
+                                    {
+                                                "text": "应在对方不注意时突然进行，以制造惊喜感。",
+                                                "explanation": "close\nNot quite\n突如其来的触碰若未经过测试，极易引发对方的防卫心理或反感。"
+                                    },
+                                    {
+                                                "text": "秉持「没什么大不了」的态度，透过微小的触碰测试对方的服从度。",
+                                                "explanation": "done\nRight answer\n肢体接触应是渐进且自然的，若对方不抗拒再逐步增加亲密度。"
+                                    },
+                                    {
+                                                "text": "肢体接触只适用于浪漫约会，不适用于初次搭讪。",
+                                                "explanation": "在初次搭讪阶段也可以有适度的测试性触碰（如指甲、手掌测试）。"
+                                    },
+                                    {
+                                                "text": "必须在正式确立情侣关系后，才能进行任何肢体接触。",
+                                                "explanation": "来源材料指出，肢体接触是建立吸引与升级关系的重要工具，不应等到最后。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 8,
+                        "question": "在建立「舒适感」或「联系感」阶段，如果你想让对方对你产生深厚的情感連結，你应该优先采取哪种沟通策略？",
+                        "hint": "比起事实陈述，什么能更能触动人心？",
+                        "choices": [
+                                    {
+                                                "text": "不断询问对方的户籍、职业与家庭状况等基本资料。",
+                                                "explanation": "close\nNot quite\n这被视为「户口调查」，缺乏情感波动，容易让对方感到无聊。"
+                                    },
+                                    {
+                                                "text": "大谈特谈自己的丰功伟业，以展示高社会价值。",
+                                                "explanation": "过度吹嘘会显得在寻求认同，反而降低价值，且无法建立情感連結。"
+                                    },
+                                    {
+                                                "text": "保持绝对的神秘感，不透露任何关于自己的信息。",
+                                                "explanation": "虽然神秘感有吸引力，但在舒适感阶段，缺乏自我披露会导致对方无法产生信任。"
+                                    },
+                                    {
+                                                "text": "分享带有个性与情感的故事，并寻找彼此的「共鸣」。",
+                                                "explanation": "done\nRight answer\n分享脆弱面或感性故事能建立深层联系，让对方觉得你了解「真正的她」。"
+                                    }
+                        ],
+                        "correct_index": 3
+            },
+            {
+                        "number": 9,
+                        "question": "小明对刚认识的女孩说：「妳看起来很外向爱交际，但其实妳内心也有非常谨慎、甚至孤单的一面。」女孩觉得被精准说中。这种冷读技巧主要利用了什么心理特性？",
+                        "hint": "想想看，是不是每个人在不同时候都有内向与外向的时候？",
+                        "choices": [
+                                    {
+                                                "text": "洗脑效应：强行赋予对方一个性格标签。",
+                                                "explanation": "close\nNot quite\n这是顺应对方潜意识的认知，而非强行灌输。"
+                                    },
+                                    {
+                                                "text": "矛盾心理（Ambivalence）：任何人都具有性格的两面性。",
+                                                "explanation": "done\nRight answer\n人是复杂的，同时具备相反的个性特征，因此从相反两面评判通常不会错。"
+                                    },
+                                    {
+                                                "text": "逻辑推理：根据对方的穿着打扮推断其性格。",
+                                                "explanation": "冷读通常利用模糊且两可的描述，让对方自发地将细节套入。"
+                                    },
+                                    {
+                                                "text": "透视眼原理：某些人天生具备看穿他人过去的能力。",
+                                                "explanation": "这是一种心理学沟通技巧，而非超能力。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 10,
+                        "question": "根据来源材料，为什么在约会中「带对方去多个不同的地方」比待在同一个地方更有利于关系升温？",
+                        "hint": "这种做法会如何影响对方对「相处时间」的心理感知？",
+                        "choices": [
+                                    {
+                                                "text": "可以展示自己经济实力雄厚，能负担多次消费。",
+                                                "explanation": "close\nNot quite\n重点在于情绪体验与场景变化，而非花费金额的多少。"
+                                    },
+                                    {
+                                                "text": "避免在同一个地点被熟人看到而感到尴尬。",
+                                                "explanation": "移动目标是为了社交动态的推进，而非单纯为了躲避。"
+                                    },
+                                    {
+                                                "text": "场地变换能制造共同经历多次约会的错觉，增加熟悉感。",
+                                                "explanation": "done\nRight answer\n这种「时间压缩」效应能让女性感觉你们已经相处了很久，从而降低防备心。"
+                                    },
+                                    {
+                                                "text": "为了消耗对方的体力，使其更依赖男性的保护。",
+                                                "explanation": "这并非主要目的，且不健康的依赖无法建立长久吸引。"
+                                    }
+                        ],
+                        "correct_index": 2
+            },
+            {
+                        "number": 11,
+                        "question": "当女性问：「你觉得我们现在像在谈恋爱吗？」而你回答：「那你喜不喜欢这种感觉呢？」这种回覆技巧的核心是什么？",
+                        "hint": "你是在回答问题，还是在引导对方思考她的感受？",
+                        "choices": [
+                                    {
+                                                "text": "展示脆弱：表现出对自己魅力不确定的担忧。",
+                                                "explanation": "close\nNot quite\n这是一种自信且掌控局面的回答，完全没有表现出担忧。"
+                                    },
+                                    {
+                                                "text": "框架控制：不直接掉入对方定义的陷阱，反将球丢回对方。",
+                                                "explanation": "done\nRight answer\n透过反问，你避免了过早给出一个确定的承诺（框架），并测试了对方的投入程度。"
+                                    },
+                                    {
+                                                "text": "真诚告白：确认双方的关系地位。",
+                                                "explanation": "这是一种逃避直接确认的技巧，而非明确的表白。"
+                                    },
+                                    {
+                                                "text": "转移话题：因为不知道如何回答而故意岔开。",
+                                                "explanation": "这不是转移话题，而是针对话题本身进行框架的反击。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 12,
+                        "question": "在社交场合，男性出现「接近焦虑」（害怕搭讪美女）的现象，根据演化观点，这种心理机制最初是为了保护我们免受什么伤害？",
+                        "hint": "思考「被群体排斥」在原始社会对生存的影响。",
+                        "choices": [
+                                    {
+                                                "text": "避免冒犯有权势的部落成员或面临被部落驱逐的社交风险。",
+                                                "explanation": "done\nThat's right!\n在远古时代，社交失败可能意味着失去繁衍机会甚至生命，因此演化出这种警报机制。"
+                                    },
+                                    {
+                                                "text": "保护男性不被对方的美貌迷惑而丧失判断力。",
+                                                "explanation": "焦虑本身就是丧失冷静的表现，并非一种保护判断力的机制。"
+                                    },
+                                    {
+                                                "text": "避免浪费体力在没有繁衍可能的对象身上。",
+                                                "explanation": "焦虑通常发生在面对「高价值」对象时，而非无繁衍可能的对象。"
+                                    },
+                                    {
+                                                "text": "防止女性因受到惊吓而产生暴力反击。",
+                                                "explanation": "这种焦虑主要源于对「社交地位」下降的恐惧，而非单纯的身体伤害。"
+                                    }
+                        ],
+                        "correct_index": 0
+            }
+];
+
+        const QUIZ_QUESTIONS_TESTING = [
+            {
+                        "number": 1,
+                        "question": "當女性在初次互動中對你提出：「幫我買杯飲料吧？」這類明顯的服從性測試時，根據《壞蛋之道》與《謎男方法》，哪種應對方式最能展現高價值？",
+                        "hint": "思考如何不跳入對方的框架，而是將球回傳。",
+                        "choices": [
+                                    {
+                                                "text": "開玩笑地回應：「那你先請我喝一杯再說。」",
+                                                "explanation": "done\nThat's right!\n這運用了「原封奉還」的技巧，將測試轉移回對方身上，展現出你並不急於討好對方的高價值姿態。"
+                                    },
+                                    {
+                                                "text": "大方地幫她買，以展示你的經濟實力與大度。",
+                                                "explanation": "過早服從不合理的要求會被視為低價值且缺乏自信，讓女性認為你試圖用物質收買她的時間。"
+                                    },
+                                    {
+                                                "text": "沈默並轉身離開，以此表達對這種要求的不屑。",
+                                                "explanation": "雖然沈默是種選擇，但在互動初期直接離去可能被視為缺乏社交技巧或對拒絕過於敏感。"
+                                    },
+                                    {
+                                                "text": "拒絕並解釋你從不幫剛認識的人買東西。",
+                                                "explanation": "過於嚴肅的邏輯辯論會破壞社交氣氛，並顯得你對這個測試反應過度。"
+                                    }
+                        ],
+                        "correct_index": 0
+            },
+            {
+                        "number": 2,
+                        "question": "在兩性互動中，女性使用「一致性測試」（Congruence Test）的核心潛意識目的為何？",
+                        "hint": "這是一種過濾機制，用來分辨真正的強者與偽裝者。",
+                        "choices": [
+                                    {
+                                                "text": "純粹為了打壓男性的自尊，以獲取互動中的主導權。",
+                                                "explanation": "close\nNot quite\n雖然結果可能導致主導權轉移，但其生物學根源更多是為了篩選能提供保護與資源的配偶。"
+                                    },
+                                    {
+                                                "text": "確認男性是否真的如他表現出來的那樣自信且具備安全感。",
+                                                "explanation": "done\nRight answer\n女性透過測試來觀察男性的反應是否穩定，以判斷其高價值特質是真實的還是偽裝出來的。"
+                                    },
+                                    {
+                                                "text": "為了讓氣氛變得尷尬，藉此有理由結束無聊的對話。",
+                                                "explanation": "如果女性對男性完全沒興趣，通常會直接選擇冷淡或離開（IOD），而非費力進行測試。"
+                                    },
+                                    {
+                                                "text": "測試男性的服從程度，看他以後是否會聽話。",
+                                                "explanation": "這混淆了「一致性測試」與「服從性測試」；前者側重於信心真實度的核實。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 3,
+                        "question": "如果女性對你說：「我覺得你長得不帥，而且衣服品味有點怪。」這屬於哪種測試？你該如何透過「曲解」來回應？",
+                        "hint": "試著將負面評價「積極地曲解」為對方的興趣指標。",
+                        "choices": [
+                                    {
+                                                "text": "這是廢物測試；回應：「沒關係，我對自己的內在更有信心。」",
+                                                "explanation": "close\nNot quite\n認真地辯解自己的優點會顯得你很在意她的評價，反而落入被篩選的被動位置。"
+                                    },
+                                    {
+                                                "text": "這是一致性測試；回應：「你這樣說真的很沒禮貌，我以為你是個有教養的人。」",
+                                                "explanation": "這是在講道理並表現出受挫感，顯示你的情緒容易受對方影響，是一次失敗的應對。"
+                                    },
+                                    {
+                                                "text": "這是一致性測試；回應：「你現在是在試圖吸引我的注意嗎？這招太老套了。」",
+                                                "explanation": "done\nRight answer\n將對方的侮辱性評價轉化為「她想追求你」的框架，展現了強大的自我框架控制能力。"
+                                    },
+                                    {
+                                                "text": "這是服從性測試；回應：「那你覺得什麼樣的衣服好看？我下次換。」",
+                                                "explanation": "這表現出尋求認同與過度服從，完全落入了對方的低價值框架中。"
+                                    }
+                        ],
+                        "correct_index": 2
+            },
+            {
+                        "number": 4,
+                        "question": "當你在夜店與女性聊天，她突然說：「你在這一定跟很多女生搭訕過吧？」這類測試反映了什麼？",
+                        "hint": "注意這類問題往往隱含著對你社交價值的認可。",
+                        "choices": [
+                                    {
+                                                "text": "她真的想知道具體的數字，以便進行數據統計。",
+                                                "explanation": "close\nNot quite\n在兩性社交中，問題的邏輯事實遠不如其背後的情緒張力與測試意義重要。"
+                                    },
+                                    {
+                                                "text": "這是一種「預選」測試，她想確認你是否具備處理多樣社交關係的能力。",
+                                                "explanation": "done\nRight answer\n這類問題往往暗示了她感受到了你的魅力，並試圖確認你是否為「社交老手」以調整她的防線。"
+                                    },
+                                    {
+                                                "text": "她是在暗示你現在應該離開她去搭訕別人。",
+                                                "explanation": "如果她想讓你離開，會直接表現出無興趣指標（IOD），而不是提出具備社交張力的問題。"
+                                    },
+                                    {
+                                                "text": "她認為你是個不受歡迎的怪胎，試圖讓你難堪。",
+                                                "explanation": "這類問題通常出現在產生吸引力之後，反映的是女性對男性社交價值的預選觀察。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 5,
+                        "question": "根據《約會倍增術》與《迷上我》，面對女性詢問：「你覺得我胖嗎？」這類兩難陷阱題，最佳的應對思維是？",
+                        "hint": "避免給出邏輯上的真實答案，專注於情緒上的張力。",
+                        "choices": [
+                                    {
+                                                "text": "運用幽默或推拉，例如：「你確實佔據了我心裡很大的一個空間。」",
+                                                "explanation": "done\nThat's right!\n透過雙關語或調情式回應跳出邏輯圈套，既不直接回答又能升高曖昧氣氛。"
+                                    },
+                                    {
+                                                "text": "反問她：「那你覺得我胖嗎？」轉移焦點。",
+                                                "explanation": "單純的反問顯得你缺乏創意且試圖逃避問題，無法展現出高價值男性的幽默感。"
+                                    },
+                                    {
+                                                "text": "實話實說，展現出你是一個誠實且有原則的男人。",
+                                                "explanation": "實話實說往往會直接終止情緒上的吸引力，將對話帶入理性與負面情緒的死胡同。"
+                                    },
+                                    {
+                                                "text": "立即否定並讚美她身材很好，讓她感到自信。",
+                                                "explanation": "這種急於討好的回應會顯露你的需求感，讓女性覺得你只是在說客套話以求生存。"
+                                    }
+                        ],
+                        "correct_index": 0
+            },
+            {
+                        "number": 6,
+                        "question": "在《謎男方法》中提到的「假性失格」（False Disqualifier），其作為應對測試的策略，主要發揮了什麼作用？",
+                        "hint": "這是一種「退後一步是為了前進兩步」的策略。",
+                        "choices": [
+                                    {
+                                                "text": "讓對方覺得你真的對她沒興趣，從而徹底放棄追求。",
+                                                "explanation": "close\nNot quite\n「假性」一詞意味著這只是戰術動作，目的是為了製造推拉效果，而非真的要終止關係。"
+                                    },
+                                    {
+                                                "text": "展示你具備篩選標準，且不輕易被美色迷惑的高價值特質。",
+                                                "explanation": "done\nRight answer\n透過主動宣告「我們不適合」，你可以解除對方的防禦心，並讓對方反過來想向你證明她自己。"
+                                    },
+                                    {
+                                                "text": "懲罰對方的壞行為，讓她知道你隨時會離開。",
+                                                "explanation": "這更接近「冷凍」或「無興趣指標」的作用，假性失格更多是用於建立初期的吸引力。"
+                                    },
+                                    {
+                                                "text": "這是一種邏輯上的自我否定，避免被對方拒絕的尷尬。",
+                                                "explanation": "這是一種主動出擊的社交策略，而非出於自卑的自我防禦。"
+                                    }
+                        ],
+                        "correct_index": 1
+            },
+            {
+                        "number": 7,
+                        "question": "如果女性在約會中說：「我現在還不想交男朋友。」這通常是哪種訊號？你該如何通過「框架控制」來應對？",
+                        "hint": "不要試圖說服她改變主意，而是表現出你比她更不想定下來。",
+                        "choices": [
+                                    {
+                                                "text": "這是一次誠實的宣告；回應：「我會一直等到你準備好為止。」",
+                                                "explanation": "close\nNot quite\n這展示了極大的需求感與低價值，會讓女性感受到沈重的壓力並對你失去尊重。"
+                                    },
+                                    {
+                                                "text": "這是一次拒絕訊號；回應：「沒關係，我們可以先從朋友做起。」",
+                                                "explanation": "這會讓你直接進入「友誼區」，完全喪失了作為潛在性對象的吸引力。"
+                                    },
+                                    {
+                                                "text": "這是一次「反蕩婦機制」測試；回應：「太好了，我正好也覺得你太黏人了，我們達成共識了。」",
+                                                "explanation": "done\nRight answer\n透過贊同並擴大對方的說法，將「不想交男友」解讀為她怕被你迷住，成功反轉了主動權。"
+                                    },
+                                    {
+                                                "text": "這是一次測驗；回應：「為什麼？是因為你受過傷嗎？」",
+                                                "explanation": "這進入了「心理醫生」模式，雖然建立了聯繫感，但在此階段會殺死性吸引力。"
+                                    }
+                        ],
+                        "correct_index": 2
+            },
+            {
+                        "number": 8,
+                        "question": "當女性使用「狙擊槍否定」攻擊你的某些細節（如：你鞋子好髒）時，根據《把妹達人》的建議，最核心的原則是什麼？",
+                        "hint": "核心在於「不受影響」與「遊戲心態」。",
+                        "choices": [
+                                    {
+                                                "text": "嚴肅地向她解釋鞋子髒的原因，以正視聽。",
+                                                "explanation": "close\nNot quite\n解釋就是掩飾，掩飾就是低價值；這會讓你顯得非常在意她的看法。"
+                                    },
+                                    {
+                                                "text": "立刻道歉並承諾下次會改進。",
+                                                "explanation": "道歉會承認你展示了低價值（DLV），讓對方的打壓得逞。"
+                                    },
+                                    {
+                                                "text": "反過來批評她的缺點，進行激烈的還擊。",
+                                                "explanation": "過激的還擊會顯得你氣急敗壞，反而暴露了你脆弱的自尊心。"
+                                    },
+                                    {
+                                                "text": "表現得像沒發生過一樣，或是以更荒謬的方式擴大它。",
+                                                "explanation": "done\nRight answer\n不被對方的評價所左右，顯示你的情緒來源於內心而非外界，這是核心自信的表現。"
+                                    }
+                        ],
+                        "correct_index": 3
+            },
+            {
+                        "number": 9,
+                        "question": "在《如何與女人見面與溝通》中提到的「真空法」（Vacuum），在面對女性的測試或沉默時如何發揮力量？",
+                        "hint": "沈默往往比言語更有力量，看誰先沈不住氣。",
+                        "choices": [
+                                    {
+                                                "text": "這是一種無視對方測試的消極防禦手段。",
+                                                "explanation": "close\nNot quite\n真空法是一種主動製造壓力場的技巧，目的是誘發對方的反應。"
+                                    },
+                                    {
+                                                "text": "透過不斷說話來填補沉默，以免氣氛尷尬。",
+                                                "explanation": "這會顯露你的緊張與不安全感，將主導權交給對方。"
+                                    },
+                                    {
+                                                "text": "利用沈默讓對方感到恐懼，從而服從你的要求。",
+                                                "explanation": "這過於偏向威脅而非吸引，健康的吸引力應建立在情緒波動而非單純的恐懼之上。"
+                                    },
+                                    {
+                                                "text": "在提出具有挑戰性的問題後保持沈默，迫使對方投入精力來填補空間。",
+                                                "explanation": "done\nRight answer\n誰先開口填補沉默，誰就在該互動中投入了更多努力，這能有效測試並提升對方的投資度。"
+                                    }
+                        ],
+                        "correct_index": 3
+            },
+            {
+                        "number": 10,
+                        "question": "女性在測試失敗（即男人展現出無能、緊張或過度服從）後的常見反應，通常被稱為什麼？",
+                        "hint": "思考當一個人對另一個人徹底失望時的表現。",
+                        "choices": [
+                                    {
+                                                "text": "服從動能（Compliance Momentum）。",
+                                                "explanation": "close\nNot quite\n這是測試成功後男人引導女性產生的現象，而非測試失敗的結果。"
+                                    },
+                                    {
+                                                "text": "事後反悔（Buyer's Remorse）。",
+                                                "explanation": "這通常發生在親密行為前後，而非單純的測試階段。"
+                                    },
+                                    {
+                                                "text": "反蕩婦機制（Anti-Slut Defense）。",
+                                                "explanation": "這是一種自我保護機制，與測試失敗導致的「沒感覺」性質不同。"
+                                    },
+                                    {
+                                                "text": "社交關機或無興趣指標（IOD）。",
+                                                "explanation": "done\nRight answer\n當男人無法通過一致性測試，女性會快速失去被吸引的感覺，轉向冷淡、敷衍或直接離開。"
+                                    }
+                        ],
+                        "correct_index": 3
+            }
+];
+
+        let activeQuestions = [];
         let currentQuestionIndex = 0;
         let quizScore = 0;
         let isQuestionAnswered = false;
@@ -2577,8 +3131,9 @@
             document.getElementById('quiz-catalog').classList.remove('hidden');
             document.getElementById('quiz-active-view').classList.add('hidden');
             
-            // Render catalog status
             const record = JSON.parse(localStorage.getItem('quiz_scores_record')) || {};
+            
+            // Render basic status
             const basicStatus = document.getElementById('quiz-status-basic');
             if (record['basic-relationship']) {
                 const score = record['basic-relationship'].score;
@@ -2588,6 +3143,30 @@
             } else {
                 basicStatus.textContent = "未測驗";
                 basicStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
+            }
+            
+            // Render escalation status
+            const escalationStatus = document.getElementById('quiz-status-escalation');
+            if (record['quiz-nlp-escalation']) {
+                const score = record['quiz-nlp-escalation'].score;
+                const total = record['quiz-nlp-escalation'].total;
+                escalationStatus.textContent = `已完成：${score}/${total} 分`;
+                escalationStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+            } else {
+                escalationStatus.textContent = "未測驗";
+                escalationStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
+            }
+            
+            // Render testing status
+            const testingStatus = document.getElementById('quiz-status-testing');
+            if (record['quiz-frame-testing']) {
+                const score = record['quiz-frame-testing'].score;
+                const total = record['quiz-frame-testing'].total;
+                testingStatus.textContent = `已完成：${score}/${total} 分`;
+                testingStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+            } else {
+                testingStatus.textContent = "未測驗";
+                testingStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
             }
             
             if (typeof lucide !== 'undefined') {
@@ -2607,7 +3186,14 @@
             document.getElementById('quiz-body').classList.remove('hidden');
             
             if (quizId === 'basic-relationship') {
+                activeQuestions = QUIZ_QUESTIONS_BASIC;
                 document.getElementById('quiz-active-title').textContent = "初級兩性情感測驗";
+            } else if (quizId === 'quiz-nlp-escalation') {
+                activeQuestions = QUIZ_QUESTIONS_ESCALATION;
+                document.getElementById('quiz-active-title').textContent = "肢體接觸與吸引升級測驗";
+            } else if (quizId === 'quiz-frame-testing') {
+                activeQuestions = QUIZ_QUESTIONS_TESTING;
+                document.getElementById('quiz-active-title').textContent = "社交框架與服從測試挑戰";
             }
             
             renderQuestion();
@@ -2622,18 +3208,18 @@
         }
         
         function renderQuestion() {
-            if (currentQuestionIndex >= QUIZ_QUESTIONS.length) {
+            if (currentQuestionIndex >= activeQuestions.length) {
                 showQuizResults();
                 return;
             }
             
-            const question = QUIZ_QUESTIONS[currentQuestionIndex];
+            const question = activeQuestions[currentQuestionIndex];
             isQuestionAnswered = false;
             
             // Update counter and progress bar
-            document.getElementById('quiz-progress-text').textContent = `第 ${question.number} / ${QUIZ_QUESTIONS.length} 題`;
+            document.getElementById('quiz-progress-text').textContent = `第 ${question.number} / ${activeQuestions.length} 題`;
             document.getElementById('quiz-score-text').textContent = `答對: ${quizScore} 題`;
-            document.getElementById('quiz-progress-bar').style.width = `${(question.number / QUIZ_QUESTIONS.length) * 100}%`;
+            document.getElementById('quiz-progress-bar').style.width = `${(question.number / activeQuestions.length) * 100}%`;
             
             // Update question text
             document.getElementById('quiz-question-text').textContent = question.question;
@@ -2681,7 +3267,7 @@
             if (isQuestionAnswered) return;
             isQuestionAnswered = true;
             
-            const question = QUIZ_QUESTIONS[currentQuestionIndex];
+            const question = activeQuestions[currentQuestionIndex];
             const isCorrect = (choiceIdx === question.correct_index);
             
             if (isCorrect) {
@@ -2739,7 +3325,7 @@
             }
             
             // Feedback text should show a summary of the correct answer explanation
-            fbDesc.textContent = question.choices[question.correct_index].explanation.replace("done\nRight answer\n", "").replace("done\nThat's right!\n", "");
+            fbDesc.textContent = question.choices[question.correct_index].explanation.replace("done\nRight answer\n", "").replace("done\nThat\'s right!\n", "");
             
             // Show Next button
             document.getElementById('quiz-next-btn').classList.remove('hidden');
@@ -2774,7 +3360,7 @@
             const resultsPanel = document.getElementById('quiz-results');
             resultsPanel.classList.remove('hidden');
             
-            document.getElementById('quiz-score-summary').textContent = `您答對了 ${quizScore} / ${QUIZ_QUESTIONS.length} 題！`;
+            document.getElementById('quiz-score-summary').textContent = `您答對了 ${quizScore} / ${activeQuestions.length} 題！`;
             
             const rankText = document.getElementById('quiz-rank-text');
             const rankDesc = document.getElementById('quiz-rank-desc');
@@ -2782,18 +3368,20 @@
             let rank = "";
             let desc = "";
             
-            if (quizScore === 10) {
+            const pct = quizScore / activeQuestions.length;
+            
+            if (pct === 1.0) {
                 rank = "極致魅影 👑";
                 desc = "太不可思議了！您答對了所有題目！您已經是神級的情感吸引力大師，對男女框架、一致性測試與高價值展示了然於胸，在兩性社交中簡集游刃有餘。";
-            } else if (quizScore >= 8) {
+            } else if (pct >= 0.8) {
                 rank = "實戰大師 🌟";
                 desc = "恭喜您！您對兩性溝通心法與社交框架已經有了相當出色的掌握！在實際社交互動中，您將更懂得應對挑戰、化解防禦並創造強烈的吸引力。";
-            } else if (quizScore >= 5) {
+            } else if (pct >= 0.5) {
                 rank = "潛力新星 📈";
                 desc = "表現不錯！您已經具備了基礎的兩性互動觀念。建議多對照 Catch 精華區的經典文獻（如推拉、框架等心法），在實戰中多加體會，便能更進一步！";
             } else {
                 rank = "情感素人 🔰";
-                desc = "仍需努力！兩性互動的精髓在於情緒的共鳴與無需求感，而不是追求邏輯的對錯。建議您詳讀左側的《謎男方法》、《把妹達人》等經典，並多使用我們的 AI 導師進行實戰語音模擬！";
+                desc = "仍需努力！兩性互動的精髓在於情緒的共鳴與無需求感，而不是追求邏輯의對錯。建議您詳讀左側的《謎男方法》、《把妹達人》等經典，並多使用我們的 AI 導師進行實戰語音模擬！";
             }
             
             rankText.textContent = rank;
@@ -2801,7 +3389,7 @@
             
             // Save results to localStorage
             const record = JSON.parse(localStorage.getItem('quiz_scores_record')) || {};
-            record[activeQuizId] = { score: quizScore, total: QUIZ_QUESTIONS.length };
+            record[activeQuizId] = { score: quizScore, total: activeQuestions.length };
             localStorage.setItem('quiz_scores_record', JSON.stringify(record));
         }
         
