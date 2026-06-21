@@ -403,14 +403,25 @@
                         <p class="text-[11px] text-slate-400 leading-relaxed" data-i18n="quiz.card7_desc">評估您對廢物測試拆解、AMOG 競爭防禦、Kino 肢體進挪退讓節奏、美貌特權打壓以及預選機制的實戰反應（共 20 題）。</p>
                     </button>
                     
-                    <!-- Quiz Card 8 (Coming Soon) -->
-                    <div class="w-full text-left bg-slate-950/20 border border-slate-900 opacity-60 rounded-2xl p-4 flex flex-col space-y-2 relative">
-                        <div class="flex items-center justify-between w-full">
-                            <span class="text-xs font-bold text-slate-400">PTT Catch 經典心法挑戰</span>
-                            <span class="text-[10px] bg-slate-950 text-slate-500 px-2 py-0.5 rounded-full font-medium">即將推出</span>
+                    <!-- Quiz Card 8 -->
+                    <button onclick="startSpecificQuiz('quiz-catch-classic')" class="w-full text-left bg-slate-950/40 hover:bg-slate-900/50 border border-amber-500/30 hover:border-amber-400/60 rounded-2xl p-4 transition flex flex-col space-y-2 group shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition duration-500"></div>
+                        <div class="flex items-center justify-between w-full relative z-10">
+                            <span class="text-xs font-bold text-amber-100/90 group-hover:text-amber-400 transition flex items-center gap-1.5" data-i18n="quiz.card8_title"><i data-lucide="award" class="w-3.5 h-3.5 text-amber-500"></i>【特選】廢物測試特訓</span>
+                            <span id="quiz-status-catchclassic" class="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full font-medium border border-slate-800">未測驗</span>
                         </div>
-                        <p class="text-[11px] text-slate-500 leading-relaxed">考驗您對 PTT Catch 板歷代大師之經典爆文、聊天心法與推拉術的熟悉度。</p>
-                    </div>
+                        <p class="text-[11px] text-slate-400/90 leading-relaxed relative z-10" data-i18n="quiz.card8_desc">考驗您對 PTT Catch 板歷代大師之經典爆文、聊天心法與推拉術的熟悉度（共 16 題）。</p>
+                    </button>
+
+                    <!-- Quiz Card 9 -->
+                    <button onclick="startSpecificQuiz('quiz-advanced-mindset')" class="w-full text-left bg-slate-950/40 hover:bg-slate-900/50 border border-amber-500/30 hover:border-amber-400/60 rounded-2xl p-4 transition flex flex-col space-y-2 group shadow-sm relative overflow-hidden">
+                        <div class="absolute -right-4 -top-4 w-16 h-16 bg-amber-500/10 rounded-full blur-xl group-hover:bg-amber-500/20 transition duration-500"></div>
+                        <div class="flex items-center justify-between w-full relative z-10">
+                            <span class="text-xs font-bold text-amber-100/90 group-hover:text-amber-400 transition flex items-center gap-1.5" data-i18n="quiz.card9_title"><i data-lucide="gem" class="w-3.5 h-3.5 text-amber-500"></i>【特選】網路交友特訓</span>
+                            <span id="quiz-status-advancedmindset" class="text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full font-medium border border-slate-800">未測驗</span>
+                        </div>
+                        <p class="text-[11px] text-slate-400/90 leading-relaxed relative z-10" data-i18n="quiz.card9_desc">進階測試在複雜社交情境下的應對心態、高價值展示與長期關係維護（共 20 題）。</p>
+                    </button>
                 </div>
             </div>
             
@@ -593,6 +604,10 @@
                 "quiz.card6_desc": "挑戰您對冷讀術人設劃分、同步身體語言建立信任、邀約問話技術以及長期心靈價值共振的掌握（共 27 題）。",
                 "quiz.card7_title": "【高級】吸引力的科學與高價值展示挑戰",
                 "quiz.card7_desc": "評估您對廢物測試拆解、AMOG 競爭防禦、Kino 肢體進挪退讓節奏、美貌特權打壓以及預選機制的實戰反應（共 20 題）。",
+                "quiz.card8_title": "【特選】廢物測試特訓",
+                "quiz.card8_desc": "考驗您對 PTT Catch 板歷代大師之經典爆文、聊天心法與推拉術的熟悉度（共 16 題）。",
+                "quiz.card9_title": "【特選】網路交友特訓",
+                "quiz.card9_desc": "進階測試在複雜社交情境下的應對心態、高價值展示與長期關係維護（共 20 題）。",
                 "quiz.next_btn": "下一題 (Next)",
                 "quiz.restart_btn": "重新測驗",
                 "quiz.return_btn": "返回測驗目錄",
@@ -688,6 +703,10 @@
                 "quiz.card6_desc": "Challenge your skills in profiling, body language mirroring, soft invitation techniques, and values resonance (27 questions).",
                 "quiz.card7_title": "[Advanced] Science of Attraction & DHV Challenge",
                 "quiz.card7_desc": "Test your response to compliance tests, AMOG competition defense, kino timing, negging beauty privilege, and pre-selection (20 questions).",
+                "quiz.card8_title": "[Featured] Shit Test Bootcamp",
+                "quiz.card8_desc": "Test your familiarity with classic viral posts, chat mindsets, and push-pull techniques from past masters on the PTT Catch board (16 questions).",
+                "quiz.card9_title": "[Featured] Online Dating Bootcamp",
+                "quiz.card9_desc": "Advanced test on coping mentalities, high-value displays, and long-term relationship maintenance in complex social situations (20 questions).",
                 "quiz.next_btn": "Next Question",
                 "quiz.restart_btn": "Restart Quiz",
                 "quiz.return_btn": "Return to Catalog",
@@ -7848,6 +7867,1671 @@
                         "correct_index": 1
             }
 ];
+        const QUIZ_QUESTIONS_CLASSIC = [
+  {
+    "number": 1,
+    "question": "當女性在初次互動中對你提出：「幫我買杯飲料吧？」這類明顯的服從性測試時，根據《壞蛋之道》與《謎男方法》，哪種應對方式最能展現高價值？",
+    "choices": [
+      {
+        "text": "開玩笑地回應：「那你先請我喝一杯再說。」",
+        "explanation": "done\nRight answer\n這運用了「原封奉還」的技巧，將測試轉移回對方身上，展現出你並不急於討好對方的高價值姿態。"
+      },
+      {
+        "text": "大方地幫她買，以展示你的經濟實力與大度。",
+        "explanation": "close\nNot quite\n過早服從不合理的要求會被視為低價值且缺乏自信，讓女性認為你試圖用物質收買她的時間。"
+      },
+      {
+        "text": "沈默並轉身離開，以此表達對這種要求的不屑。",
+        "explanation": "close\nNot quite\n雖然沈默是種選擇，但在互動初期直接離去可能被視為缺乏社交技巧或對拒絕過於敏感。"
+      },
+      {
+        "text": "拒絕並解釋你從不幫剛認識的人買東西。",
+        "explanation": "close\nNot quite\n過於嚴肅的邏輯辯論會破壞社交氣氛，並顯得你對這個測試反應過度。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 2,
+    "question": "在兩性互動中，女性使用「一致性測試」（Congruence Test）的核心潛意識目的為何？",
+    "choices": [
+      {
+        "text": "純粹為了打壓男性的自尊，以獲取互動中的主導權。",
+        "explanation": "close\nNot quite\n雖然結果可能導致主導權轉移，但其生物學根源更多是為了篩選能提供保護與資源的配偶。"
+      },
+      {
+        "text": "確認男性是否真的如他表現出來的那樣自信且具備安全感。",
+        "explanation": "done\nRight answer\n女性透過測試來觀察男性的反應是否穩定，以判斷其高價值特質是真實的還是偽裝出來的。"
+      },
+      {
+        "text": "為了讓氣氛變得尷尬，藉此有理由結束無聊的對話。",
+        "explanation": "close\nNot quite\n如果女性對男性完全沒興趣，通常會直接選擇冷淡或離開（IOD），而非費力進行測試。"
+      },
+      {
+        "text": "測試男性的服從程度，看他以後是否會聽話。",
+        "explanation": "close\nNot quite\n這混淆了「一致性測試」與「服從性測試」；前者側重於信心真實度的核實。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 3,
+    "question": "如果女性對你說：「我覺得你長得不帥，而且衣服品味有點怪。」這屬於哪種測試？你該如何透過「曲解」來回應？",
+    "choices": [
+      {
+        "text": "這是廢物測試；回應：「沒關係，我對自己的內在更有信心。」",
+        "explanation": "close\nNot quite\n認真地辯解自己的優點會顯得你很在意她的評價，反而落入被篩選的被動位置。"
+      },
+      {
+        "text": "這是一致性測試；回應：「你這樣說真的很沒禮貌，我以為你是個有教養的人。」",
+        "explanation": "close\nNot quite\n這是在講道理並表現出受挫感，顯示你的情緒容易受對方影響，是一次失敗的應對。"
+      },
+      {
+        "text": "這是一致性測試；回應：「你現在是在試圖吸引我的注意嗎？這招太老套了。」",
+        "explanation": "done\nRight answer\n將對方的侮辱性評價轉化為「她想追求你」的框架，展現了強大的自我框架控制能力。"
+      },
+      {
+        "text": "這是服從性測試；回應：「那你覺得什麼樣的衣服好看？我下次換。」",
+        "explanation": "close\nNot quite\n這表現出尋求認同與過度服從，完全落入了對方的低價值框架中。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 4,
+    "question": "當你在夜店與女性聊天，她突然說：「你在這一定跟很多女生搭訕過吧？」這類測試反映了什麼？",
+    "choices": [
+      {
+        "text": "她真的想知道具體的數字，以便進行數據統計。",
+        "explanation": "close\nNot quite\n在兩性社交中，問題的邏輯事實遠不如其背後的情緒張力與測試意義重要。"
+      },
+      {
+        "text": "這是一種「預選」測試，她想確認你是否具備處理多樣社交關係的能力。",
+        "explanation": "done\nRight answer\n這類問題往往暗示了她感受到了你的魅力，並試圖確認你是否為「社交老手」以調整她的防線。"
+      },
+      {
+        "text": "她是在暗示你現在應該離開她去搭訕別人。",
+        "explanation": "close\nNot quite\n如果她想讓你離開，會直接表現出無興趣指標（IOD），而不是提出具備社交張力的問題。"
+      },
+      {
+        "text": "她認為你是個不受歡迎的怪胎，試圖讓你難堪。",
+        "explanation": "close\nNot quite\n這類問題通常出現在產生吸引力之後，反映的是女性對男性社交價值的預選觀察。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 5,
+    "question": "根據《約會倍增術》與《迷上我》，面對女性詢問：「你覺得我胖嗎？」這類兩難陷阱題，最佳的應對思維是？",
+    "choices": [
+      {
+        "text": "運用幽默或推拉，例如：「你確實佔據了我心裡很大的一個空間。」",
+        "explanation": "done\nRight answer\n透過雙關語或調情式回應跳出邏輯圈套，既不直接回答又能升高曖昧氣氛。"
+      },
+      {
+        "text": "反問她：「那你覺得我胖嗎？」轉移焦點。",
+        "explanation": "close\nNot quite\n單純的反問顯得你缺乏創意且試圖逃避問題，無法展現出高價值男性的幽默感。"
+      },
+      {
+        "text": "實話實說，展現出你是一個誠實且有原則的男人。",
+        "explanation": "close\nNot quite\n實話實說往往會直接終止情緒上的吸引力，將對話帶入理性與負面情緒的死胡同。"
+      },
+      {
+        "text": "立即否定並讚美她身材很好，讓她感到自信。",
+        "explanation": "close\nNot quite\n這種急於討好的回應會顯露你的需求感，讓女性覺得你只是在說客套話以求生存。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 6,
+    "question": "在《謎男方法》中提到的「假性失格」（False Disqualifier），其作為應對測試的策略，主要發揮了什麼作用？",
+    "choices": [
+      {
+        "text": "讓對方覺得你真的對她沒興趣，從而徹底放棄追求。",
+        "explanation": "close\nNot quite\n「假性」一詞意味著這只是戰術動作，目的是為了製造推拉效果，而非真的要終止關係。"
+      },
+      {
+        "text": "展示你具備篩選標準，且不輕易被美色迷惑的高價值特質。",
+        "explanation": "done\nRight answer\n透過主動宣告「我們不適合」，你可以解除對方的防禦心，並讓對方反過來想向你證明她自己。"
+      },
+      {
+        "text": "懲罰對方的壞行為，讓她知道你隨時會離開。",
+        "explanation": "close\nNot quite\n這更接近「冷凍」或「無興趣指標」的作用，假性失格更多是用於建立初期的吸引力。"
+      },
+      {
+        "text": "這是一種邏輯上的自我否定，避免被對方拒絕的尷尬。",
+        "explanation": "close\nNot quite\n這是一種主動出擊的社交策略，而非出於自卑的自我防禦。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 7,
+    "question": "如果女性在約會中說：「我現在還不想交男朋友。」這通常是哪種訊號？你該如何通過「框架控制」來應對？",
+    "choices": [
+      {
+        "text": "這是一次誠實的宣告；回應：「我會一直等到你準備好為止。」",
+        "explanation": "close\nNot quite\n這展示了極大的需求感與低價值，會讓女性感受到沈重的壓力並對你失去尊重。"
+      },
+      {
+        "text": "這是一次拒絕訊號；回應：「沒關係，我們可以先從朋友做起。」",
+        "explanation": "close\nNot quite\n這會讓你直接進入「友誼區」，完全喪失了作為潛在性對象的吸引力。"
+      },
+      {
+        "text": "這是一次「反蕩婦機制」測試；回應：「太好了，我正好也覺得你太黏人了，我們達成共識了。」",
+        "explanation": "done\nRight answer\n透過贊同並擴大對方的說法，將「不想交男友」解讀為她怕被你迷住，成功反轉了主動權。"
+      },
+      {
+        "text": "這是一次測驗；回應：「為什麼？是因為你受過傷嗎？」",
+        "explanation": "close\nNot quite\n這進入了「心理醫生」模式，雖然建立了聯繫感，但在此階段會殺死性吸引力。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 8,
+    "question": "當女性使用「狙擊槍否定」攻擊你的某些細節（如：你鞋子好髒）時，根據《把妹達人》的建議，最核心的原則是什麼？",
+    "choices": [
+      {
+        "text": "嚴肅地向她解釋鞋子髒的原因，以正視聽。",
+        "explanation": "close\nNot quite\n解釋就是掩飾，掩飾就是低價值；這會讓你顯得非常在意她的看法。"
+      },
+      {
+        "text": "立刻道歉並承諾下次會改進。",
+        "explanation": "close\nNot quite\n道歉會承認你展示了低價值（DLV），讓對方的打壓得逞。"
+      },
+      {
+        "text": "反過來批評她的缺點，進行激烈的還擊。",
+        "explanation": "close\nNot quite\n過激的還擊會顯得你氣急敗壞，反而暴露了你脆弱的自尊心。"
+      },
+      {
+        "text": "表現得像沒發生過一樣，或是以更荒謬的方式擴大它。",
+        "explanation": "done\nRight answer\n不被對方的評價所左右，顯示你的情緒來源於內心而非外界，這是核心自信的表現。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 9,
+    "question": "在《如何與女人見面與溝通》中提到的「真空法」（Vacuum），在面對女性的測試或沉默時如何發揮力量？",
+    "choices": [
+      {
+        "text": "這是一種無視對方測試的消極防禦手段。",
+        "explanation": "close\nNot quite\n真空法是一種主動製造壓力場的技巧，目的是誘發對方的反應。"
+      },
+      {
+        "text": "透過不斷說話來填補沉默，以免氣氛尷尬。",
+        "explanation": "close\nNot quite\n這會顯露你的緊張與不安全感，將主導權交給對方。"
+      },
+      {
+        "text": "利用沈默讓對方感到恐懼，從而服從你的要求。",
+        "explanation": "close\nNot quite\n這過於偏向威脅而非吸引，健康的吸引力應建立在情緒波動而非單純的恐懼之上。"
+      },
+      {
+        "text": "在提出具有挑戰性的問題後保持沈默，迫使對方投入精力來填補空間。",
+        "explanation": "done\nRight answer\n誰先開口填補沉默，誰就在該互動中投入了更多努力，這能有效測試並提升對方的投資度。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 10,
+    "question": "女性在測試失敗（即男人展現出無能、緊張或過度服從）後的常見反應，通常被稱為什麼？",
+    "choices": [
+      {
+        "text": "服從動能（Compliance Momentum）。",
+        "explanation": "close\nNot quite\n這是測試成功後男人引導女性產生的現象，而非測試失敗的結果。"
+      },
+      {
+        "text": "事後反悔（Buyer's Remorse）。",
+        "explanation": "close\nNot quite\n這通常發生在親密行為前後，而非單純的測試階段。"
+      },
+      {
+        "text": "反蕩婦機制（Anti-Slut Defense）。",
+        "explanation": "close\nNot quite\n這是一種自我保護機制，與測試失敗導致的「沒感覺」性質不同。"
+      },
+      {
+        "text": "社交關機或無興趣指標（IOD）。",
+        "explanation": "done\nRight answer\n當男人無法通過一致性測試，女性會快速失去被吸引的感覺，轉向冷淡、敷衍或直接離開。"
+      }
+    ],
+    "correct_index": 3
+  }
+];
+        const QUIZ_QUESTIONS_CLASSIC_EN = [
+  {
+    "number": 1,
+    "question": "When a woman presents you with an obvious compliance test like, \"Buy me a drink, please?\" during an initial interaction, according to \"The Bad Boy's Way\" and \"The Mystery Method,\" which response best demonstrates high value?",
+    "choices": [
+      {
+        "text": "Respond jokingly: \"You buy me a drink first, then we'll talk.\"",
+        "explanation": "done\nRight answer\nThis uses the \"boomerang\" technique, shifting the test back onto the other person and demonstrating your high-value stance of not being eager to please them."
+      },
+      {
+        "text": "Generously buy it for her, to show your financial strength and generosity.",
+        "explanation": "close\nNot quite\nPrematurely complying with unreasonable requests will be seen as low value and lacking confidence, making women think you are trying to buy her time with material things."
+      },
+      {
+        "text": "Remain silent and turn to leave, to express disdain for such a request.",
+        "explanation": "close\nNot quite\nAlthough silence is an option, directly leaving in the early stages of interaction might be seen as lacking social skills or being overly sensitive to rejection."
+      },
+      {
+        "text": "Refuse and explain that you never buy things for people you've just met.",
+        "explanation": "close\nNot quite\nAn overly serious logical debate will disrupt the social atmosphere and make it seem like you're overreacting to the test."
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 2,
+    "question": "What is the core subconscious purpose when women use the 'Congruence Test' in male-female interactions?",
+    "choices": [
+      {
+        "text": "Purely to undermine men's self-esteem and gain dominance in the interaction.",
+        "explanation": "close\nNot quite\nAlthough the outcome might lead to a shift in dominance, its biological roots are more about screening for a partner who can provide protection and resources."
+      },
+      {
+        "text": "To confirm if the man is truly as confident and secure as he presents himself.",
+        "explanation": "done\nRight answer\nWomen use tests to observe if a man's reactions are stable, to determine if his high-value traits are genuine or feigned."
+      },
+      {
+        "text": "To make the atmosphere awkward, thereby having a reason to end a boring conversation.",
+        "explanation": "close\nNot quite\nIf a woman has no interest in a man, she usually opts for indifference or leaves (IOD) directly, rather than bothering to conduct a test."
+      },
+      {
+        "text": "To test a man's level of obedience and see if he will be compliant in the future.",
+        "explanation": "close\nNot quite\nThis confuses the 'Congruence Test' with the 'Obedience Test'; the former focuses on verifying the genuineness of confidence."
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 3,
+    "question": "If a woman says to you, \"I don't think you're handsome, and your taste in clothes is a bit strange.\" What kind of test is this? How should you respond by 'reinterpreting' (or 'reframing')?",
+    "choices": [
+      {
+        "text": "This is a shit test; Response: \"It's okay, I'm more confident in my inner self.\"",
+        "explanation": "close\nNot quite\nSeriously defending your strengths makes it seem like you care too much about her evaluation, and you fall into a passive position of being screened."
+      },
+      {
+        "text": "This is a consistency test; Response: \"What you just said is really impolite, I thought you were a well-mannered person.\"",
+        "explanation": "close\nNot quite\nThis is lecturing and showing frustration, indicating your emotions are easily affected by the other person, which is a failed response."
+      },
+      {
+        "text": "This is a consistency test; Response: \"Are you trying to get my attention right now? That move is too old-fashioned.\"",
+        "explanation": "done\nRight answer\nTransforming the other person's insulting comment into a frame of 'she wants to pursue you' demonstrates strong self-frame control."
+      },
+      {
+        "text": "This is an obedience test; Response: \"Then what kind of clothes do you think look good? I'll change next time.\"",
+        "explanation": "close\nNot quite\nThis shows seeking approval and excessive obedience, completely falling into the other person's low-value frame."
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 4,
+    "question": "When you're chatting with a woman at a nightclub and she suddenly says, 'You must have hit on a lot of girls here, right?' What does this type of test reflect?",
+    "choices": [
+      {
+        "text": "She genuinely wants to know the exact number for statistical purposes.",
+        "explanation": "close\nNot quite\nIn social interactions between genders, the logical facts of a question are far less important than the emotional tension and testing significance behind it."
+      },
+      {
+        "text": "This is a 'pre-selection' test; she wants to confirm if you have the ability to handle diverse social relationships.",
+        "explanation": "done\nRight answer\nThese types of questions often imply that she feels your charm and is trying to confirm if you are a 'social veteran' to adjust her defenses."
+      },
+      {
+        "text": "She's hinting that you should leave her now to hit on other people.",
+        "explanation": "close\nNot quite\nIf she wanted you to leave, she would directly show indicators of disinterest (IOD) rather than asking a question with social tension."
+      },
+      {
+        "text": "She thinks you're an unpopular weirdo and is trying to embarrass you.",
+        "explanation": "close\nNot quite\nThis type of question usually appears after attraction has been established, reflecting a woman's pre-selection observation of a man's social value."
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 5,
+    "question": "According to \"The Dating Multiplier\" and \"Get Her to Fall for You,\" when faced with a dilemma trap question from a woman like: 'Do you think I'm fat?', what's the best approach to respond?",
+    "choices": [
+      {
+        "text": "Use humor or push-pull, for example: 'You certainly take up a lot of space in my heart.'",
+        "explanation": "done\nRight answer\nBy using a pun or a flirty response to break out of the logical trap, you avoid answering directly while escalating the flirtatious atmosphere."
+      },
+      {
+        "text": "Ask her back: 'Do you think I'm fat?' to shift the focus.",
+        "explanation": "close\nNot quite\nSimply asking back makes you seem uncreative and trying to evade the question, failing to showcase the humor of a high-value man."
+      },
+      {
+        "text": "Tell the truth, to show you are an honest and principled man.",
+        "explanation": "close\nNot quite\nTelling the truth often directly terminates emotional attraction, leading the conversation into a dead end of rationality and negative emotions."
+      },
+      {
+        "text": "Immediately deny it and compliment her good figure to make her feel confident.",
+        "explanation": "close\nNot quite\nThis kind of eager-to-please response reveals your neediness, making women feel you're just saying pleasantries to survive."
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 6,
+    "question": "In 'The Mystery Method,' what is the primary function of a 'False Disqualifier' as a strategy to handle tests?",
+    "choices": [
+      {
+        "text": "To make the other person believe you are genuinely uninterested in her, leading her to completely give up on pursuing you.",
+        "explanation": "close\nNot quite\nThe term 'false' implies this is merely a tactical move, intended to create a push-pull dynamic, rather than genuinely terminating the relationship."
+      },
+      {
+        "text": "To demonstrate your high-value qualities, showing that you have screening standards and are not easily swayed by beauty.",
+        "explanation": "done\nRight answer\nBy actively declaring 'we're not a match,' you can lower the other person's defenses and make her want to prove herself to you instead."
+      },
+      {
+        "text": "To punish the other person's bad behavior, letting her know that you might leave at any time.",
+        "explanation": "close\nNot quite\nThis is closer to the function of 'freezing out' or 'indicators of disinterest.' False disqualifiers are primarily used for building initial attraction."
+      },
+      {
+        "text": "This is a form of logical self-negation to avoid the embarrassment of being rejected by the other person.",
+        "explanation": "close\nNot quite\nThis is a proactive social strategy, rather than a self-defense mechanism stemming from insecurity."
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 7,
+    "question": "If a woman says during a date, \"I don't want a boyfriend right now,\" what kind of signal is this usually, and how should you respond using 'frame control'?",
+    "choices": [
+      {
+        "text": "This is an honest declaration; respond: \"I'll wait until you're ready.\"",
+        "explanation": "close\nNot quite\nThis shows extreme neediness and low value, which will make the woman feel pressured and lose respect for you."
+      },
+      {
+        "text": "This is a rejection signal; respond: \"That's okay, we can start as friends.\"",
+        "explanation": "close\nNot quite\nThis will immediately put you in the 'friend zone', completely losing your appeal as a potential romantic interest."
+      },
+      {
+        "text": "This is an anti-slut defense test; respond: \"Great, I actually thought you were a bit too clingy, so we're on the same page.\"",
+        "explanation": "done\nRight answer\nBy agreeing with and amplifying her statement, interpreting her 'not wanting a boyfriend' as her being afraid of being too attracted to you, you successfully reverse the dynamic."
+      },
+      {
+        "text": "This is a test; respond: \"Why? Is it because you've been hurt before?\"",
+        "explanation": "close\nNot quite\nThis enters the 'therapist' mode, which, while building a sense of connection, kills sexual attraction at this stage."
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 8,
+    "question": "When a woman uses 'sniper negation' to attack specific details about you (e.g., 'Your shoes are so dirty'), what is the core principle, according to *The Game*?",
+    "choices": [
+      {
+        "text": "Seriously explain to her why your shoes are dirty to clarify the situation.",
+        "explanation": "close\nNot quite\nExplaining is covering up, and covering up means low value; this will make you seem overly concerned about her opinion."
+      },
+      {
+        "text": "Immediately apologize and promise to improve next time.",
+        "explanation": "close\nNot quite\nApologizing acknowledges that you displayed low value (DLV), allowing the other person's put-down to succeed."
+      },
+      {
+        "text": "Criticize her flaws in return and launch a fierce counterattack.",
+        "explanation": "close\nNot quite\nAn overly aggressive counterattack will make you seem flustered and expose your fragile ego."
+      },
+      {
+        "text": "Act as if it didn't happen, or exaggerate it in a more absurd way.",
+        "explanation": "done\nRight answer\nNot being swayed by the other person's evaluation shows that your emotions stem from within, not from external sources. This is a manifestation of core confidence."
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 9,
+    "question": "How does the 'Vacuum' technique, mentioned in 'How to Meet and Communicate with Women,' exert its power when facing a woman's tests or silence?",
+    "choices": [
+      {
+        "text": "It's a passive defensive method that ignores the other person's tests.",
+        "explanation": "close\nNot quite\nThe Vacuum technique is a method of actively creating a pressure field, the purpose of which is to elicit a reaction from the other person."
+      },
+      {
+        "text": "By constantly talking to fill the silence, to avoid awkwardness.",
+        "explanation": "close\nNot quite\nThis will reveal your nervousness and insecurity, handing over the lead to the other person."
+      },
+      {
+        "text": "Using silence to make the other person feel fear, thereby complying with your demands.",
+        "explanation": "close\nNot quite\nThis leans too much towards threat rather than attraction; healthy attraction should be built on emotional fluctuations rather than mere fear."
+      },
+      {
+        "text": "Remaining silent after posing a challenging question, forcing the other person to invest energy to fill the space.",
+        "explanation": "done\nRight answer\nWhoever speaks first to fill the silence invests more effort in that interaction, which can effectively test and increase the other person's level of investment."
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 10,
+    "question": "What is the common reaction of women after failing a test (i.e., when a man exhibits incompetence, nervousness, or excessive subservience) usually called?",
+    "choices": [
+      {
+        "text": "Compliance Momentum.",
+        "explanation": "close\nNot quite\nThis is a phenomenon where men guide women to produce compliance after a successful test, rather than the result of a failed test."
+      },
+      {
+        "text": "Buyer's Remorse.",
+        "explanation": "close\nNot quite\nThis usually occurs before or after intimate acts, rather than merely during the testing phase."
+      },
+      {
+        "text": "Anti-Slut Defense.",
+        "explanation": "close\nNot quite\nThis is a self-protection mechanism and is different in nature from the 'lack of feeling' caused by a failed test."
+      },
+      {
+        "text": "Social Shutdown or Indicator of Disinterest (IOD).",
+        "explanation": "done\nRight answer\nWhen a man fails the consistency test, women quickly lose their feeling of attraction, turning cold, perfunctory, or leaving directly."
+      }
+    ],
+    "correct_index": 3
+  }
+];
+        const QUIZ_QUESTIONS_ADVANCED = [
+  {
+    "number": 1,
+    "question": "在網路聊天中，如果你分享了一段精彩的出遊經歷，對方回覆：「聽起來很棒，祝你玩得愉快！」這最可能代表什麼訊息？",
+    "choices": [
+      {
+        "text": "這是一種「概括式」的回應，暗示話題可以就此結束。",
+        "explanation": "done\nRight answer\n使用口號式或總結性的語言通常具有結束談話的效果，顯示對話意願不高。"
+      },
+      {
+        "text": "對方對你的生活感到好奇，並給予正面鼓勵。",
+        "explanation": "close\nNot quite\n這雖然是正面語句，但缺乏具體的細節追問，偏向禮貌性回應。"
+      },
+      {
+        "text": "對方正在忙碌，打算晚點再深入交流。",
+        "explanation": "close\nNot quite\n若是因為忙碌，通常會直接說明狀態或完全不回，而非給出總結性評價。"
+      },
+      {
+        "text": "這是一種高價值的展示，顯示對方生活同樣精彩。",
+        "explanation": "close\nNot quite\n這句話並未提及對方自己的生活，純粹是對你的內容進行結案。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 2,
+    "question": "兩人在餐廳約會時，對方雖然時不時會低頭滑手機，但在你講述童年趣事時，會放下手機並追問相關細節，且身體微微前傾。這種混合訊號應如何解讀？",
+    "choices": [
+      {
+        "text": "滑手機代表徹底沒興趣，追問只是基本社交禮貌。",
+        "explanation": "close\nNot quite\n追問具體細節並伴隨身體前傾通常需要較高的心理投入，不只是基本禮貌。"
+      },
+      {
+        "text": "這是一種高度興趣的表現，對方正在測試你的反應。",
+        "explanation": "close\nNot quite\n滑手機本身仍是干擾訊號，不能直接判定為高度興趣的測試。"
+      },
+      {
+        "text": "這是典型的社交機器人行為，完全按照既定程序互動。",
+        "explanation": "close\nNot quite\n社交機器人通常缺乏靈活的情緒共鳴，無法針對具體細節進行自然下切。"
+      },
+      {
+        "text": "對方可能處於放鬆狀態，滑手機是習慣，而追問則是真實的好感指標。",
+        "explanation": "done\nRight answer\n在互動中，願意對乏味的細節產生共鳴並投入關注，是更有價值的興趣指標。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 3,
+    "question": "你向對方提出這週末一起去參觀新開的畫展，對方回覆：「這週末我有事，下次再說吧。」關於這個回覆的描述，何者正確？",
+    "choices": [
+      {
+        "text": "這代表對方對畫展沒興趣，應更換活動內容。",
+        "explanation": "close\nNot quite\n若對活動沒興趣但對人有興趣，通常會提出其他活動建議。"
+      },
+      {
+        "text": "對方在測試你是否會因為挫折而輕易放棄。",
+        "explanation": "close\nNot quite\n將模糊拒絕視為測試通常是追求者的過度解讀，容易導致對方反感。"
+      },
+      {
+        "text": "這是明確的拒絕，因為缺乏具體的替代方案或時間建議。",
+        "explanation": "done\nRight answer\n有興趣見面的人會使用更具體的語言來協商時間，而非使用模糊的結尾。"
+      },
+      {
+        "text": "對方只是這週末不方便，建議下週再邀約一次。",
+        "explanation": "close\nNot quite\n「下次再說」通常是一種模糊的推託，缺乏具體的主動時間提議。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 4,
+    "question": "在網路聊天中，你傳了一張午餐照片。對方回覆：「看起來很好吃耶，在哪裡買的呀？感覺很清爽。」這是哪種層次的訊號？",
+    "choices": [
+      {
+        "text": "高度興趣：試圖主導對話並取得主動權。",
+        "explanation": "close\nNot quite\n這僅是話題的延伸，尚未達到想要了解你個人狀況或主導關係的程度。"
+      },
+      {
+        "text": "中度興趣：除了回覆，還主動延伸話題並分享感受。",
+        "explanation": "done\nRight answer\n當回覆包含下切細節（感覺清爽）並提問，顯示對方願意維持對話能量。"
+      },
+      {
+        "text": "這是無興趣指標，試圖用雜事轉移對你個人的注意力。",
+        "explanation": "close\nNot quite\n無興趣者通常會採取上推回覆或簡短回覆，而非積極探詢細節。"
+      },
+      {
+        "text": "低度興趣：單純針對事實進行問答。",
+        "explanation": "close\nNot quite\n對方不僅問位置，還加入感官描述（清爽），顯示了情緒投入。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 5,
+    "question": "如果你在交談中故意開玩笑說：「你剛剛喝飲料的樣子好像一隻小倉鼠喔！」對方聽完後臉紅並輕打你的手臂說：「你很討厭耶！」這代表什麼？",
+    "choices": [
+      {
+        "text": "這是一種測試，看你是否會因為她的評價而道歉。",
+        "explanation": "close\nNot quite\n這種自然的情緒流露通常不是精心設計的測試，而是潛意識的反應。"
+      },
+      {
+        "text": "對方真的感到生氣，你冒犯了她的儀態。",
+        "explanation": "close\nNot quite\n臉紅並伴隨輕微的身體接觸（打手臂）通常是情緒激動的好感訊號。"
+      },
+      {
+        "text": "這是無興趣指標，對方正在試圖拉開社交距離。",
+        "explanation": "close\nNot quite\n拉開社交距離通常會伴隨身體後仰、眼神避開，而非主動接觸。"
+      },
+      {
+        "text": "這是一個明確的興趣指標，且顯示對方願意進行肢體互動。",
+        "explanation": "done\nRight answer\n戲謔的互動誘發了情緒反應與身體接觸，是進入曖昧階段的特徵。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 6,
+    "question": "在群體聚會中，你正在跟一群人聊天，你發現目標女性雖然跟別人說話，但她的身體朝向你，且每當你說出笑話時，她總是第一個笑或看著你。這屬於哪種指標？",
+    "choices": [
+      {
+        "text": "這是一種「被動興趣指標」，她在關注你的價值展示。",
+        "explanation": "done\nRight answer\n雖然沒有直接對話，但注意力與身體語言的傾向透露了她的興趣所在。"
+      },
+      {
+        "text": "這是無興趣指標，她利用你的笑話來掩飾與別人的尷尬。",
+        "explanation": "close\nNot quite\n無興趣者通常會忽視或打斷你的發言，而非給予即時的回饋。"
+      },
+      {
+        "text": "這只是社交禮貌，她試圖不讓你在人群中冷場。",
+        "explanation": "close\nNot quite\n社交禮貌不需要透過身體朝向或第一時間的眼神確認來維持。"
+      },
+      {
+        "text": "她正在試圖反制你的社交地位。",
+        "explanation": "close\nNot quite\n反制通常伴隨打壓或忽視，而非配合你的節奏發笑。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 7,
+    "question": "你與對方認識一週，這期間訊息來回頻繁。某次你回覆訊息慢了兩小時，對方傳來：「你回訊息也太慢了吧，我等到都快睡著了，真沒誠意。」這應如何看待？",
+    "choices": [
+      {
+        "text": "這是無興趣指標，對方正在尋找藉口吵架。",
+        "explanation": "close\nNot quite\n這類抱怨通常伴隨對你狀態的關注，而非單純的否定。"
+      },
+      {
+        "text": "這是一種社交禮儀的提醒，對方重視準時。",
+        "explanation": "close\nNot quite\n網路聊天並非正式會議，這類帶有個人感受的語言遠超禮儀範疇。"
+      },
+      {
+        "text": "這是一個強烈的好感指標，顯示對方非常在意你的回覆。",
+        "explanation": "done\nRight answer\n由愛而怨的情緒波動顯示了高度的投入，是對方在意你關注的證明。"
+      },
+      {
+        "text": "對方真的對你失去耐心，準備結束關係。",
+        "explanation": "close\nNot quite\n若真的沒興趣，會直接冷淡處理，而非表達強烈的情緒不滿。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 8,
+    "question": "在互動中，你對對方說：「我覺得你今天的穿搭很有個性。」對方冷淡地回覆：「謝謝。」然後繼續低頭看書。這代表什麼？",
+    "choices": [
+      {
+        "text": "對方害羞，不知道該如何回應讚美。",
+        "explanation": "close\nNot quite\n害羞通常會伴隨局促或眼神閃躲，而非完全投入到另一個活動（看書）。"
+      },
+      {
+        "text": "這是明顯的無興趣指標，對方在建立社交防護罩。",
+        "explanation": "done\nRight answer\n簡短的禮貌性回覆並切斷對話能量，顯示目前沒有互動的意願。"
+      },
+      {
+        "text": "這代表你的讚美不夠具體，無法引起共鳴。",
+        "explanation": "close\nNot quite\n即便讚美平淡，若有興趣也會尋找話題延續，而非直接進入沉默。"
+      },
+      {
+        "text": "對方正在展示高價值，讓你覺得她很難追求。",
+        "explanation": "close\nNot quite\n刻意的冷落通常會保留一絲回擊的空間，而非徹底無視。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 9,
+    "question": "你問對方：「下班後在忙什麼？」對方回：「在健身房運動，快累死了，教練今天超嚴格。」這段對話顯示對方的狀態為何？",
+    "choices": [
+      {
+        "text": "對方很忙，暗示你不要打擾她。",
+        "explanation": "close\nNot quite\n若不想被打擾，回覆會更簡短且不涉及個人感受。"
+      },
+      {
+        "text": "這屬於「具體化」的下切回覆，顯示對方願意分享狀態與感受。",
+        "explanation": "done\nRight answer\n分享具體活動加上主觀感受（累、教練嚴格）是良好的交流開端。"
+      },
+      {
+        "text": "對方希望你針對健身器材給予建議。",
+        "explanation": "close\nNot quite\n這是理性思維的誤區，對方更多是在尋求情感上的共鳴。"
+      },
+      {
+        "text": "對方在炫耀自己的生活很有品質。",
+        "explanation": "close\nNot quite\n這類回覆更偏向情緒分享，而非刻意展示價值的傲慢。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 10,
+    "question": "當你嘗試在談話中稍微靠近對方時，對方並沒有退後，但卻拿起飲料杯並看著窗外。這最可能代表什麼？",
+    "choices": [
+      {
+        "text": "這是無興趣指標，對方在尋找藉口離開現場。",
+        "explanation": "close\nNot quite\n尋找離開機會通常會伴隨身體轉向出口或焦慮的擺動。"
+      },
+      {
+        "text": "這代表對方對窗外的風景比你更有興趣。",
+        "explanation": "close\nNot quite\n社交語境下，這類行為通常與互動者的社交壓力有關。"
+      },
+      {
+        "text": "這代表絕對的服從，你可以直接進行下一個階段。",
+        "explanation": "close\nNot quite\n雖然沒有退後，但視覺上的撤離（看窗外）顯示仍有一定程度的焦慮或抵抗。"
+      },
+      {
+        "text": "這是「象徵性抵抗」，對方在適應新的社交距離。",
+        "explanation": "done\nRight answer\n沒有立即退開代表基礎信任存在，但轉移注意力是舒緩不安全感的機制。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 11,
+    "question": "在網路聊天中，對方回覆速度非常慢（通常超過四小時），但每次回覆內容都寫得很多，甚至會拍照片分享。這代表什麼？",
+    "choices": [
+      {
+        "text": "對方完全沒興趣，只是出於禮貌回覆。",
+        "explanation": "close\nNot quite\n禮貌回覆不需要花費時間寫長文或拍照片分享生活。"
+      },
+      {
+        "text": "這代表對方是個社交高手，對所有人都一視同仁。",
+        "explanation": "close\nNot quite\n高質量的分享通常具有針對性，是建立連結的嘗試。"
+      },
+      {
+        "text": "對方處於忙碌狀態但對你有興趣，願意投入社交成本。",
+        "explanation": "done\nRight answer\n回覆內容的品質（豐富度）比回覆的速度更能反映真實的興趣。"
+      },
+      {
+        "text": "對方在玩心理戰術，故意讓你焦慮。",
+        "explanation": "close\nNot quite\n長期的高質量回覆與慢速通常與生活節奏有關，而非刻意操控。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 12,
+    "question": "兩人在散步時，你提到要去附近的便利商店買水。你發現對方主動跟著你走進店裡，而非在店門口等待。這可以視為：",
+    "choices": [
+      {
+        "text": "這代表對方缺乏獨立性，無法單獨待著。",
+        "explanation": "close\nNot quite\n這類分析過於狹隘，忽略了社交中的情緒共振特質。"
+      },
+      {
+        "text": "對方口渴了也想買東西。",
+        "explanation": "close\nNot quite\n即便也想買東西，但在社交中選擇「陪同」本身就是一種關注。"
+      },
+      {
+        "text": "對方不信任你，擔心你藉機離開。",
+        "explanation": "close\nNot quite\n除非關係極度惡化，否則一般社交情境不會產生這種病態不信任。"
+      },
+      {
+        "text": "一個正面的好感指標，顯示對方願意增加相處的時間。",
+        "explanation": "done\nRight answer\n願意陪同進行瑣碎的小事（如買水），顯示對方喜歡「在一起」的狀態。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 13,
+    "question": "你傳送了一條帶有挑逗意味的訊息：「我發現你這幾天好像變懶了喔，是不是在偷懶？」對方回：「哪有！我超認真的好嗎！你才懶咧！」這顯示：",
+    "choices": [
+      {
+        "text": "這是無興趣指標，對方覺得你的開場白很無聊。",
+        "explanation": "close\nNot quite\n若覺得無聊，會直接無視或給予冷淡的上推回覆。"
+      },
+      {
+        "text": "對方在認真地向你解釋她的生活態度。",
+        "explanation": "close\nNot quite\n過於認真的解釋通常不會包含「你才懶咧」這種具備情緒張力的反擊。"
+      },
+      {
+        "text": "對方生氣了，對你的無端指控感到不悅。",
+        "explanation": "close\nNot quite\n情緒激昂的回嘴（帶有驚嘆號或反擊）通常是參與互動的表現。"
+      },
+      {
+        "text": "這是一種良好的互動共鳴，對方願意配合你的戲謔節奏。",
+        "explanation": "done\nRight answer\n這種相互回擊的語言模式顯示了雙方的心理防禦降低，進入了調情狀態。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 14,
+    "question": "約會快結束時，你問對方要不要去公園走走，對方說：「雖然有點晚了，但走一小段應該還可以。」這反映了什麼？",
+    "choices": [
+      {
+        "text": "對方被迫答應，因為不好意思當面拒絕。",
+        "explanation": "close\nNot quite\n「還可以」雖帶有保留，但願意延續約會時間是強烈的興趣指標。"
+      },
+      {
+        "text": "對方在測試你是否會真的只走「一小段」。",
+        "explanation": "close\nNot quite\n這更像是一種行為上的妥協與順從，而非精心設計的考驗。"
+      },
+      {
+        "text": "這是「象徵性抵抗」與「興趣指標」的結合。",
+        "explanation": "done\nRight answer\n「有點晚」是自我保護的框架，「還可以」則是對你的認同與服從。"
+      },
+      {
+        "text": "這是無興趣指標，暗示她已經累了想回家。",
+        "explanation": "close\nNot quite\n想回家會直接表示需要休息，而非接受進一步的邀約。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 15,
+    "question": "如果你在聊天中詢問對方的專業問題，對方回覆得非常詳盡且專業。但在你轉而問到她週末喜歡去哪裡玩時，她的回覆變得非常簡短。如何判斷？",
+    "choices": [
+      {
+        "text": "目前僅處於「資訊交換」，尚未進入「情緒分享」的範疇。",
+        "explanation": "done\nRight answer\n對私人生活的簡短回覆代表安全感或興趣不足，專業知識的回覆不代表社交好感。"
+      },
+      {
+        "text": "這是明確的無興趣指標，她根本不想跟你說話。",
+        "explanation": "close\nNot quite\n若完全沒興趣，專業問題也會敷衍了事。"
+      },
+      {
+        "text": "她對你有高度好感，所以認真回答你的問題。",
+        "explanation": "close\nNot quite\n詳盡的專業回答可能僅基於個人成就感的滿足或責任感，非對你個人的興趣。"
+      },
+      {
+        "text": "她在測試你是否能聽懂她的專業內容。",
+        "explanation": "close\nNot quite\n這忽略了對話中私人領域縮減的訊號，過於樂觀。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 16,
+    "question": "在聚會中，你跟一個正妹聊天，你發現她的朋友不斷拉她的手示意要離開，但她會拍拍朋友的手說「再等一下下」。這代表什麼？",
+    "choices": [
+      {
+        "text": "目標只是想展現自己很有主見，與你無關。",
+        "explanation": "close\nNot quite\n在特定對象面前展現主見，本質上就是在爭取該對象的注意。"
+      },
+      {
+        "text": "這是一個極強的好感指標，目標願意為了你抵抗群體壓力。",
+        "explanation": "done\nRight answer\n主動對抗社交障礙或朋友的催促，顯示了強烈的互動動力。"
+      },
+      {
+        "text": "她的朋友很討厭你，正在試圖「擋屌」。",
+        "explanation": "close\nNot quite\n這描述的是朋友的行為，重點應放在「目標」對抗干擾的反應。"
+      },
+      {
+        "text": "這是無興趣指標，她在拖延時間等待更合適的人出現。",
+        "explanation": "close\nNot quite\n這不符合邏輯，若沒興趣，會順著朋友的意願離開尷尬場景。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 17,
+    "question": "你發現對方在個人社群頁面上分享了一首憂鬱的歌。你私訊詢問：「這首歌很有味道，心情還好嗎？」對方回：「就那樣吧。」這種情形最可能是：",
+    "choices": [
+      {
+        "text": "這是一種「上推式」的無興趣指標，對方不想跟你討論心情。",
+        "explanation": "done\nRight answer\n不願意下切描述具體感受，代表目前的信任度或興趣不足以進行情緒分享。"
+      },
+      {
+        "text": "這是高價值展示，顯示她情緒多變且神秘。",
+        "explanation": "close\nNot quite\n缺乏互動能量的神秘感在社交中往往被解讀為冷漠或排斥。"
+      },
+      {
+        "text": "對方在測試你是否能讀懂她的潛台詞。",
+        "explanation": "close\nNot quite\n這過於美化對方的冷淡，事實上這種回覆通常是為了切斷話題。"
+      },
+      {
+        "text": "對方非常難過，正在等你給予溫暖的安慰。",
+        "explanation": "close\nNot quite\n簡短的總結性回覆（就那樣吧）通常是拒絕深度交流的訊號。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 18,
+    "question": "兩人在互動時，你提到某間咖啡廳的甜點很有名。對方說：「我也聽說過那家，可是我最近在減肥，不能吃甜食。」隨後又補了一句：「但他們家的冰滴咖啡好像也不錯。」後者這句話的作用是？",
+    "choices": [
+      {
+        "text": "這是測試，看你是否會為了她的健康而反對她喝咖啡。",
+        "explanation": "close\nNot quite\n這分析不符社交常規，社交中的修補行為通常是興趣的體現。"
+      },
+      {
+        "text": "單純在分享食記資訊，沒有額外意圖。",
+        "explanation": "close\nNot quite\n在拒絕一個提議後主動補上另一個可能性，是維持對話的積極訊號。"
+      },
+      {
+        "text": "這是一種「彌補行為」，顯示她仍想保留未來的約會機會。",
+        "explanation": "done\nRight answer\n主動提出替代方案（冰滴咖啡）是為了消除拒絕（減肥）帶來的話題中斷感。"
+      },
+      {
+        "text": "對方在暗示你應該現在就帶她去喝咖啡。",
+        "explanation": "close\nNot quite\n這過於激進，目前的語境更多是在進行興趣的試探與修補。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 19,
+    "question": "在聊天過程中，你發現對方開始頻繁使用與你相似的語助詞（例如：喔唷、嘿咩）或表情符號。這種行為被稱為：",
+    "choices": [
+      {
+        "text": "社交機器人的慣性模仿。",
+        "explanation": "close\nNot quite\n社交機器人通常只會機械式應答，不會有潛意識的語氣同頻。"
+      },
+      {
+        "text": "對方缺乏個性，只能依賴他人的語彙。",
+        "explanation": "close\nNot quite\n在心理學上，同步性更多與社交吸引力相關，而非性格缺陷。"
+      },
+      {
+        "text": "這是對方的嘲諷，在諷刺你的說話方式。",
+        "explanation": "close\nNot quite\n嘲諷通常伴隨誇張的表情或語氣，而非在自然對話中穩定地出現。"
+      },
+      {
+        "text": "這是一種「共鳴」現象，顯示雙方進入了融洽且同步的狀態。",
+        "explanation": "done\nRight answer\n下意識地模仿對方的副語言或肢體動作，是心理連結感增強的指標。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 20,
+    "question": "你發現對方在約會時的穿著打扮明顯比平常在照片中更精緻，甚至噴了淡淡的香水。這說明了什麼？",
+    "choices": [
+      {
+        "text": "對方剛下班，所以穿得比較正式。",
+        "explanation": "close\nNot quite\n穿著精緻並噴香水通常需要額外的準備時間與心力投入。"
+      },
+      {
+        "text": "這是一種「投資」行為，顯示對方非常在意在你看來出的形象。",
+        "explanation": "done\nRight answer\n投入儀態成本是希望獲得對方青睞的強烈興趣指標。"
+      },
+      {
+        "text": "這是測試，看你是否會注意到她的改變並給予讚美。",
+        "explanation": "close\nNot quite\n這不只是測試，更是主動展示價值的行為。"
+      },
+      {
+        "text": "對方天生愛美，對所有場合都如此打扮。",
+        "explanation": "close\nNot quite\n即便是愛美，特定的香水與精緻度調整仍具有針對特定對象的意義。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 21,
+    "question": "在網路聊天中，如果你問一個問題，對方雖然回覆了，但隨即開啟另一個完全無關的話題。這種「話題跳轉」最可能是：",
+    "choices": [
+      {
+        "text": "這代表對方腦袋轉很快，思考不連貫。",
+        "explanation": "close\nNot quite\n社交中的跳轉通常與情緒避難有關，而非智力特徵。"
+      },
+      {
+        "text": "這是一種無興趣指標或「軟性迴避」，代表對原本的話題感到無聊或壓力。",
+        "explanation": "done\nRight answer\n切斷話題連結顯示不想深談當前內容，即便回覆了也是敷衍。"
+      },
+      {
+        "text": "高度興趣，對方想讓你認識她更多的面向。",
+        "explanation": "close\nNot quite\n無視前一個問題的深度或感受而跳轉話題，往往是避開敏感或不感興趣內容的表現。"
+      },
+      {
+        "text": "這是一種測試，看你是否能跟上她的思維速度。",
+        "explanation": "close\nNot quite\n這類解釋通常過於樂觀，忽略了社交舒適感的流失。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 22,
+    "question": "你跟對方在公園散步，遇到一隻可愛的流浪貓，你蹲下來逗貓。對方也跟著蹲下來，並開始跟你討論貓咪的動作。這顯示：",
+    "choices": [
+      {
+        "text": "對方只是也很喜歡貓咪而已。",
+        "explanation": "close\nNot quite\n在社交語境下，共同參與同一項活動並進行情感交流是建立連結的訊號。"
+      },
+      {
+        "text": "這是無興趣指標，對方覺得你很無聊，所以只好跟貓玩。",
+        "explanation": "close\nNot quite\n若覺得無聊，會站在一旁催促離開，而非參與其中。"
+      },
+      {
+        "text": "這是一種良好的「共振」狀態，顯示對方願意分享你的情緒體驗。",
+        "explanation": "done\nRight answer\n同步的動作與共同的話題焦點，顯示雙方正處於融洽的社交脈絡中。"
+      },
+      {
+        "text": "這是測試，看你是否有愛心。",
+        "explanation": "close\nNot quite\n雖然可能有測試意味，但雙方的同步行為更多是好感度的體現。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 23,
+    "question": "如果對方在聊天中主動提到：「我媽最近一直問我交男朋友沒，煩死了。」這句話背後的潛溝通最可能是：",
+    "choices": [
+      {
+        "text": "這是一種「興趣測試」或自我揭露，試探你對她感情狀態的反應。",
+        "explanation": "done\nRight answer\n主動提起感情話題通常是為了引導對方展現態度，是一種微妙的興趣指標。"
+      },
+      {
+        "text": "這是高價值展示，顯示她很受家人的重視。",
+        "explanation": "close\nNot quite\n家人的詢問並非稀有價值，其重點在於與你討論感情生活。"
+      },
+      {
+        "text": "對方真的很討厭她媽媽。",
+        "explanation": "close\nNot quite\n這忽略了對話中提到的敏感關鍵字「男朋友」在兩性交往中的意義。"
+      },
+      {
+        "text": "這是明確的無興趣指標，告訴你她目前不想談戀愛。",
+        "explanation": "close\nNot quite\n若不想談戀愛，會直接避開這類話題，而非向你抱怨此事。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 24,
+    "question": "你發現對方回覆訊息時常常使用很多疊字（如：好喔好喔、嗯嗯、知道啦知道啦）。這通常代表：",
+    "choices": [
+      {
+        "text": "對方非常不耐煩，想快速敷衍你。",
+        "explanation": "close\nNot quite\n不耐煩的敷衍通常是單個字的回覆（如：喔、嗯），而非疊字。"
+      },
+      {
+        "text": "這是一種軟性的好感指標，顯示心情愉悅且對話氛圍輕鬆。",
+        "explanation": "done\nRight answer\n疊字帶有輕快的語氣感，顯示出放鬆且友善的對話狀態。"
+      },
+      {
+        "text": "對方智力退化，無法組織完整的句子。",
+        "explanation": "close\nNot quite\n這分析純屬荒謬，忽略了網路聊天的情緒標籤功能。"
+      },
+      {
+        "text": "這是無興趣指標，代表對方正在忙別的事。",
+        "explanation": "close\nNot quite\n忙碌時通常會延遲回覆，而非使用帶有語氣色彩的疊字。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 25,
+    "question": "在現實互動中，如果對方說話時頻繁地玩弄自己的頭髮，但眼神卻沒有直視你。這應如何判斷？",
+    "choices": [
+      {
+        "text": "這是測試，看你是否會誇獎她的髮質。",
+        "explanation": "close\nNot quite\n這過於刻意，這類動作多半是生理性的潛意識反應。"
+      },
+      {
+        "text": "這是一個典型的興趣指標，代表她對你感到在意或緊張。",
+        "explanation": "done\nRight answer\n理頭髮是潛意識在整理儀態或舒緩焦慮，通常發生在對互動對象在意時。"
+      },
+      {
+        "text": "這是無興趣指標，代表她覺得頭髮很亂很煩。",
+        "explanation": "close\nNot quite\n若純粹是頭髮問題，會直接固定髮型而非反覆玩弄。"
+      },
+      {
+        "text": "這代表她完全沒在聽你說話，只關注自己。",
+        "explanation": "close\nNot quite\n專注於儀態整理往往正是因為在聽對話並感到壓力的反應。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 26,
+    "question": "如果你提議：「下次有機會可以一起去那間酒吧喝一杯。」對方回：「哈哈，再看看囉。」隨即問你：「所以你那天後來怎麼回家的？」這顯示了什麼？",
+    "choices": [
+      {
+        "text": "這是無興趣指標，她完全不想去那間酒吧。",
+        "explanation": "close\nNot quite\n若完全沒興趣，會直接冷淡結束，而非再拋出一個問題延續聊天。"
+      },
+      {
+        "text": "高度興趣，對方已經在安排下次約會。",
+        "explanation": "close\nNot quite\n「再看看」是典型的模糊迴避，顯示對邀約仍持保留態度。"
+      },
+      {
+        "text": "這是一種「防禦性跳轉」，避開邀約但維持聊天連結。",
+        "explanation": "done\nRight answer\n用問題跳過邀約顯示對目前的升高感到不適，但尚未打算切斷所有互動。"
+      },
+      {
+        "text": "對方在測試你是否有安全駕駛的觀念。",
+        "explanation": "close\nNot quite\n這是過度解讀，跳轉話題的主要動機通常是為了避開不適的回應。"
+      }
+    ],
+    "correct_index": 2
+  }
+];
+        const QUIZ_QUESTIONS_ADVANCED_EN = [
+  {
+    "number": 1,
+    "question": "在網路聊天中，如果你分享了一段精彩的出遊經歷，對方回覆：「聽起來很棒，祝你玩得愉快！」這最可能代表什麼訊息？",
+    "choices": [
+      {
+        "text": "這是一種「概括式」的回應，暗示話題可以就此結束。",
+        "explanation": "done\nRight answer\n使用口號式或總結性的語言通常具有結束談話的效果，顯示對話意願不高。"
+      },
+      {
+        "text": "對方對你的生活感到好奇，並給予正面鼓勵。",
+        "explanation": "close\nNot quite\n這雖然是正面語句，但缺乏具體的細節追問，偏向禮貌性回應。"
+      },
+      {
+        "text": "對方正在忙碌，打算晚點再深入交流。",
+        "explanation": "close\nNot quite\n若是因為忙碌，通常會直接說明狀態或完全不回，而非給出總結性評價。"
+      },
+      {
+        "text": "這是一種高價值的展示，顯示對方生活同樣精彩。",
+        "explanation": "close\nNot quite\n這句話並未提及對方自己的生活，純粹是對你的內容進行結案。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 2,
+    "question": "兩人在餐廳約會時，對方雖然時不時會低頭滑手機，但在你講述童年趣事時，會放下手機並追問相關細節，且身體微微前傾。這種混合訊號應如何解讀？",
+    "choices": [
+      {
+        "text": "滑手機代表徹底沒興趣，追問只是基本社交禮貌。",
+        "explanation": "close\nNot quite\n追問具體細節並伴隨身體前傾通常需要較高的心理投入，不只是基本禮貌。"
+      },
+      {
+        "text": "這是一種高度興趣的表現，對方正在測試你的反應。",
+        "explanation": "close\nNot quite\n滑手機本身仍是干擾訊號，不能直接判定為高度興趣的測試。"
+      },
+      {
+        "text": "這是典型的社交機器人行為，完全按照既定程序互動。",
+        "explanation": "close\nNot quite\n社交機器人通常缺乏靈活的情緒共鳴，無法針對具體細節進行自然下切。"
+      },
+      {
+        "text": "對方可能處於放鬆狀態，滑手機是習慣，而追問則是真實的好感指標。",
+        "explanation": "done\nRight answer\n在互動中，願意對乏味的細節產生共鳴並投入關注，是更有價值的興趣指標。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 3,
+    "question": "你向對方提出這週末一起去參觀新開的畫展，對方回覆：「這週末我有事，下次再說吧。」關於這個回覆的描述，何者正確？",
+    "choices": [
+      {
+        "text": "這代表對方對畫展沒興趣，應更換活動內容。",
+        "explanation": "close\nNot quite\n若對活動沒興趣但對人有興趣，通常會提出其他活動建議。"
+      },
+      {
+        "text": "對方在測試你是否會因為挫折而輕易放棄。",
+        "explanation": "close\nNot quite\n將模糊拒絕視為測試通常是追求者的過度解讀，容易導致對方反感。"
+      },
+      {
+        "text": "這是明確的拒絕，因為缺乏具體的替代方案或時間建議。",
+        "explanation": "done\nRight answer\n有興趣見面的人會使用更具體的語言來協商時間，而非使用模糊的結尾。"
+      },
+      {
+        "text": "對方只是這週末不方便，建議下週再邀約一次。",
+        "explanation": "close\nNot quite\n「下次再說」通常是一種模糊的推託，缺乏具體的主動時間提議。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 4,
+    "question": "在網路聊天中，你傳了一張午餐照片。對方回覆：「看起來很好吃耶，在哪裡買的呀？感覺很清爽。」這是哪種層次的訊號？",
+    "choices": [
+      {
+        "text": "高度興趣：試圖主導對話並取得主動權。",
+        "explanation": "close\nNot quite\n這僅是話題的延伸，尚未達到想要了解你個人狀況或主導關係的程度。"
+      },
+      {
+        "text": "中度興趣：除了回覆，還主動延伸話題並分享感受。",
+        "explanation": "done\nRight answer\n當回覆包含下切細節（感覺清爽）並提問，顯示對方願意維持對話能量。"
+      },
+      {
+        "text": "這是無興趣指標，試圖用雜事轉移對你個人的注意力。",
+        "explanation": "close\nNot quite\n無興趣者通常會採取上推回覆或簡短回覆，而非積極探詢細節。"
+      },
+      {
+        "text": "低度興趣：單純針對事實進行問答。",
+        "explanation": "close\nNot quite\n對方不僅問位置，還加入感官描述（清爽），顯示了情緒投入。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 5,
+    "question": "如果你在交談中故意開玩笑說：「你剛剛喝飲料的樣子好像一隻小倉鼠喔！」對方聽完後臉紅並輕打你的手臂說：「你很討厭耶！」這代表什麼？",
+    "choices": [
+      {
+        "text": "這是一種測試，看你是否會因為她的評價而道歉。",
+        "explanation": "close\nNot quite\n這種自然的情緒流露通常不是精心設計的測試，而是潛意識的反應。"
+      },
+      {
+        "text": "對方真的感到生氣，你冒犯了她的儀態。",
+        "explanation": "close\nNot quite\n臉紅並伴隨輕微的身體接觸（打手臂）通常是情緒激動的好感訊號。"
+      },
+      {
+        "text": "這是無興趣指標，對方正在試圖拉開社交距離。",
+        "explanation": "close\nNot quite\n拉開社交距離通常會伴隨身體後仰、眼神避開，而非主動接觸。"
+      },
+      {
+        "text": "這是一個明確的興趣指標，且顯示對方願意進行肢體互動。",
+        "explanation": "done\nRight answer\n戲謔的互動誘發了情緒反應與身體接觸，是進入曖昧階段的特徵。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 6,
+    "question": "在群體聚會中，你正在跟一群人聊天，你發現目標女性雖然跟別人說話，但她的身體朝向你，且每當你說出笑話時，她總是第一個笑或看著你。這屬於哪種指標？",
+    "choices": [
+      {
+        "text": "這是一種「被動興趣指標」，她在關注你的價值展示。",
+        "explanation": "done\nRight answer\n雖然沒有直接對話，但注意力與身體語言的傾向透露了她的興趣所在。"
+      },
+      {
+        "text": "這是無興趣指標，她利用你的笑話來掩飾與別人的尷尬。",
+        "explanation": "close\nNot quite\n無興趣者通常會忽視或打斷你的發言，而非給予即時的回饋。"
+      },
+      {
+        "text": "這只是社交禮貌，她試圖不讓你在人群中冷場。",
+        "explanation": "close\nNot quite\n社交禮貌不需要透過身體朝向或第一時間的眼神確認來維持。"
+      },
+      {
+        "text": "她正在試圖反制你的社交地位。",
+        "explanation": "close\nNot quite\n反制通常伴隨打壓或忽視，而非配合你的節奏發笑。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 7,
+    "question": "你與對方認識一週，這期間訊息來回頻繁。某次你回覆訊息慢了兩小時，對方傳來：「你回訊息也太慢了吧，我等到都快睡著了，真沒誠意。」這應如何看待？",
+    "choices": [
+      {
+        "text": "這是無興趣指標，對方正在尋找藉口吵架。",
+        "explanation": "close\nNot quite\n這類抱怨通常伴隨對你狀態的關注，而非單純的否定。"
+      },
+      {
+        "text": "這是一種社交禮儀的提醒，對方重視準時。",
+        "explanation": "close\nNot quite\n網路聊天並非正式會議，這類帶有個人感受的語言遠超禮儀範疇。"
+      },
+      {
+        "text": "這是一個強烈的好感指標，顯示對方非常在意你的回覆。",
+        "explanation": "done\nRight answer\n由愛而怨的情緒波動顯示了高度的投入，是對方在意你關注的證明。"
+      },
+      {
+        "text": "對方真的對你失去耐心，準備結束關係。",
+        "explanation": "close\nNot quite\n若真的沒興趣，會直接冷淡處理，而非表達強烈的情緒不滿。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 8,
+    "question": "在互動中，你對對方說：「我覺得你今天的穿搭很有個性。」對方冷淡地回覆：「謝謝。」然後繼續低頭看書。這代表什麼？",
+    "choices": [
+      {
+        "text": "對方害羞，不知道該如何回應讚美。",
+        "explanation": "close\nNot quite\n害羞通常會伴隨局促或眼神閃躲，而非完全投入到另一個活動（看書）。"
+      },
+      {
+        "text": "這是明顯的無興趣指標，對方在建立社交防護罩。",
+        "explanation": "done\nRight answer\n簡短的禮貌性回覆並切斷對話能量，顯示目前沒有互動的意願。"
+      },
+      {
+        "text": "這代表你的讚美不夠具體，無法引起共鳴。",
+        "explanation": "close\nNot quite\n即便讚美平淡，若有興趣也會尋找話題延續，而非直接進入沉默。"
+      },
+      {
+        "text": "對方正在展示高價值，讓你覺得她很難追求。",
+        "explanation": "close\nNot quite\n刻意的冷落通常會保留一絲回擊的空間，而非徹底無視。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 9,
+    "question": "你問對方：「下班後在忙什麼？」對方回：「在健身房運動，快累死了，教練今天超嚴格。」這段對話顯示對方的狀態為何？",
+    "choices": [
+      {
+        "text": "對方很忙，暗示你不要打擾她。",
+        "explanation": "close\nNot quite\n若不想被打擾，回覆會更簡短且不涉及個人感受。"
+      },
+      {
+        "text": "這屬於「具體化」的下切回覆，顯示對方願意分享狀態與感受。",
+        "explanation": "done\nRight answer\n分享具體活動加上主觀感受（累、教練嚴格）是良好的交流開端。"
+      },
+      {
+        "text": "對方希望你針對健身器材給予建議。",
+        "explanation": "close\nNot quite\n這是理性思維的誤區，對方更多是在尋求情感上的共鳴。"
+      },
+      {
+        "text": "對方在炫耀自己的生活很有品質。",
+        "explanation": "close\nNot quite\n這類回覆更偏向情緒分享，而非刻意展示價值的傲慢。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 10,
+    "question": "當你嘗試在談話中稍微靠近對方時，對方並沒有退後，但卻拿起飲料杯並看著窗外。這最可能代表什麼？",
+    "choices": [
+      {
+        "text": "這是無興趣指標，對方在尋找藉口離開現場。",
+        "explanation": "close\nNot quite\n尋找離開機會通常會伴隨身體轉向出口或焦慮的擺動。"
+      },
+      {
+        "text": "這代表對方對窗外的風景比你更有興趣。",
+        "explanation": "close\nNot quite\n社交語境下，這類行為通常與互動者的社交壓力有關。"
+      },
+      {
+        "text": "這代表絕對的服從，你可以直接進行下一個階段。",
+        "explanation": "close\nNot quite\n雖然沒有退後，但視覺上的撤離（看窗外）顯示仍有一定程度的焦慮或抵抗。"
+      },
+      {
+        "text": "這是「象徵性抵抗」，對方在適應新的社交距離。",
+        "explanation": "done\nRight answer\n沒有立即退開代表基礎信任存在，但轉移注意力是舒緩不安全感的機制。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 11,
+    "question": "在網路聊天中，對方回覆速度非常慢（通常超過四小時），但每次回覆內容都寫得很多，甚至會拍照片分享。這代表什麼？",
+    "choices": [
+      {
+        "text": "對方完全沒興趣，只是出於禮貌回覆。",
+        "explanation": "close\nNot quite\n禮貌回覆不需要花費時間寫長文或拍照片分享生活。"
+      },
+      {
+        "text": "這代表對方是個社交高手，對所有人都一視同仁。",
+        "explanation": "close\nNot quite\n高質量的分享通常具有針對性，是建立連結的嘗試。"
+      },
+      {
+        "text": "對方處於忙碌狀態但對你有興趣，願意投入社交成本。",
+        "explanation": "done\nRight answer\n回覆內容的品質（豐富度）比回覆的速度更能反映真實的興趣。"
+      },
+      {
+        "text": "對方在玩心理戰術，故意讓你焦慮。",
+        "explanation": "close\nNot quite\n長期的高質量回覆與慢速通常與生活節奏有關，而非刻意操控。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 12,
+    "question": "兩人在散步時，你提到要去附近的便利商店買水。你發現對方主動跟著你走進店裡，而非在店門口等待。這可以視為：",
+    "choices": [
+      {
+        "text": "這代表對方缺乏獨立性，無法單獨待著。",
+        "explanation": "close\nNot quite\n這類分析過於狹隘，忽略了社交中的情緒共振特質。"
+      },
+      {
+        "text": "對方口渴了也想買東西。",
+        "explanation": "close\nNot quite\n即便也想買東西，但在社交中選擇「陪同」本身就是一種關注。"
+      },
+      {
+        "text": "對方不信任你，擔心你藉機離開。",
+        "explanation": "close\nNot quite\n除非關係極度惡化，否則一般社交情境不會產生這種病態不信任。"
+      },
+      {
+        "text": "一個正面的好感指標，顯示對方願意增加相處的時間。",
+        "explanation": "done\nRight answer\n願意陪同進行瑣碎的小事（如買水），顯示對方喜歡「在一起」的狀態。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 13,
+    "question": "你傳送了一條帶有挑逗意味的訊息：「我發現你這幾天好像變懶了喔，是不是在偷懶？」對方回：「哪有！我超認真的好嗎！你才懶咧！」這顯示：",
+    "choices": [
+      {
+        "text": "這是無興趣指標，對方覺得你的開場白很無聊。",
+        "explanation": "close\nNot quite\n若覺得無聊，會直接無視或給予冷淡的上推回覆。"
+      },
+      {
+        "text": "對方在認真地向你解釋她的生活態度。",
+        "explanation": "close\nNot quite\n過於認真的解釋通常不會包含「你才懶咧」這種具備情緒張力的反擊。"
+      },
+      {
+        "text": "對方生氣了，對你的無端指控感到不悅。",
+        "explanation": "close\nNot quite\n情緒激昂的回嘴（帶有驚嘆號或反擊）通常是參與互動的表現。"
+      },
+      {
+        "text": "這是一種良好的互動共鳴，對方願意配合你的戲謔節奏。",
+        "explanation": "done\nRight answer\n這種相互回擊的語言模式顯示了雙方的心理防禦降低，進入了調情狀態。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 14,
+    "question": "約會快結束時，你問對方要不要去公園走走，對方說：「雖然有點晚了，但走一小段應該還可以。」這反映了什麼？",
+    "choices": [
+      {
+        "text": "對方被迫答應，因為不好意思當面拒絕。",
+        "explanation": "close\nNot quite\n「還可以」雖帶有保留，但願意延續約會時間是強烈的興趣指標。"
+      },
+      {
+        "text": "對方在測試你是否會真的只走「一小段」。",
+        "explanation": "close\nNot quite\n這更像是一種行為上的妥協與順從，而非精心設計的考驗。"
+      },
+      {
+        "text": "這是「象徵性抵抗」與「興趣指標」的結合。",
+        "explanation": "done\nRight answer\n「有點晚」是自我保護的框架，「還可以」則是對你的認同與服從。"
+      },
+      {
+        "text": "這是無興趣指標，暗示她已經累了想回家。",
+        "explanation": "close\nNot quite\n想回家會直接表示需要休息，而非接受進一步的邀約。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 15,
+    "question": "如果你在聊天中詢問對方的專業問題，對方回覆得非常詳盡且專業。但在你轉而問到她週末喜歡去哪裡玩時，她的回覆變得非常簡短。如何判斷？",
+    "choices": [
+      {
+        "text": "目前僅處於「資訊交換」，尚未進入「情緒分享」的範疇。",
+        "explanation": "done\nRight answer\n對私人生活的簡短回覆代表安全感或興趣不足，專業知識的回覆不代表社交好感。"
+      },
+      {
+        "text": "這是明確的無興趣指標，她根本不想跟你說話。",
+        "explanation": "close\nNot quite\n若完全沒興趣，專業問題也會敷衍了事。"
+      },
+      {
+        "text": "她對你有高度好感，所以認真回答你的問題。",
+        "explanation": "close\nNot quite\n詳盡的專業回答可能僅基於個人成就感的滿足或責任感，非對你個人的興趣。"
+      },
+      {
+        "text": "她在測試你是否能聽懂她的專業內容。",
+        "explanation": "close\nNot quite\n這忽略了對話中私人領域縮減的訊號，過於樂觀。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 16,
+    "question": "在聚會中，你跟一個正妹聊天，你發現她的朋友不斷拉她的手示意要離開，但她會拍拍朋友的手說「再等一下下」。這代表什麼？",
+    "choices": [
+      {
+        "text": "目標只是想展現自己很有主見，與你無關。",
+        "explanation": "close\nNot quite\n在特定對象面前展現主見，本質上就是在爭取該對象的注意。"
+      },
+      {
+        "text": "這是一個極強的好感指標，目標願意為了你抵抗群體壓力。",
+        "explanation": "done\nRight answer\n主動對抗社交障礙或朋友的催促，顯示了強烈的互動動力。"
+      },
+      {
+        "text": "她的朋友很討厭你，正在試圖「擋屌」。",
+        "explanation": "close\nNot quite\n這描述的是朋友的行為，重點應放在「目標」對抗干擾的反應。"
+      },
+      {
+        "text": "這是無興趣指標，她在拖延時間等待更合適的人出現。",
+        "explanation": "close\nNot quite\n這不符合邏輯，若沒興趣，會順著朋友的意願離開尷尬場景。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 17,
+    "question": "你發現對方在個人社群頁面上分享了一首憂鬱的歌。你私訊詢問：「這首歌很有味道，心情還好嗎？」對方回：「就那樣吧。」這種情形最可能是：",
+    "choices": [
+      {
+        "text": "這是一種「上推式」的無興趣指標，對方不想跟你討論心情。",
+        "explanation": "done\nRight answer\n不願意下切描述具體感受，代表目前的信任度或興趣不足以進行情緒分享。"
+      },
+      {
+        "text": "這是高價值展示，顯示她情緒多變且神秘。",
+        "explanation": "close\nNot quite\n缺乏互動能量的神秘感在社交中往往被解讀為冷漠或排斥。"
+      },
+      {
+        "text": "對方在測試你是否能讀懂她的潛台詞。",
+        "explanation": "close\nNot quite\n這過於美化對方的冷淡，事實上這種回覆通常是為了切斷話題。"
+      },
+      {
+        "text": "對方非常難過，正在等你給予溫暖的安慰。",
+        "explanation": "close\nNot quite\n簡短的總結性回覆（就那樣吧）通常是拒絕深度交流的訊號。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 18,
+    "question": "兩人在互動時，你提到某間咖啡廳的甜點很有名。對方說：「我也聽說過那家，可是我最近在減肥，不能吃甜食。」隨後又補了一句：「但他們家的冰滴咖啡好像也不錯。」後者這句話的作用是？",
+    "choices": [
+      {
+        "text": "這是測試，看你是否會為了她的健康而反對她喝咖啡。",
+        "explanation": "close\nNot quite\n這分析不符社交常規，社交中的修補行為通常是興趣的體現。"
+      },
+      {
+        "text": "單純在分享食記資訊，沒有額外意圖。",
+        "explanation": "close\nNot quite\n在拒絕一個提議後主動補上另一個可能性，是維持對話的積極訊號。"
+      },
+      {
+        "text": "這是一種「彌補行為」，顯示她仍想保留未來的約會機會。",
+        "explanation": "done\nRight answer\n主動提出替代方案（冰滴咖啡）是為了消除拒絕（減肥）帶來的話題中斷感。"
+      },
+      {
+        "text": "對方在暗示你應該現在就帶她去喝咖啡。",
+        "explanation": "close\nNot quite\n這過於激進，目前的語境更多是在進行興趣的試探與修補。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 19,
+    "question": "在聊天過程中，你發現對方開始頻繁使用與你相似的語助詞（例如：喔唷、嘿咩）或表情符號。這種行為被稱為：",
+    "choices": [
+      {
+        "text": "社交機器人的慣性模仿。",
+        "explanation": "close\nNot quite\n社交機器人通常只會機械式應答，不會有潛意識的語氣同頻。"
+      },
+      {
+        "text": "對方缺乏個性，只能依賴他人的語彙。",
+        "explanation": "close\nNot quite\n在心理學上，同步性更多與社交吸引力相關，而非性格缺陷。"
+      },
+      {
+        "text": "這是對方的嘲諷，在諷刺你的說話方式。",
+        "explanation": "close\nNot quite\n嘲諷通常伴隨誇張的表情或語氣，而非在自然對話中穩定地出現。"
+      },
+      {
+        "text": "這是一種「共鳴」現象，顯示雙方進入了融洽且同步的狀態。",
+        "explanation": "done\nRight answer\n下意識地模仿對方的副語言或肢體動作，是心理連結感增強的指標。"
+      }
+    ],
+    "correct_index": 3
+  },
+  {
+    "number": 20,
+    "question": "你發現對方在約會時的穿著打扮明顯比平常在照片中更精緻，甚至噴了淡淡的香水。這說明了什麼？",
+    "choices": [
+      {
+        "text": "對方剛下班，所以穿得比較正式。",
+        "explanation": "close\nNot quite\n穿著精緻並噴香水通常需要額外的準備時間與心力投入。"
+      },
+      {
+        "text": "這是一種「投資」行為，顯示對方非常在意在你看來出的形象。",
+        "explanation": "done\nRight answer\n投入儀態成本是希望獲得對方青睞的強烈興趣指標。"
+      },
+      {
+        "text": "這是測試，看你是否會注意到她的改變並給予讚美。",
+        "explanation": "close\nNot quite\n這不只是測試，更是主動展示價值的行為。"
+      },
+      {
+        "text": "對方天生愛美，對所有場合都如此打扮。",
+        "explanation": "close\nNot quite\n即便是愛美，特定的香水與精緻度調整仍具有針對特定對象的意義。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 21,
+    "question": "在網路聊天中，如果你問一個問題，對方雖然回覆了，但隨即開啟另一個完全無關的話題。這種「話題跳轉」最可能是：",
+    "choices": [
+      {
+        "text": "這代表對方腦袋轉很快，思考不連貫。",
+        "explanation": "close\nNot quite\n社交中的跳轉通常與情緒避難有關，而非智力特徵。"
+      },
+      {
+        "text": "這是一種無興趣指標或「軟性迴避」，代表對原本的話題感到無聊或壓力。",
+        "explanation": "done\nRight answer\n切斷話題連結顯示不想深談當前內容，即便回覆了也是敷衍。"
+      },
+      {
+        "text": "高度興趣，對方想讓你認識她更多的面向。",
+        "explanation": "close\nNot quite\n無視前一個問題的深度或感受而跳轉話題，往往是避開敏感或不感興趣內容的表現。"
+      },
+      {
+        "text": "這是一種測試，看你是否能跟上她的思維速度。",
+        "explanation": "close\nNot quite\n這類解釋通常過於樂觀，忽略了社交舒適感的流失。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 22,
+    "question": "你跟對方在公園散步，遇到一隻可愛的流浪貓，你蹲下來逗貓。對方也跟著蹲下來，並開始跟你討論貓咪的動作。這顯示：",
+    "choices": [
+      {
+        "text": "對方只是也很喜歡貓咪而已。",
+        "explanation": "close\nNot quite\n在社交語境下，共同參與同一項活動並進行情感交流是建立連結的訊號。"
+      },
+      {
+        "text": "這是無興趣指標，對方覺得你很無聊，所以只好跟貓玩。",
+        "explanation": "close\nNot quite\n若覺得無聊，會站在一旁催促離開，而非參與其中。"
+      },
+      {
+        "text": "這是一種良好的「共振」狀態，顯示對方願意分享你的情緒體驗。",
+        "explanation": "done\nRight answer\n同步的動作與共同的話題焦點，顯示雙方正處於融洽的社交脈絡中。"
+      },
+      {
+        "text": "這是測試，看你是否有愛心。",
+        "explanation": "close\nNot quite\n雖然可能有測試意味，但雙方的同步行為更多是好感度的體現。"
+      }
+    ],
+    "correct_index": 2
+  },
+  {
+    "number": 23,
+    "question": "如果對方在聊天中主動提到：「我媽最近一直問我交男朋友沒，煩死了。」這句話背後的潛溝通最可能是：",
+    "choices": [
+      {
+        "text": "這是一種「興趣測試」或自我揭露，試探你對她感情狀態的反應。",
+        "explanation": "done\nRight answer\n主動提起感情話題通常是為了引導對方展現態度，是一種微妙的興趣指標。"
+      },
+      {
+        "text": "這是高價值展示，顯示她很受家人的重視。",
+        "explanation": "close\nNot quite\n家人的詢問並非稀有價值，其重點在於與你討論感情生活。"
+      },
+      {
+        "text": "對方真的很討厭她媽媽。",
+        "explanation": "close\nNot quite\n這忽略了對話中提到的敏感關鍵字「男朋友」在兩性交往中的意義。"
+      },
+      {
+        "text": "這是明確的無興趣指標，告訴你她目前不想談戀愛。",
+        "explanation": "close\nNot quite\n若不想談戀愛，會直接避開這類話題，而非向你抱怨此事。"
+      }
+    ],
+    "correct_index": 0
+  },
+  {
+    "number": 24,
+    "question": "你發現對方回覆訊息時常常使用很多疊字（如：好喔好喔、嗯嗯、知道啦知道啦）。這通常代表：",
+    "choices": [
+      {
+        "text": "對方非常不耐煩，想快速敷衍你。",
+        "explanation": "close\nNot quite\n不耐煩的敷衍通常是單個字的回覆（如：喔、嗯），而非疊字。"
+      },
+      {
+        "text": "這是一種軟性的好感指標，顯示心情愉悅且對話氛圍輕鬆。",
+        "explanation": "done\nRight answer\n疊字帶有輕快的語氣感，顯示出放鬆且友善的對話狀態。"
+      },
+      {
+        "text": "對方智力退化，無法組織完整的句子。",
+        "explanation": "close\nNot quite\n這分析純屬荒謬，忽略了網路聊天的情緒標籤功能。"
+      },
+      {
+        "text": "這是無興趣指標，代表對方正在忙別的事。",
+        "explanation": "close\nNot quite\n忙碌時通常會延遲回覆，而非使用帶有語氣色彩的疊字。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 25,
+    "question": "在現實互動中，如果對方說話時頻繁地玩弄自己的頭髮，但眼神卻沒有直視你。這應如何判斷？",
+    "choices": [
+      {
+        "text": "這是測試，看你是否會誇獎她的髮質。",
+        "explanation": "close\nNot quite\n這過於刻意，這類動作多半是生理性的潛意識反應。"
+      },
+      {
+        "text": "這是一個典型的興趣指標，代表她對你感到在意或緊張。",
+        "explanation": "done\nRight answer\n理頭髮是潛意識在整理儀態或舒緩焦慮，通常發生在對互動對象在意時。"
+      },
+      {
+        "text": "這是無興趣指標，代表她覺得頭髮很亂很煩。",
+        "explanation": "close\nNot quite\n若純粹是頭髮問題，會直接固定髮型而非反覆玩弄。"
+      },
+      {
+        "text": "這代表她完全沒在聽你說話，只關注自己。",
+        "explanation": "close\nNot quite\n專注於儀態整理往往正是因為在聽對話並感到壓力的反應。"
+      }
+    ],
+    "correct_index": 1
+  },
+  {
+    "number": 26,
+    "question": "如果你提議：「下次有機會可以一起去那間酒吧喝一杯。」對方回：「哈哈，再看看囉。」隨即問你：「所以你那天後來怎麼回家的？」這顯示了什麼？",
+    "choices": [
+      {
+        "text": "這是無興趣指標，她完全不想去那間酒吧。",
+        "explanation": "close\nNot quite\n若完全沒興趣，會直接冷淡結束，而非再拋出一個問題延續聊天。"
+      },
+      {
+        "text": "高度興趣，對方已經在安排下次約會。",
+        "explanation": "close\nNot quite\n「再看看」是典型的模糊迴避，顯示對邀約仍持保留態度。"
+      },
+      {
+        "text": "這是一種「防禦性跳轉」，避開邀約但維持聊天連結。",
+        "explanation": "done\nRight answer\n用問題跳過邀約顯示對目前的升高感到不適，但尚未打算切斷所有互動。"
+      },
+      {
+        "text": "對方在測試你是否有安全駕駛的觀念。",
+        "explanation": "close\nNot quite\n這是過度解讀，跳轉話題的主要動機通常是為了避開不適的回應。"
+      }
+    ],
+    "correct_index": 2
+  }
+];
+
         const QUIZ_QUESTIONS_SCIENCE_EN = [
             {
                         "number": 1,
@@ -8428,6 +10112,30 @@
                 scienceStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
             }
             
+            // Render catch-classic status
+            const catchClassicStatus = document.getElementById('quiz-status-catchclassic');
+            if (record['quiz-catch-classic']) {
+                const score = record['quiz-catch-classic'].score;
+                const total = record['quiz-catch-classic'].total;
+                catchClassicStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
+                catchClassicStatus.className = "text-[10px] bg-amber-950/60 text-amber-400 border border-amber-900/40 px-2 py-0.5 rounded-full font-semibold";
+            } else {
+                catchClassicStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
+                catchClassicStatus.className = "text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full font-medium border border-slate-800";
+            }
+
+            // Render advanced-mindset status
+            const advancedMindsetStatus = document.getElementById('quiz-status-advancedmindset');
+            if (record['quiz-advanced-mindset']) {
+                const score = record['quiz-advanced-mindset'].score;
+                const total = record['quiz-advanced-mindset'].total;
+                advancedMindsetStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
+                advancedMindsetStatus.className = "text-[10px] bg-amber-950/60 text-amber-400 border border-amber-900/40 px-2 py-0.5 rounded-full font-semibold";
+            } else {
+                advancedMindsetStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
+                advancedMindsetStatus.className = "text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full font-medium border border-slate-800";
+            }
+            
             if (typeof lucide !== 'undefined') {
                 lucide.createIcons();
             }
@@ -8465,6 +10173,12 @@
             } else if (quizId === 'quiz-attraction-science') {
                 activeQuestions = (currentLang === 'zh') ? QUIZ_QUESTIONS_SCIENCE : QUIZ_QUESTIONS_SCIENCE_EN;
                 document.getElementById('quiz-active-title').textContent = (currentLang === 'zh') ? "【高級】吸引力的科學與高價值展示挑戰" : "[Advanced] Science of Attraction & DHV Challenge";
+            } else if (quizId === 'quiz-catch-classic') {
+                activeQuestions = (currentLang === 'zh') ? QUIZ_QUESTIONS_CLASSIC : QUIZ_QUESTIONS_CLASSIC_EN;
+                document.getElementById('quiz-active-title').textContent = (currentLang === 'zh') ? "【特選】廢物測試特訓" : "[Featured] Shit Test Bootcamp";
+            } else if (quizId === 'quiz-advanced-mindset') {
+                activeQuestions = (currentLang === 'zh') ? QUIZ_QUESTIONS_ADVANCED : QUIZ_QUESTIONS_ADVANCED_EN;
+                document.getElementById('quiz-active-title').textContent = (currentLang === 'zh') ? "【特選】網路交友特訓" : "[Featured] Online Dating Bootcamp";
             }
             
             renderQuestion();
