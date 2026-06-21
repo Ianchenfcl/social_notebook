@@ -281,15 +281,18 @@
     <!-- 3. 右側欄 (Notes & Source Viewer) -->
     <aside id="right-panel" class="w-96 flex-shrink-0 bg-slate-900 border-l border-slate-800 flex flex-col h-full glass-panel z-10 transition-transform duration-300">
         <!-- Panel Tabs -->
-        <div class="flex border-b border-slate-800 bg-slate-950/30">
+        <div class="flex border-b border-slate-800 bg-slate-950/30 relative">
             <button onclick="switchRightTab('notes')" id="tab-notes" class="flex-1 py-4 text-xs font-semibold text-brand-400 border-b-2 border-brand-500 flex items-center justify-center gap-1.5">
-                <i data-lucide="sticky-note" class="w-4 h-4"></i><span data-i18n="right.tab_notes">個人筆記</span>
+                <i data-lucide="sticky-note" class="w-4 h-4"></i><span data-i18n="right.tab_notes" class="hidden sm:inline">個人筆記</span>
             </button>
             <button onclick="switchRightTab('source')" id="tab-source" class="flex-1 py-4 text-xs font-semibold text-slate-400 border-b-2 border-transparent flex items-center justify-center gap-1.5">
-                <i data-lucide="file-text" class="w-4 h-4"></i><span data-i18n="right.tab_source">原文溯源對照</span>
+                <i data-lucide="file-text" class="w-4 h-4"></i><span data-i18n="right.tab_source" class="hidden sm:inline">原文溯源對照</span>
             </button>
             <button onclick="switchRightTab('quiz')" id="tab-quiz" class="flex-1 py-4 text-xs font-semibold text-slate-400 border-b-2 border-transparent flex items-center justify-center gap-1.5">
-                <i data-lucide="award" class="w-4 h-4"></i><span data-i18n="right.tab_quiz">情感互動測驗</span>
+                <i data-lucide="award" class="w-4 h-4"></i><span data-i18n="right.tab_quiz" class="hidden sm:inline">情感互動測驗</span>
+            </button>
+            <button id="toggle-right-panel-btn" onclick="toggleRightPanelFullscreen()" class="px-4 py-4 text-slate-400 hover:text-white hover:bg-slate-800/50 transition border-l border-slate-800/50" title="放大/縮小面板">
+                <i data-lucide="maximize-2" id="panel-resize-icon" class="w-4 h-4"></i>
             </button>
         </div>
 
@@ -1635,7 +1638,27 @@
             }
         }
 
-        // 6. Right Panel switch
+        // 6. Right Panel switch & fullscreen
+        let isRightPanelFullscreen = false;
+        function toggleRightPanelFullscreen() {
+            const panel = document.getElementById('right-panel');
+            // We need to re-render the button innerHTML because lucide replaces the <i> tag
+            const btn = document.getElementById('toggle-right-panel-btn');
+            isRightPanelFullscreen = !isRightPanelFullscreen;
+            if (isRightPanelFullscreen) {
+                panel.classList.remove('w-96');
+                panel.classList.add('w-full', 'absolute', 'inset-0', 'z-50', 'bg-slate-900/95', 'backdrop-blur-xl');
+                btn.innerHTML = '<i data-lucide="minimize-2" id="panel-resize-icon" class="w-4 h-4"></i>';
+            } else {
+                panel.classList.add('w-96');
+                panel.classList.remove('w-full', 'absolute', 'inset-0', 'z-50', 'bg-slate-900/95', 'backdrop-blur-xl');
+                btn.innerHTML = '<i data-lucide="maximize-2" id="panel-resize-icon" class="w-4 h-4"></i>';
+            }
+            if (typeof lucide !== 'undefined') {
+                lucide.createIcons();
+            }
+        }
+
         function switchRightTab(tabName) {
             const btnNotes = document.getElementById('tab-notes');
             const btnSource = document.getElementById('tab-source');

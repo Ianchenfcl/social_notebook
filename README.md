@@ -45,12 +45,15 @@
 
 ## 🌟 核心特色 (Features)
 * **🗂️ 多主體知識庫自由切換**：可於左側控制面板無縫切換「PTT Catch 精華區」與「經典情感與把妹書籍」兩大知識庫，載入不同文件並與 AI 對話。
-* **📞 撥打電話給戀愛AI導師**：點擊右上角「撥打語音導師」按鈕，即可與多種風格的 AI 語音導師（如 Zephyr, Puck 等）進行如同打電話般的即時語音對話，支援 **Barge-in（插話打斷）** 功能，讓您的兩性對話演練更加逼真。
+* **📞 撥打電話給戀愛AI導師**：點擊右上角「撥打語音導師」按鈕，即可與多種風格的 AI 語音導師（如 Zephyr, Puck 等）進行如同打電話般的即時語音對話。
+  * **全新支援「螢幕分享」與「鏡頭分享」模式**：能讓 AI 導師看著您的聊天紀錄或直接指導您的穿搭與肢體動作。
+  * 支援 **Barge-in（插話打斷）** 功能，讓您的兩性對話演練更加逼真。
+* **📝 情感互動測驗 (Interactive Quizzes)**：內建多達 9 種不同難度與主題的實戰測驗題庫（包含「廢物測試特訓」、「網路交友特訓」等特選題），隨時檢驗您的聊天心法與社交框架，並支援個人進度儲存與重新測驗。
 * **💎 純淨無噪聲資料庫**：自動過濾板規、公告等噪聲，專注於實戰與心法。
 * **🎨 三欄式質感介面 (Tailwind CSS)**：
   * **左欄**：參考來源清單（支援一鍵點擊在新分頁開啟原文，並可一鍵生成 Study Guide 智慧導讀大綱）。
   * **中欄**：AI 問答視窗（帶有 `[Source X]` 引用智慧徽章）。
-  * **右欄**：雙分頁對照（原文片段高亮對照檢視 + 個人隨手筆記編輯器）。
+  * **右欄**：多功能面板（包含個人筆記、原文對照、情感測驗），**支援一鍵放大至全螢幕**，方便無干擾閱讀或測驗。
 * **⚙️ 降級展示模式**：未輸入 Key 時自動降級為展示模式，依然可正常搜尋文章與記錄筆記。
 
 ---
@@ -105,7 +108,9 @@ To protect the open-source community and respect original authors, 戀愛AI impl
 ## 🌟 Key Features
 - **🗂️ Multi-Notebook Support**: Swap between "PTT Catch Classics" and "Classic Relationship Books" on the fly.
 - **📞 Phone Call with AI Mentors**: Click "撥打語音導師" to voice call multiple AI coaches (Zephyr, Puck, etc.) with real-time **barge-in / interruption** support.
-- **🎨 Premium Triple-Panel UI**: Clean responsive design with source indexing, interactive RAG chat window, and a split side panel for direct text comparison and user notebook editor.
+  - **Screen & Camera Sharing**: Allow the AI mentor to view your screen (e.g., chat logs) or camera (e.g., outfit checks) for ultra-personalized feedback.
+- **📝 Interactive Quizzes**: Test your social dynamics and mindset with 9 different relationship quizzes, complete with progress tracking and retry mechanics.
+- **🎨 Premium Triple-Panel UI**: Clean responsive design with source indexing, interactive RAG chat window, and a multi-functional side panel (Notes, Source Viewer, Quizzes) that supports **fullscreen expansion** for distraction-free reading.
 
 ---
 

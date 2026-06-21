@@ -1,4 +1,5 @@
 __pycache__/
+__pycache__/
 pua_books_repo/
 *.json
 *-journal
@@ -6,6 +7,3 @@ pua_books_repo/
 venv/
 venv.bak/
 .env
-catch_notebook.db
-chroma_db/
-*.db
