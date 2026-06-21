@@ -8,6 +8,7 @@ import json
 import uuid
 import re
 import time
+import base64
 
 from fastapi import FastAPI, HTTPException, Body, Header
 from fastapi.middleware.cors import CORSMiddleware

@@ -610,6 +610,16 @@
                 "quiz.card9_desc": "進階測試在複雜社交情境下的應對心態、高價值展示與長期關係維護（共 20 題）。",
                 "quiz.next_btn": "下一題 (Next)",
                 "quiz.restart_btn": "重新測驗",
+                "voice.select_mode_title": "選擇通話模式",
+                "voice.select_mode_desc": "大師可以透過您的螢幕或鏡頭提供更精準的建議",
+                "voice.mode_screen": "分享螢幕畫面",
+                "voice.mode_screen_desc": "適合討論聊天紀錄或交友軟體",
+                "voice.mode_camera": "分享鏡頭畫面",
+                "voice.mode_camera_desc": "適合穿搭建議或實體約會模擬",
+                "voice.mode_audio": "僅用語音通話",
+                "voice.mode_audio_desc": "純語音交流與解答",
+                "voice.high_res_mode": "高解析度模式 (1080p)",
+                "voice.high_res_warning": "※ 畫質較高，但可能會造成連線不穩或斷線",
                 "quiz.return_btn": "返回測驗目錄",
                 "quiz.back_btn": "返回目錄",
                 "quiz.completed_title": "測驗完成！"
@@ -709,6 +719,16 @@
                 "quiz.card9_desc": "Advanced test on coping mentalities, high-value displays, and long-term relationship maintenance in complex social situations (20 questions).",
                 "quiz.next_btn": "Next Question",
                 "quiz.restart_btn": "Restart Quiz",
+                "voice.select_mode_title": "Select Call Mode",
+                "voice.select_mode_desc": "The Master can provide more precise advice via your screen or camera",
+                "voice.mode_screen": "Share Screen",
+                "voice.mode_screen_desc": "Great for discussing chat logs or dating apps",
+                "voice.mode_camera": "Share Camera",
+                "voice.mode_camera_desc": "Great for outfit advice or mock dates",
+                "voice.mode_audio": "Audio Only",
+                "voice.mode_audio_desc": "Pure voice interaction",
+                "voice.high_res_mode": "High Resolution Mode (1080p)",
+                "voice.high_res_warning": "* Better quality, but may cause connection instability or drops",
                 "quiz.return_btn": "Return to Catalog",
                 "quiz.back_btn": "Back to Catalog",
                 "quiz.completed_title": "Quiz Completed!"
@@ -1788,6 +1808,60 @@
             }
         }
     </script>
+    <!-- 📹 AI 語音通話模式選擇 Modal -->
+    <div id="voice-mode-select-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center hidden z-50 transition-opacity duration-300">
+        <div class="bg-slate-900/95 border border-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl shadow-brand-950/30 flex flex-col space-y-5 animate-in fade-in zoom-in duration-200">
+            <div class="flex flex-col items-center justify-center text-center space-y-2 pb-2">
+                <div class="w-12 h-12 bg-brand-500/10 rounded-full flex items-center justify-center mb-1">
+                    <i data-lucide="video" class="w-6 h-6 text-brand-400"></i>
+                </div>
+                <h3 class="font-bold text-slate-100 text-lg" data-i18n="voice.select_mode_title">選擇通話模式</h3>
+                <p class="text-xs text-slate-400" data-i18n="voice.select_mode_desc">大師可以透過您的螢幕或鏡頭提供更精準的建議</p>
+            </div>
+            <div class="grid grid-cols-1 gap-3">
+                <button onclick="startRealVoiceCall('screen')" class="w-full flex items-center gap-3 bg-slate-800 hover:bg-brand-600 border border-slate-700 hover:border-brand-500 rounded-xl p-4 transition group">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 group-hover:bg-brand-500 flex items-center justify-center transition">
+                        <i data-lucide="monitor-up" class="w-5 h-5 text-slate-300 group-hover:text-white"></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-sm text-slate-200 group-hover:text-white transition" data-i18n="voice.mode_screen">分享螢幕畫面</div>
+                        <div class="text-[10px] text-slate-400 group-hover:text-brand-100 transition" data-i18n="voice.mode_screen_desc">適合討論聊天紀錄或交友軟體</div>
+                    </div>
+                </button>
+                <button onclick="startRealVoiceCall('camera')" class="w-full flex items-center gap-3 bg-slate-800 hover:bg-brand-600 border border-slate-700 hover:border-brand-500 rounded-xl p-4 transition group">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 group-hover:bg-brand-500 flex items-center justify-center transition">
+                        <i data-lucide="camera" class="w-5 h-5 text-slate-300 group-hover:text-white"></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-sm text-slate-200 group-hover:text-white transition" data-i18n="voice.mode_camera">分享鏡頭畫面</div>
+                        <div class="text-[10px] text-slate-400 group-hover:text-brand-100 transition" data-i18n="voice.mode_camera_desc">適合穿搭建議或實體約會模擬</div>
+                    </div>
+                </button>
+                <button onclick="startRealVoiceCall('audio')" class="w-full flex items-center gap-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl p-4 transition group">
+                    <div class="w-10 h-10 rounded-full bg-slate-700 flex items-center justify-center transition">
+                        <i data-lucide="mic" class="w-5 h-5 text-slate-300"></i>
+                    </div>
+                    <div class="text-left">
+                        <div class="font-bold text-sm text-slate-200 transition" data-i18n="voice.mode_audio">僅用語音通話</div>
+                        <div class="text-[10px] text-slate-400 transition" data-i18n="voice.mode_audio_desc">純語音交流與解答</div>
+                    </div>
+                </button>
+            </div>
+            
+            <div class="flex items-center gap-2 px-2 py-1 mt-2">
+                <input type="checkbox" id="voice-high-res-toggle" class="w-4 h-4 rounded border-slate-700 bg-slate-800 text-brand-500 focus:ring-brand-500 focus:ring-offset-slate-900 transition">
+                <div class="flex flex-col">
+                    <label for="voice-high-res-toggle" class="text-sm text-slate-300 font-medium cursor-pointer" data-i18n="voice.high_res_mode">高解析度模式 (1080p)</label>
+                    <span class="text-[10px] text-amber-500/80" data-i18n="voice.high_res_warning">※ 畫質較高，但可能會造成連線不穩或斷線</span>
+                </div>
+            </div>
+
+            <button onclick="document.getElementById('voice-mode-select-modal').classList.add('hidden')" class="w-full py-2.5 rounded-xl border border-slate-700 text-slate-400 hover:bg-slate-800 hover:text-white font-medium text-sm transition" data-i18n="ui.cancel">
+                取消
+            </button>
+        </div>
+    </div>
+
     <!-- 📞 AI 語音通話 Modal (Floating Call Modal) -->
     <div id="voice-call-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md flex items-center justify-center hidden z-50 transition-opacity duration-300">
         <div class="bg-slate-900/95 border border-slate-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl shadow-brand-950/30 flex flex-col space-y-5 animate-in fade-in zoom-in duration-200">
@@ -1874,6 +1948,13 @@
         let voiceRecognition = null;
         let voiceRecBubble = null;
 
+        let voiceVideoMode = 'audio';
+        let voiceVideoStream = null;
+        let voiceVideoInterval = null;
+        let hiddenCanvas = document.createElement('canvas');
+        let hiddenVideo = document.createElement('video');
+        hiddenVideo.autoplay = true;
+
 
 
         async function openVoiceCallModal() {
@@ -1887,16 +1968,43 @@
                 return;
             }
             
+            document.getElementById('voice-mode-select-modal').classList.remove('hidden');
+        }
+
+        async function startRealVoiceCall(mode) {
+            document.getElementById('voice-mode-select-modal').classList.add('hidden');
+            voiceVideoMode = mode;
+            
+            if (mode === 'screen') {
+                try {
+                    voiceVideoStream = await navigator.mediaDevices.getDisplayMedia({ video: { width: 1280, height: 720 }, audio: false });
+                    hiddenVideo.srcObject = voiceVideoStream;
+                } catch (err) {
+                    console.error("Failed to get screen stream:", err);
+                    alert("無法取得螢幕分享授權，將僅使用語音通話。");
+                    voiceVideoMode = 'audio';
+                }
+            } else if (mode === 'camera') {
+                try {
+                    voiceVideoStream = await navigator.mediaDevices.getUserMedia({ video: { width: 1280, height: 720 }, audio: false });
+                    hiddenVideo.srcObject = voiceVideoStream;
+                } catch (err) {
+                    console.error("Failed to get camera stream:", err);
+                    alert("無法取得相機授權，將僅使用語音通話。");
+                    voiceVideoMode = 'audio';
+                }
+            }
+
             const modal = document.getElementById('voice-call-modal');
             modal.classList.remove('hidden');
             
             voiceCurrentText = "";
             voiceCallLogHistory = [];
             voiceIsMuted = false;
-            voiceIsInterrupted = false; // 重設打斷狀態，避免上一次通話的狀態殘留
-            voiceAccumulator = new Int16Array(0); // 清空音訊快取
-            voiceNextStartTime = 0; // 重置音訊時間軸
-            voiceActiveSources = []; // 清空現有播放源
+            voiceIsInterrupted = false;
+            voiceAccumulator = new Int16Array(0);
+            voiceNextStartTime = 0;
+            voiceActiveSources = [];
             
             document.getElementById('voice-mute-btn').className = "w-12 h-12 rounded-full bg-slate-800 hover:bg-slate-750 text-slate-300 hover:text-white flex items-center justify-center transition border border-slate-700/60 shadow";
             document.getElementById('voice-mute-icon').setAttribute('data-lucide', 'microphone');
@@ -1910,6 +2018,7 @@
                 </div>
             `;
             
+            const apiKey = localStorage.getItem('gemini_api_key') || "";
             connectVoice(apiKey);
         }
 
@@ -1955,6 +2064,33 @@
                     isVoiceReconnecting = false;
                     voiceReconnectAttempts = 0;
                     startSpeechRecognition(); // 啟動使用者語音辨識（逐字稿）
+                    
+                    if (voiceVideoMode !== 'audio' && voiceVideoStream) {
+                        voiceVideoInterval = setInterval(() => {
+                            if (voiceWs && voiceWs.readyState === WebSocket.OPEN && hiddenVideo.readyState === hiddenVideo.HAVE_ENOUGH_DATA) {
+                                const isHighRes = document.getElementById('voice-high-res-toggle').checked;
+                                const maxDim = isHighRes ? 1920 : 640;
+                                let w = hiddenVideo.videoWidth;
+                                let h = hiddenVideo.videoHeight;
+                                if (w > maxDim || h > maxDim) {
+                                    if (w > h) {
+                                        h = Math.round(h * (maxDim / w));
+                                        w = maxDim;
+                                    } else {
+                                        w = Math.round(w * (maxDim / h));
+                                        h = maxDim;
+                                    }
+                                }
+                                hiddenCanvas.width = w;
+                                hiddenCanvas.height = h;
+                                const ctx = hiddenCanvas.getContext('2d');
+                                ctx.drawImage(hiddenVideo, 0, 0, hiddenCanvas.width, hiddenCanvas.height);
+                                const dataUrl = hiddenCanvas.toDataURL('image/jpeg', 0.4);
+                                const base64Data = dataUrl.split(',')[1];
+                                voiceWs.send(JSON.stringify({ type: 'video', data: base64Data }));
+                            }
+                        }, 1000); // 1 FPS
+                    }
                 };
                 
                 voiceWs.onmessage = async (event) => {
@@ -2047,6 +2183,19 @@
             stopVoiceTimer();
             stopVoiceVisualizers();
             stopSpeechRecognition(); // 關閉使用者語意辨識
+
+            if (voiceVideoInterval) {
+                clearInterval(voiceVideoInterval);
+                voiceVideoInterval = null;
+            }
+            if (voiceVideoStream) {
+                voiceVideoStream.getTracks().forEach(track => track.stop());
+                voiceVideoStream = null;
+            }
+            if (hiddenVideo) {
+                hiddenVideo.srcObject = null;
+            }
+            voiceVideoMode = 'audio';
             
             if (voiceAudioCtx) {
                 try {
@@ -10021,6 +10170,14 @@
         let isQuestionAnswered = false;
         let activeQuizId = 'basic-relationship';
         
+        function resetQuizRecord(quizId) {
+            if (!confirm(currentLang === 'zh' ? "確定要清除這個測驗的紀錄嗎？" : "Are you sure you want to clear this quiz record?")) return;
+            const record = JSON.parse(localStorage.getItem('quiz_scores_record')) || {};
+            delete record[quizId];
+            localStorage.setItem('quiz_scores_record', JSON.stringify(record));
+            initQuiz();
+        }
+        
         function initQuiz() {
             // Load catalog screen
             document.getElementById('quiz-catalog').classList.remove('hidden');
@@ -10033,8 +10190,8 @@
             if (record['basic-relationship']) {
                 const score = record['basic-relationship'].score;
                 const total = record['basic-relationship'].total;
-                basicStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                basicStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+                basicStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('basic-relationship'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('basic-relationship'); event.stopPropagation();" title="Clear Record"></i>`;
+                basicStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 basicStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 basicStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
@@ -10045,8 +10202,8 @@
             if (record['quiz-nlp-escalation']) {
                 const score = record['quiz-nlp-escalation'].score;
                 const total = record['quiz-nlp-escalation'].total;
-                escalationStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                escalationStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+                escalationStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-nlp-escalation'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-nlp-escalation'); event.stopPropagation();" title="Clear Record"></i>`;
+                escalationStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 escalationStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 escalationStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
@@ -10057,8 +10214,8 @@
             if (record['quiz-frame-testing']) {
                 const score = record['quiz-frame-testing'].score;
                 const total = record['quiz-frame-testing'].total;
-                testingStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                testingStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+                testingStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-frame-testing'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-frame-testing'); event.stopPropagation();" title="Clear Record"></i>`;
+                testingStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 testingStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 testingStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
@@ -10069,8 +10226,8 @@
             if (record['quiz-resonance-value']) {
                 const score = record['quiz-resonance-value'].score;
                 const total = record['quiz-resonance-value'].total;
-                resonanceStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                resonanceStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+                resonanceStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-resonance-value'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-resonance-value'); event.stopPropagation();" title="Clear Record"></i>`;
+                resonanceStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 resonanceStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 resonanceStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
@@ -10081,8 +10238,8 @@
             if (record['quiz-pushpull-mastery']) {
                 const score = record['quiz-pushpull-mastery'].score;
                 const total = record['quiz-pushpull-mastery'].total;
-                pushpullStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                pushpullStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+                pushpullStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-pushpull-mastery'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-pushpull-mastery'); event.stopPropagation();" title="Clear Record"></i>`;
+                pushpullStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 pushpullStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 pushpullStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
@@ -10093,8 +10250,8 @@
             if (record['quiz-coldreading-tactics']) {
                 const score = record['quiz-coldreading-tactics'].score;
                 const total = record['quiz-coldreading-tactics'].total;
-                coldreadingStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                coldreadingStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+                coldreadingStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-coldreading-tactics'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-coldreading-tactics'); event.stopPropagation();" title="Clear Record"></i>`;
+                coldreadingStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 coldreadingStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 coldreadingStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
@@ -10105,8 +10262,8 @@
             if (record['quiz-attraction-science']) {
                 const score = record['quiz-attraction-science'].score;
                 const total = record['quiz-attraction-science'].total;
-                scienceStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                scienceStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold";
+                scienceStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-attraction-science'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-attraction-science'); event.stopPropagation();" title="Clear Record"></i>`;
+                scienceStatus.className = "text-[10px] bg-emerald-950/60 text-emerald-400 border border-emerald-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 scienceStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 scienceStatus.className = "text-[10px] bg-slate-800 text-slate-400 px-2 py-0.5 rounded-full font-medium";
@@ -10117,8 +10274,8 @@
             if (record['quiz-catch-classic']) {
                 const score = record['quiz-catch-classic'].score;
                 const total = record['quiz-catch-classic'].total;
-                catchClassicStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                catchClassicStatus.className = "text-[10px] bg-amber-950/60 text-amber-400 border border-amber-900/40 px-2 py-0.5 rounded-full font-semibold";
+                catchClassicStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-catch-classic'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-catch-classic'); event.stopPropagation();" title="Clear Record"></i>`;
+                catchClassicStatus.className = "text-[10px] bg-amber-950/60 text-amber-400 border border-amber-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 catchClassicStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 catchClassicStatus.className = "text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full font-medium border border-slate-800";
@@ -10129,8 +10286,8 @@
             if (record['quiz-advanced-mindset']) {
                 const score = record['quiz-advanced-mindset'].score;
                 const total = record['quiz-advanced-mindset'].total;
-                advancedMindsetStatus.textContent = currentLang === 'zh' ? `已完成：${score}/${total} 分` : `Completed: ${score}/${total} pts`;
-                advancedMindsetStatus.className = "text-[10px] bg-amber-950/60 text-amber-400 border border-amber-900/40 px-2 py-0.5 rounded-full font-semibold";
+                advancedMindsetStatus.innerHTML = currentLang === 'zh' ? `已完成：${score}/${total} 分 <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-advanced-mindset'); event.stopPropagation();" title="清除紀錄"></i>` : `Completed: ${score}/${total} pts <i data-lucide="rotate-ccw" class="w-3 h-3 ml-1 inline-block cursor-pointer hover:text-white transition" onclick="resetQuizRecord('quiz-advanced-mindset'); event.stopPropagation();" title="Clear Record"></i>`;
+                advancedMindsetStatus.className = "text-[10px] bg-amber-950/60 text-amber-400 border border-amber-900/40 px-2 py-0.5 rounded-full font-semibold flex items-center";
             } else {
                 advancedMindsetStatus.textContent = currentLang === 'zh' ? "未測驗" : "Not Quiz";
                 advancedMindsetStatus.className = "text-[10px] bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full font-medium border border-slate-800";

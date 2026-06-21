@@ -8,3 +8,4 @@ venv.bak/
 .env
 catch_notebook.db
 chroma_db/
+*.db
